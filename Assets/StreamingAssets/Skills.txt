@@ -1,0 +1,25 @@
+{
+    "skillList":
+    [
+        {
+            "ID":0,
+            "skillName":"Force Blast",
+            "cooldown":8.5
+        },
+        {
+            "ID":1,
+            "skillName":"Self Heal",
+            "cooldown":30
+        },
+        {
+            "ID":2,
+            "skillName":"Hover Jump",
+            "cooldown":18.5
+        },
+        {
+            "ID":3,
+            "skillName":"Rejuvenate",
+            "cooldown":30
+        }
+    ]  
+}

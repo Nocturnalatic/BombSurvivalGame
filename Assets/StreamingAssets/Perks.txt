@@ -1,0 +1,17 @@
+{
+    "perkList":
+    [
+        {
+            "ID":0,
+            "perkName":"Evasive"
+        },
+        {
+            "ID":1,
+            "perkName":"Last Stand"
+        },
+        {
+            "ID":2,
+            "perkName":"Tanky"
+        }
+    ]  
+}
