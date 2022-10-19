@@ -66,14 +66,19 @@ public class GameplayLoop : MonoBehaviour
     {
         //Can generate bomb types here in the future
         //Specialise rng for nukes and other big bombs
-        if (Intensity > 3)
+        if (Intensity >= 3)
         {
             MaxNukeCount = 1 + ((int)Intensity - 3);
             float nukeChance = Random.Range(0, 1f);
             if ((nukeChance <= 0.1 + (Intensity / 5f - 0.6f)) && NukeCount < MaxNukeCount)
             {
                 Vector3 pos = GenerateBombSpawn();
-                Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
+                GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
+                if (Intensity >= 5)
+                {
+                    nukeObj.transform.Find("Sphere").GetComponent<MeshRenderer>().enabled = false;
+                    nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.1f);
+                }
                 NukeCount++;
             }
         }
@@ -220,7 +225,7 @@ public class GameplayLoop : MonoBehaviour
         while (roundSeconds > 0)
         {
             roundSeconds -= Time.deltaTime;
-            globalText.text = MiscFunctions.FormatTimeString(roundSeconds);
+            globalText.text = $"Time: {MiscFunctions.FormatTimeString(roundSeconds)}";
             yield return waitforupdate;
         }
     }
@@ -290,7 +295,7 @@ public class GameplayLoop : MonoBehaviour
         }
         GameInProgress = true;
         timer = 3;
-        globalText.fontSize = 100;
+        globalText.fontSize = 70;
         while (timer > 0)
         {
             AudioManager.instance.PlayTick();
@@ -299,7 +304,7 @@ public class GameplayLoop : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
         globalText.text = "BEGIN!";
-        globalText.fontSize = 70;
+        globalText.fontSize = 60;
         AudioManager.instance.PlayWhistle();
         yield return AudioManager.instance.waitForWhistle;
         // Start Spawning Bombs Based On Intensity

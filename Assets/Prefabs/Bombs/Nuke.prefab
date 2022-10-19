@@ -698,7 +698,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.9689878, g: 1, b: 0, a: 1}
+      maxColor: {r: 1, g: 0.65119374, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -760,7 +760,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 20
       minScalar: 15
       maxCurve:
         serializedVersion: 2
@@ -5318,8 +5318,8 @@ ParticleSystemRenderer:
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 1
-  m_MinParticleSize: 0.4
-  m_MaxParticleSize: 0.4
+  m_MinParticleSize: 0
+  m_MaxParticleSize: 2
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: 2
@@ -5765,6 +5765,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionRadius: 20
   explosionForce: 1500
+  knockbackForce: 10
   damage: 120
   speedMultiplier: 1
   isNuke: 1

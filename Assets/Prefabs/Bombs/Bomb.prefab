@@ -306,7 +306,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.9689878, g: 1, b: 0, a: 1}
+      maxColor: {r: 0.5, g: 0.2487811, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5215,4 +5215,6 @@ MonoBehaviour:
   detonationTime: 7
   explosionRadius: 5
   explosionForce: 100
+  knockbackForce: 5
   damage: 30
+  type: 0

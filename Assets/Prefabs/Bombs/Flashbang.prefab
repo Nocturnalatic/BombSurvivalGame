@@ -136,6 +136,7 @@ MonoBehaviour:
   detonationTime: 5
   explosionRadius: 10
   explosionForce: 20
+  knockbackForce: 5
   damage: 5
   type: 1
 --- !u!1 &1784069305276440405
@@ -244,7 +245,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -1435,7 +1436,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   ColorModule:
-    enabled: 0
+    enabled: 1
     gradient:
       serializedVersion: 2
       minMaxState: 1
