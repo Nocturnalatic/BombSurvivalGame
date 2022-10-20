@@ -35,7 +35,7 @@ public class Scoring : MonoBehaviour
 
     public void CalculateScore()
     {
-        survivalT = survivalB = 0;
+        survivalT = survivalB = Hardcore = 0;
         survivalT = PlayerStats.instance.survivalTime;
         if (PlayerStats.instance.state == PlayerStats.GAME_STATE.WIN)
         {
