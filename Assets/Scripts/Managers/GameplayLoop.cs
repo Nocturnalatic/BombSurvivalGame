@@ -353,6 +353,7 @@ public class GameplayLoop : MonoBehaviour
             Intensity -= 0.5f;
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
+        yield return new WaitForSeconds(2);
         foreach (PlayerStats player in allPlayers)
         {
             if (player.state == PlayerStats.GAME_STATE.WIN)
@@ -361,7 +362,8 @@ public class GameplayLoop : MonoBehaviour
             }
             player.GetComponentInChildren<Scoring>().CalculateScore();
         }
-        yield return new WaitForSeconds(6);
+        globalText.text = "Cleaning Up!";
+        yield return new WaitForSeconds(7);
         Destroy(env);
         allPlayers.Clear();
         foreach (Transform go in bombsParent)
