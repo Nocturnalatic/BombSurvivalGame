@@ -10,7 +10,7 @@ public class GameplayLoop : MonoBehaviour
     [Range(1, 5)]
     public float Intensity;
     public bool GameInProgress = false;
-    float roundSeconds;
+    public float roundSeconds;
     float timer;
     [HideInInspector]
     public int NukeCount = 0;
@@ -253,10 +253,8 @@ public class GameplayLoop : MonoBehaviour
             {
                 player.selectedSkill.currentcooldown = 0.1f;
             }
-            player.effects.Clear();
             player.skillUI.SetActive(true);
-            player.ResetHealth();
-            player.transform.GetComponent<PlayerControls>().moveSpeedModifiers.Clear();
+            player.Reset();
         }
         timer = 20;
         while (timer > 0)
@@ -325,7 +323,7 @@ public class GameplayLoop : MonoBehaviour
                     {
                         if (playerStats.selectedPerk.ID == 1 && playerStats.selectedPerk.enabled)
                         {
-                            playerStats.ResetHealth();
+                            playerStats.Reset();
                         }
                     }
                 }
@@ -355,7 +353,15 @@ public class GameplayLoop : MonoBehaviour
             Intensity -= 0.5f;
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
-        yield return new WaitForSeconds(3);
+        foreach (PlayerStats player in allPlayers)
+        {
+            if (player.state == PlayerStats.GAME_STATE.WIN)
+            {
+                player.survivalTime = 150;
+            }
+            player.GetComponentInChildren<Scoring>().CalculateScore();
+        }
+        yield return new WaitForSeconds(6);
         Destroy(env);
         allPlayers.Clear();
         foreach (Transform go in bombsParent)

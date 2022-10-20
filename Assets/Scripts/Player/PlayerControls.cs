@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerControls : MonoBehaviour
 {
@@ -14,8 +15,13 @@ public class PlayerControls : MonoBehaviour
     public CharacterController controller;
     public static PlayerControls instance;
     public bool processCamera = true;
+    public Image staminaBarUI;
 
     Transform playerHead, mainCam, playerLeg;
+    float stamina;
+    float maxStamina = 100;
+    float staminaDrainRate = 1.00f;
+    float staminaRegenDelay;
     float rotationX;
     float mouseSensMultiplier = 5;
     Vector3 moveDir, velocity, knockBack;
@@ -27,6 +33,7 @@ public class PlayerControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        stamina = maxStamina;
         Cursor.lockState = CursorLockMode.Locked; //To make sure the mouse don't anyhow move
         playerLeg = transform.Find("Body").Find("Leg");
         playerHead = transform.Find("Head");
@@ -103,8 +110,7 @@ public class PlayerControls : MonoBehaviour
         {
             PlayerStats.instance.UseSkill();
         }
-        isSprinting = Input.GetKey(KeyCode.LeftShift);
-        
+
         x = Input.GetAxisRaw("Horizontal"); // get left right movement
         z = Input.GetAxisRaw("Vertical"); // get front back movement
 
@@ -112,6 +118,37 @@ public class PlayerControls : MonoBehaviour
         bool hasHorizontalInput = !Mathf.Approximately(x, 0f);
         bool hasVerticalInput = !Mathf.Approximately(z, 0f);
         bool isWalking = hasHorizontalInput || hasVerticalInput;
+
+        if (Input.GetKey(KeyCode.LeftShift) && isWalking)
+        {
+            staminaRegenDelay = 1.5f;
+            if (stamina > 0)
+            {
+                isSprinting = true;
+                stamina -= Time.deltaTime * 30 * staminaDrainRate;
+            }
+            else
+            {
+                isSprinting = false;
+            }
+        }
+        else
+        {
+            isSprinting = false;
+        }
+        if (!isSprinting)
+        {
+            if (staminaRegenDelay > 0)
+            {
+                staminaRegenDelay -= Time.deltaTime;
+            }
+            else
+            {
+                stamina += Time.deltaTime * 20 * PlayerStats.instance.cooldownReduction;
+            }
+        }
+        stamina = Mathf.Clamp(stamina, 0, maxStamina);
+        staminaBarUI.fillAmount = stamina / maxStamina;
         moveDir = (transform.right * x + transform.forward * z).normalized; // movement vector normalized (so that diagonal speed won't be faster)
 
         float result = 1;

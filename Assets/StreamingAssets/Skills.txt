@@ -20,6 +20,11 @@
             "ID":3,
             "skillName":"Rejuvenate",
             "cooldown":30
+        },
+        {
+            "ID":4,
+            "skillName":"Force Field",
+            "cooldown":16
         }
     ]  
 }

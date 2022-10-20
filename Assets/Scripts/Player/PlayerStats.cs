@@ -38,6 +38,7 @@ public class PlayerStats : MonoBehaviour
     public List<Sprite> skillIcons;
     public Image selectedSkillIcon, cooldownUI;
     public AudioSource ForceBlastSound;
+    public Animator barrierEffect;
 
     [Header("Perks")]
     [HideInInspector]
@@ -49,8 +50,12 @@ public class PlayerStats : MonoBehaviour
     public List<GameObject> UI_Icons = new List<GameObject>();
     [HideInInspector]
     public bool isInFire = false;
-
     bool isChilled = false;
+
+    #region Scoring Variables
+    public float damageTaken = 0;
+    public float survivalTime = 0;
+    #endregion
 
     public enum GAME_STATE
     {
@@ -147,6 +152,8 @@ public class PlayerStats : MonoBehaviour
                 return "FROSTED";
             case StatusEffect.EffectType.REGEN:
                 return "REGEN";
+            case StatusEffect.EffectType.PROTECTED:
+                return "PROTECTED";
         }
         return "ERROR";
     }
@@ -218,14 +225,6 @@ public class PlayerStats : MonoBehaviour
                         damageResistModifiers.Add(Globals.chillDamageDebuff);
                         isChilled = true;
                     }
-                    else
-                    {
-                        //Bug Fix for Bug Number 2
-                        if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF) == false)
-                        {
-                            PlayerControls.instance.moveSpeedModifiers.Add(Globals.chillMovementDebuff);
-                        }
-                    }
                 }
                 else if (effect.type == StatusEffect.EffectType.BURN)
                 {
@@ -248,8 +247,11 @@ public class PlayerStats : MonoBehaviour
             {
                 isChilled = false;
                 cooldownReduction = 1;
-                PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
-                damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF)) //Bug 2 Attempt Fix
+                {
+                    PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                    damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                }
             }
             effects.Remove(f);
         }
@@ -400,8 +402,9 @@ public class PlayerStats : MonoBehaviour
                 }
             }
         }
-        if (!dodge)
+        if (!dodge && !HasEffect(StatusEffect.EffectType.PROTECTED))
         {
+            damageTaken += dmg;
             float remainingDmg = dmg;
             if (shield > 0)
             {
@@ -441,6 +444,7 @@ public class PlayerStats : MonoBehaviour
             {
                 GameplayLoop.instance.GameInProgress = false;
                 state = GAME_STATE.LOSE;
+                survivalTime = 150 - GameplayLoop.instance.roundSeconds;
             }
         }
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
@@ -455,15 +459,19 @@ public class PlayerStats : MonoBehaviour
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
     }
 
-    public void ResetHealth() //Resets other things
+    public void Reset() //Resets other things
     {
         StopAllCoroutines();
+        damageTaken = 0;
         shield = 0;
         health = maxhealth;
         ShieldBar.fillAmount = 0;
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
         moveSpeedMultiplier = 1;
+        cooldownReduction = 1;
+        effects.Clear();
+        PlayerControls.instance.moveSpeedModifiers.Clear();
         damageResistModifiers.Clear();
         hpbar.enabled = false;
         HPbar.color = new Color(0.6735849f, 1, 1);

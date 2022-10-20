@@ -24,6 +24,7 @@ public class StatusEffect
         STUNNED,
         CHILLED,
         REGEN,
+        PROTECTED,
         TOTAL
     }
 

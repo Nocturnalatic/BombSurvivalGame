@@ -62,7 +62,7 @@ public class Skills
                 }
             case 1:
                 {
-                    PlayerStats.instance.HealPlayer(30f, true);
+                    PlayerStats.instance.HealPlayer(20f, true);
                     break;
                 }
             case 2:
@@ -73,6 +73,13 @@ public class Skills
             case 3:
                 {
                     PlayerStats.instance.Skill4();
+                    break;
+                }
+            case 4:
+                {
+                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 3, 1, false, StatusEffect.BuffType.POSITIVE);
+                    PlayerStats.instance.AddStatus(effect);
+                    PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
                     break;
                 }
         }
