@@ -48,14 +48,14 @@ public class Skills
             case 0:
                 {
                     PlayerStats.instance.ForceBlastSound.Play();
-                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 10);
+                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 15);
                     foreach (Collider col in result)
                     {
                         Rigidbody rb = col.GetComponent<Rigidbody>();
 
                         if (rb != null && !rb.gameObject.CompareTag("Bomb"))
                         {
-                            rb.AddExplosionForce(1000, PlayerStats.instance.transform.position, 10, 1);
+                            rb.AddExplosionForce(1500, PlayerStats.instance.transform.position, 15, 1);
                         }
                     }
                     break;
@@ -82,7 +82,57 @@ public class Skills
                     PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
                     break;
                 }
+            case 5:
+                {
+                    RandomSkill();
+                    break;
+                }
         }
         currentcooldown = cooldown;
+    }
+
+    public void RandomSkill()
+    {
+        int SID = Random.Range(0, 5);
+        switch (SID)
+        {
+            case 0:
+                {
+                    PlayerStats.instance.ForceBlastSound.Play();
+                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 20);
+                    foreach (Collider col in result)
+                    {
+                        Rigidbody rb = col.GetComponent<Rigidbody>();
+
+                        if (rb != null && !rb.gameObject.CompareTag("Bomb"))
+                        {
+                            rb.AddExplosionForce(1750, PlayerStats.instance.transform.position, 20, 1);
+                        }
+                    }
+                    break;
+                }
+            case 1:
+                {
+                    PlayerStats.instance.HealPlayer(30f, true);
+                    break;
+                }
+            case 2:
+                {
+                    PlayerControls.instance.StartCoroutine(PlayerControls.instance.Skill3());
+                    break;
+                }
+            case 3:
+                {
+                    PlayerStats.instance.Skill4(true);
+                    break;
+                }
+            case 4:
+                {
+                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 4, 1, false, StatusEffect.BuffType.POSITIVE);
+                    PlayerStats.instance.AddStatus(effect);
+                    PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
+                    break;
+                }
+        }
     }
 }

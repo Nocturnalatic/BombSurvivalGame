@@ -82,7 +82,7 @@ public class PlayerStats : MonoBehaviour
         StartCoroutine(ApplyBurn());
     }
 
-    public void Skill4()
+    public void Skill4(bool empowered = false)
     {
         foreach (StatusEffect effect in effects)
         {
@@ -91,7 +91,7 @@ public class PlayerStats : MonoBehaviour
                 effect.duration = 0;
             }
         }
-        AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 15, 3, true, StatusEffect.BuffType.POSITIVE));
+        AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 15, empowered ? 5 : 3, true, StatusEffect.BuffType.POSITIVE));
     }
 
     IEnumerator ApplyBurn()

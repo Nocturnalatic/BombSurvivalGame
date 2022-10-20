@@ -25,6 +25,11 @@
             "ID":4,
             "skillName":"Force Field",
             "cooldown":16
+        },
+        {
+            "ID":5,
+            "skillName":"Random",
+            "cooldown":30
         }
     ]  
 }
