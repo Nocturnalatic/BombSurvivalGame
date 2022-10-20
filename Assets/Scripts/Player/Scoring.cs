@@ -7,7 +7,7 @@ public class Scoring : MonoBehaviour
 {
     public float MaxDamageTaken = 100;
 
-    public AudioSource ding, woosh;
+    public AudioSource ding, woosh, finalDing;
 
     [Header("UI Elements")]
     public TextMeshProUGUI survivalTime;
@@ -29,6 +29,9 @@ public class Scoring : MonoBehaviour
                 break;
             case 1:
                 woosh.Play();
+                break;
+            case 2:
+                finalDing.Play();
                 break;
         }
     }

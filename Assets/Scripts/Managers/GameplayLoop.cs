@@ -344,15 +344,6 @@ public class GameplayLoop : MonoBehaviour
         globalText.text = "Round Over!";
         yield return new WaitForSeconds(2);
         globalText.text = $"{GetWinningPlayers()} / {allPlayers.Count} players survived";
-        if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
-        {
-            Intensity += 0.5f;
-        }
-        else
-        {
-            Intensity -= 0.5f;
-        }
-        Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
         yield return new WaitForSeconds(2);
         foreach (PlayerStats player in allPlayers)
         {
@@ -362,8 +353,17 @@ public class GameplayLoop : MonoBehaviour
             }
             player.GetComponentInChildren<Scoring>().CalculateScore();
         }
+        if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
+        {
+            Intensity += 0.5f;
+        }
+        else
+        {
+            Intensity -= 0.5f;
+        }
+        Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
         globalText.text = "Cleaning Up!";
-        yield return new WaitForSeconds(7);
+        yield return new WaitForSeconds(8);
         Destroy(env);
         allPlayers.Clear();
         foreach (Transform go in bombsParent)
