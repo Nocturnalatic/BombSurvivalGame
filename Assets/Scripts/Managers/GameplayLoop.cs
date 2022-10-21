@@ -246,6 +246,8 @@ public class GameplayLoop : MonoBehaviour
                 player.GetComponent<PlayerControls>().gravity = -9.81f;
             }
         }
+        yield return new WaitUntil(() => AudioManager.instance != null);
+        AudioManager.instance.PlayLobbyMusic();
         chosenEnv = Environments[Random.Range(0, Environments.Count)];
         intensityText.text = $"{GetIntensityText()} {Intensity}";
         SetIntensityColor();
@@ -297,6 +299,7 @@ public class GameplayLoop : MonoBehaviour
         }
         GameInProgress = true;
         timer = 3;
+        AudioManager.instance.StopAudio();
         while (timer > 0)
         {
             AudioManager.instance.PlayTick();

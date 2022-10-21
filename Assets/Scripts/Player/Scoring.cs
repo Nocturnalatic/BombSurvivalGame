@@ -46,6 +46,10 @@ public class Scoring : MonoBehaviour
         }
         dmgTkn = 100 - (int)PlayerStats.instance.damageTaken;
         dmgTkn = (int)Mathf.Clamp(dmgTkn, 0, MaxDamageTaken);
+        if (PlayerStats.instance.damageTaken < 1)
+        {
+            dmgTkn *= 5; //500% More For No Damage Bonus
+        }
         if (PlayerStats.instance.hardcoreMode)
         {
             Hardcore = (survivalT + survivalB + dmgTkn) * 2;

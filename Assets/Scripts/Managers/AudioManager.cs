@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public List<AudioSource> LobbyMusic;
     public List<AudioSource> LowIntensityMusic;
     public List<AudioSource> MidIntensityMusic;
     public List<AudioSource> HighIntensityMusic;
@@ -14,6 +15,19 @@ public class AudioManager : MonoBehaviour
     public AudioSource whistle;
 
     public static AudioManager instance;
+
+    public void StopAudio()
+    {
+        currentlyPlaying.Stop();
+    }
+
+    public void PlayLobbyMusic()
+    {
+        int selector = Random.Range(0, LobbyMusic.Count);
+        currentlyPlaying = LobbyMusic[selector];
+        currentlyPlaying.volume = 1;
+        currentlyPlaying.Play();
+    }
 
     public void PlayBGM(GameplayLoop.INTENSITY intensity)
     {
