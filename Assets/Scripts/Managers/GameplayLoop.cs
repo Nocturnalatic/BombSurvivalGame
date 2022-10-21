@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameplayLoop : MonoBehaviour
@@ -15,8 +16,10 @@ public class GameplayLoop : MonoBehaviour
     [HideInInspector]
     public int NukeCount = 0;
     int MaxNukeCount = 1;
+    float roundDuration = 150;
     public Transform bombsParent, Arena, Players;
-    public TextMeshProUGUI globalText, intensityText;
+    public TextMeshProUGUI globalText, intensityText, roundTimerText;
+    public Image roundTimerBar;
     public List<GameObject> Environments;
     GameObject chosenEnv;
     [SerializeField]
@@ -225,7 +228,8 @@ public class GameplayLoop : MonoBehaviour
         while (roundSeconds > 0)
         {
             roundSeconds -= Time.deltaTime;
-            globalText.text = $"Time: {MiscFunctions.FormatTimeString(roundSeconds)}";
+            roundTimerText.text = $"{MiscFunctions.FormatTimeString(roundSeconds)}";
+            roundTimerBar.fillAmount = roundSeconds / roundDuration;
             yield return waitforupdate;
         }
     }
@@ -243,7 +247,7 @@ public class GameplayLoop : MonoBehaviour
             }
         }
         chosenEnv = Environments[Random.Range(0, Environments.Count)];
-        intensityText.text = $"{GetIntensityText()}  {Intensity}";
+        intensityText.text = $"{GetIntensityText()} {Intensity}";
         SetIntensityColor();
         GameObject env = Instantiate(chosenEnv, Vector3.zero, Quaternion.identity, Arena);
         GameInProgress = false;
@@ -293,7 +297,6 @@ public class GameplayLoop : MonoBehaviour
         }
         GameInProgress = true;
         timer = 3;
-        globalText.fontSize = 70;
         while (timer > 0)
         {
             AudioManager.instance.PlayTick();
@@ -302,11 +305,12 @@ public class GameplayLoop : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
         globalText.text = "BEGIN!";
-        globalText.fontSize = 60;
         AudioManager.instance.PlayWhistle();
         yield return AudioManager.instance.waitForWhistle;
+        globalText.text = "Round In Progress...";
         // Start Spawning Bombs Based On Intensity
-        roundSeconds = 150;
+        roundSeconds = roundDuration;
+        roundTimerBar.fillAmount = 1;
         float spawnDelay = 0.6f / (Intensity * 1.1f) + 0.75f;
         WaitForSeconds waitDelay = new WaitForSeconds(spawnDelay);
         Coroutine countdown = StartCoroutine(CountdownRoundTime());

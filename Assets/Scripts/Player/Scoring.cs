@@ -18,7 +18,7 @@ public class Scoring : MonoBehaviour
     public TextMeshProUGUI FinalScore;
     public Animator scoreAnimator;
 
-    float survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
+    int survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
 
     public void PlaySoundFX(int num)
     {
@@ -39,26 +39,26 @@ public class Scoring : MonoBehaviour
     public void CalculateScore()
     {
         survivalT = survivalB = Hardcore = 0;
-        survivalT = PlayerStats.instance.survivalTime;
+        survivalT = (int)PlayerStats.instance.survivalTime;
         if (PlayerStats.instance.state == PlayerStats.GAME_STATE.WIN)
         {
-            survivalB = survivalT * 1.5f;
+            survivalB = (int)(survivalT * 1.5f);
         }
-        dmgTkn = 100 - PlayerStats.instance.damageTaken;
-        dmgTkn = Mathf.Clamp(dmgTkn, 0, MaxDamageTaken);
+        dmgTkn = 100 - (int)PlayerStats.instance.damageTaken;
+        dmgTkn = (int)Mathf.Clamp(dmgTkn, 0, MaxDamageTaken);
         if (PlayerStats.instance.hardcoreMode)
         {
             Hardcore = (survivalT + survivalB + dmgTkn) * 2;
         }
-        IntMult = (survivalT + survivalB + dmgTkn) * GameplayLoop.instance.Intensity;
+        IntMult = (survivalT + survivalB + dmgTkn) * (int)GameplayLoop.instance.Intensity;
         Final = survivalT + survivalB + dmgTkn + Hardcore + IntMult;
 
-        survivalTime.text = $"{(int)survivalT}";
-        survivalBonus.text = $"{(int)survivalB}";
-        damageTakenBonus.text = $"{(int)dmgTkn}";
-        HardcoreBonus.text = string.Format("{0:n0}", $"{(int)Hardcore}");
-        IntensityMultiplier.text = string.Format("{0:n0}", $"{(int)IntMult}");
-        FinalScore.text = string.Format("{0:n0}", $"{(int)Final}");
+        survivalTime.text = $"{survivalT}";
+        survivalBonus.text = $"{survivalB}";
+        damageTakenBonus.text = $"{dmgTkn}";
+        HardcoreBonus.text = Hardcore.ToString("#,##0");
+        IntensityMultiplier.text = IntMult.ToString("#,##0");
+        FinalScore.text = Final.ToString("#,##0");
         scoreAnimator.SetTrigger("DoScore");
     }
 }
