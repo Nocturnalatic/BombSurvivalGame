@@ -171,7 +171,7 @@ public class PlayerControls : MonoBehaviour
         gravityMultiplier = 0.1f;
         yield return new WaitUntil(() => isGrounded == true);
         gravityMultiplier = 5;
-        jumpHeight = 3;
+        jumpHeight = 2;
         yield return null;
     }
 

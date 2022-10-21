@@ -345,7 +345,6 @@ public class GameplayLoop : MonoBehaviour
                 player.state = PlayerStats.GAME_STATE.WIN;
             }
         }
-        GlobalSettings.instance.SetHardcoreSetting(true);
         StartCoroutine(AudioManager.instance.FadeOutTrack());
         AudioManager.instance.PlayWhistle();
         globalText.text = "Round Over!";
@@ -369,6 +368,7 @@ public class GameplayLoop : MonoBehaviour
             Intensity -= 0.5f;
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
+        GlobalSettings.instance.SetHardcoreSetting(true);
         globalText.text = "Cleaning Up!";
         yield return new WaitForSeconds(8);
         Destroy(env);
