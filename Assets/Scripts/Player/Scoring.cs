@@ -50,11 +50,15 @@ public class Scoring : MonoBehaviour
         {
             dmgTkn *= 5; //500% More For No Damage Bonus
         }
+        else if (PlayerStats.instance.damageTaken < 10)
+        {
+            dmgTkn *= 2; //200% More For Taking Less Than 10 Damage
+        }
         if (PlayerStats.instance.hardcoreMode)
         {
             Hardcore = (survivalT + survivalB + dmgTkn) * 2;
         }
-        IntMult = (survivalT + survivalB + dmgTkn) * (int)GameplayLoop.instance.Intensity;
+        IntMult = (int)((survivalT + survivalB + dmgTkn) * GameplayLoop.instance.Intensity);
         Final = survivalT + survivalB + dmgTkn + Hardcore + IntMult;
 
         survivalTime.text = $"{survivalT}";
