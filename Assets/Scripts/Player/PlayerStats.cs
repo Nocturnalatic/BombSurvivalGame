@@ -404,7 +404,10 @@ public class PlayerStats : MonoBehaviour
         }
         if (!dodge && !HasEffect(StatusEffect.EffectType.PROTECTED))
         {
-            damageTaken += dmg;
+            if (GameplayLoop.instance.GameInProgress)
+            {
+                damageTaken += dmg / damageResist;
+            }
             float remainingDmg = dmg;
             if (shield > 0)
             {
