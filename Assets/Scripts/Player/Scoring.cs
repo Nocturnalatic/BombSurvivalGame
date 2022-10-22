@@ -20,6 +20,94 @@ public class Scoring : MonoBehaviour
 
     int survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
 
+    string GetRankFromScore(int score)
+    {
+        if (score < 500)
+        {
+            return "FAIL";
+        }
+        else if (score < 1000)
+        {
+            return "BRONZE";
+        }
+        else if (score < 1500)
+        {
+            return "SILVER";
+        }
+        else if (score < 2000)
+        {
+            return "GOLD";
+        }
+        else if (score < 2500)
+        {
+            return "PLATINUM";
+        }
+        else if (score < 3000)
+        {
+            return "DIAMOND";
+        }
+        else if (score < 4000)
+        {
+            return "MASTER";
+        }
+        else if (score < 5000)
+        {
+            return "GRANDMASTER";
+        }
+        else if (score >= 5000)
+        {
+            return "UNBEATABLE!";
+        }
+        else
+        {
+            return "UNRANKED";
+        }
+    }
+
+    Color GetColorFromScore(int score)
+    {
+        if (score < 500)
+        {
+            return Color.gray;
+        }
+        else if (score < 1000)
+        {
+            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
+        }
+        else if (score < 1500)
+        {
+            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
+        }
+        else if (score < 2000)
+        {
+            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
+        }
+        else if (score < 2500)
+        {
+            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
+        }
+        else if (score < 3000)
+        {
+            return new Color(185 / 255f, 242 / 255f, 255 / 255f);
+        }
+        else if (score < 4000)
+        {
+            return Color.blue;
+        }
+        else if (score < 5000)
+        {
+            return Color.magenta;
+        }
+        else if (score >= 5000)
+        {
+            return Color.white;
+        }
+        else
+        {
+            return Color.gray;
+        }
+    }
+
     public void PlaySoundFX(int num)
     {
         switch (num)
@@ -66,7 +154,8 @@ public class Scoring : MonoBehaviour
         damageTakenBonus.text = $"{dmgTkn}";
         HardcoreBonus.text = Hardcore.ToString("#,##0");
         IntensityMultiplier.text = IntMult.ToString("#,##0");
-        FinalScore.text = Final.ToString("#,##0");
+        FinalScore.text = (Final.ToString("#,##0")) + " - " + GetRankFromScore(Final);
+        FinalScore.color = GetColorFromScore(Final);
         scoreAnimator.SetTrigger("DoScore");
     }
 }

@@ -77,10 +77,10 @@ public class GameplayLoop : MonoBehaviour
             {
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
+                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.1f);
                 if (Intensity >= 5)
                 {
                     nukeObj.transform.Find("Sphere").GetComponent<MeshRenderer>().enabled = false;
-                    nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.1f);
                 }
                 NukeCount++;
             }
@@ -252,7 +252,6 @@ public class GameplayLoop : MonoBehaviour
         intensityText.text = $"{GetIntensityText()} {Intensity}";
         SetIntensityColor();
         GameObject env = Instantiate(chosenEnv, Vector3.zero, Quaternion.identity, Arena);
-        GameInProgress = false;
         foreach (PlayerStats player in allPlayers) //Reset Players
         {
             if (player.selectedSkill != null)
@@ -347,6 +346,7 @@ public class GameplayLoop : MonoBehaviour
         }
         StartCoroutine(AudioManager.instance.FadeOutTrack());
         AudioManager.instance.PlayWhistle();
+        GameInProgress = false;
         globalText.text = "Round Over!";
         yield return new WaitForSeconds(2);
         globalText.text = $"{GetWinningPlayers()} / {allPlayers.Count} players survived";
@@ -386,7 +386,7 @@ public class GameplayLoop : MonoBehaviour
     { 
         waitforupdate = new WaitForFixedUpdate();
         instance = this;
-        Intensity = 5.0f;
+        Intensity = 3.0f;
         StartCoroutine(Gameplay());
     }
 }

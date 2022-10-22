@@ -225,6 +225,62 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 533025979, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 370.0249
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025979, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 57.4573
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025979, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 279.0125
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025979, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -3.7286
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025980, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_text
+      value: 250 - UNBEATABLE!
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025980, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_fontSize
+      value: 45.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025980, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: daaf74362322b6944ae63909388517a1, type: 2}
+    - target: {fileID: 533025980, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 533025980, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044802549, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044802550, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044802550, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044802550, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044802550, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1405681062, guid: 0530ed84c56e010469933c833776eb1f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
