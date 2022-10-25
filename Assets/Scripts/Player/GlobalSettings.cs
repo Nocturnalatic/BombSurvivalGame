@@ -8,7 +8,7 @@ public class GlobalSettings : MonoBehaviour
 
     public static GlobalSettings instance;
     public Toggle hardcoretoggle;
-    public Slider mouseSensSlider;
+    public Slider mouseSensSlider, intensityControl;
     public GameObject settingsCanvas;
     public bool isInGameSettingsOpen = false;
 
@@ -32,6 +32,11 @@ public class GlobalSettings : MonoBehaviour
         hardcoretoggle.interactable = v;
     }
 
+    public void SetIntensityControlSetting(bool v)
+    {
+        intensityControl.interactable = v;
+    }
+
     public void SetHardcoreMode(bool v)
     {
         PlayerStats.instance.hardcoreMode = v;
@@ -42,6 +47,11 @@ public class GlobalSettings : MonoBehaviour
     public void SetSensitivity(float v)
     {
         mouseSensitivity = v;
+    }
+
+    public void SetIntensity(float i)
+    {
+        GameplayLoop.instance.SetIntensity(i);
     }
 
     public void QuitToMenu()

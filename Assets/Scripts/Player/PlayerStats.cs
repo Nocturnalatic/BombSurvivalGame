@@ -11,6 +11,7 @@ public class PlayerStats : MonoBehaviour
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public float moveSpeedMultiplier = 1;
     public float cooldownReduction = 1;
+    public float noiseCooldown = 2;
 
     public static PlayerStats instance;
     WaitForSeconds waitupdate;
@@ -24,6 +25,11 @@ public class PlayerStats : MonoBehaviour
     public List<StatusEffect> effects = new List<StatusEffect>();
 
     public Animator dodgeTextAnimator;
+    [Header("Audio")]
+    public List<AudioSource> lightdamagetakenNoises;
+    public List<AudioSource> heavydamagetakenNoises;
+    public List<AudioSource> deathNoises;
+
     [Header("Health Bar UI")]
     public Image ShieldBar, HPbar, HPBarBG;
     public GameObject hardcoreText;
@@ -330,6 +336,21 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public void PlayLDT()
+    {
+        lightdamagetakenNoises[Random.Range(0, lightdamagetakenNoises.Count)].Play();
+    }
+
+    public void PlayHDT()
+    {
+        heavydamagetakenNoises[Random.Range(0, heavydamagetakenNoises.Count)].Play();
+    }
+
+    public void PlayDeath()
+    {
+        deathNoises[Random.Range(0, deathNoises.Count)].Play();
+    }
+
     public void AddShield(float v)
     {
         shield += v;
@@ -408,6 +429,18 @@ public class PlayerStats : MonoBehaviour
             {
                 damageTaken += dmg / damageResist;
             }
+            if (noiseCooldown <= 0)
+            {
+                if (dmg <= 10)
+                {
+                    PlayLDT();
+                }
+                else
+                {
+                    PlayHDT();
+                }
+                noiseCooldown = 1;
+            }
             float remainingDmg = dmg;
             if (shield > 0)
             {
@@ -448,6 +481,7 @@ public class PlayerStats : MonoBehaviour
                 GameplayLoop.instance.GameInProgress = false;
                 state = GAME_STATE.LOSE;
                 survivalTime = 150 - GameplayLoop.instance.roundSeconds;
+                PlayDeath();
             }
         }
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
@@ -485,6 +519,10 @@ public class PlayerStats : MonoBehaviour
     {
         ProcessEffects();
         ProcessStatusUI();
+        if (noiseCooldown > 0)
+        {
+            noiseCooldown -= Time.deltaTime;
+        }
         if (selectedSkill != null)
         {
             //Process Skills

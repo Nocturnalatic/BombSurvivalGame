@@ -22,37 +22,37 @@ public class Scoring : MonoBehaviour
 
     string GetRankFromScore(int score)
     {
-        if (score < 500)
+        if (score < 1000)
         {
             return "FAIL";
         }
-        else if (score < 1000)
-        {
-            return "BRONZE";
-        }
-        else if (score < 1500)
-        {
-            return "SILVER";
-        }
         else if (score < 2000)
         {
-            return "GOLD";
+            return "AMATEUR";
         }
         else if (score < 2500)
         {
-            return "PLATINUM";
+            return "NOVICE";
         }
         else if (score < 3000)
         {
-            return "DIAMOND";
+            return "SKILLED";
+        }
+        else if (score < 3500)
+        {
+            return "VETERAN";
         }
         else if (score < 4000)
         {
-            return "MASTER";
+            return "EPIC";
+        }
+        else if (score < 4500)
+        {
+            return "LEGENDARY";
         }
         else if (score < 5000)
         {
-            return "GRANDMASTER";
+            return "MYTHICAL";
         }
         else if (score >= 5000)
         {
@@ -66,31 +66,31 @@ public class Scoring : MonoBehaviour
 
     Color GetColorFromScore(int score)
     {
-        if (score < 500)
+        if (score < 1000)
         {
-            return Color.gray;
-        }
-        else if (score < 1000)
-        {
-            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
-        }
-        else if (score < 1500)
-        {
-            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
+            return Color.red;
         }
         else if (score < 2000)
         {
-            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
+            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
         }
         else if (score < 2500)
         {
-            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
+            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
         }
         else if (score < 3000)
         {
-            return new Color(185 / 255f, 242 / 255f, 255 / 255f);
+            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
+        }
+        else if (score < 3500)
+        {
+            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
         }
         else if (score < 4000)
+        {
+            return new Color(185 / 255f, 242 / 255f, 255 / 255f);
+        }
+        else if (score < 4500)
         {
             return Color.blue;
         }

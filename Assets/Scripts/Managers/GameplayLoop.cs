@@ -65,6 +65,13 @@ public class GameplayLoop : MonoBehaviour
         return pos;
     }
 
+    public void SetIntensity(float v)
+    {
+        Intensity = v;
+        SetIntensityColor();
+        intensityText.text = $"{GetIntensityText()} {Intensity}";
+    }
+
     void SpawnBomb()
     {
         //Can generate bomb types here in the future
@@ -249,8 +256,7 @@ public class GameplayLoop : MonoBehaviour
         yield return new WaitUntil(() => AudioManager.instance != null);
         AudioManager.instance.PlayLobbyMusic();
         chosenEnv = Environments[Random.Range(0, Environments.Count)];
-        intensityText.text = $"{GetIntensityText()} {Intensity}";
-        SetIntensityColor();
+        SetIntensity(Intensity);
         GameObject env = Instantiate(chosenEnv, Vector3.zero, Quaternion.identity, Arena);
         foreach (PlayerStats player in allPlayers) //Reset Players
         {
@@ -269,6 +275,7 @@ public class GameplayLoop : MonoBehaviour
             yield return waitforupdate;
         }
         GlobalSettings.instance.SetHardcoreSetting(false);
+        GlobalSettings.instance.SetIntensityControlSetting(false);
         foreach (PlayerStats player in allPlayers)
         {
             player.state = PlayerStats.GAME_STATE.IN_GAME;
@@ -369,6 +376,7 @@ public class GameplayLoop : MonoBehaviour
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
+        GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";
         yield return new WaitForSeconds(8);
         Destroy(env);
