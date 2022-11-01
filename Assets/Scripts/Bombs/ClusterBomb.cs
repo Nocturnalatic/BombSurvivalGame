@@ -11,7 +11,9 @@ public class ClusterBomb : MonoBehaviour
     public float explosionForce = 600f;
     public float knockbackForce = 7.5f;
     public float damage = 40;
+    public Animator animator;
 
+    float updatedDetonationTime;
     float frameTime;
     ParticleSystem ps;
     AudioSource explosionSound;
@@ -20,9 +22,10 @@ public class ClusterBomb : MonoBehaviour
     WaitForFixedUpdate waitFrame = new WaitForFixedUpdate();
     IEnumerator Detonate()
     {
-        while (detonationTime > 0)
+        while (updatedDetonationTime > 0)
         {
-            detonationTime -= frameTime;
+            animator.speed = detonationTime / updatedDetonationTime;
+            updatedDetonationTime -= frameTime;
             yield return waitFrame;
         }
         //Explode
@@ -33,6 +36,7 @@ public class ClusterBomb : MonoBehaviour
 
             if (rb != null && !rb.gameObject.CompareTag("Bomb"))
             {
+                rb.isKinematic = false;
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 1);
             }
 
@@ -67,6 +71,7 @@ public class ClusterBomb : MonoBehaviour
         frameTime = Time.fixedDeltaTime;
         ps = transform.GetComponentInChildren<ParticleSystem>();
         explosionSound = transform.GetComponentInChildren<AudioSource>();
+        updatedDetonationTime = detonationTime;
         StartCoroutine(Detonate());
     }
 }

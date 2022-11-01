@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5478540097860203075}
   - component: {fileID: 7687403030441260273}
   - component: {fileID: 7687403030441260274}
+  - component: {fileID: 5619098669582229222}
   m_Layer: 0
   m_Name: Flashbang
   m_TagString: Untagged
@@ -138,7 +139,28 @@ MonoBehaviour:
   explosionForce: 20
   knockbackForce: 5
   damage: 5
+  animator: {fileID: 5619098669582229222}
   type: 1
+--- !u!95 &5619098669582229222
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689670725695502319}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e91370cd7fa264f43852761fe248c5ef, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1784069305276440405
 GameObject:
   m_ObjectHideFlags: 0

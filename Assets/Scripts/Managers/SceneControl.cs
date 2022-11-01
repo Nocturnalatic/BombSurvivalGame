@@ -10,9 +10,16 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
         MAIN_MENU = 0,
         GAMEPLAY = 1
     }
+    public Material defaultSkybox;
+    public Material HighIntSkybox;
     public GameObject player;
     public static SceneControl instance; //Public Object :3
     SCENE_TYPE currentScene; //This is to define which scene the player is in.
+
+    public void SetSkybox(bool highInt)
+    {
+        RenderSettings.skybox = highInt ? HighIntSkybox : defaultSkybox;   
+    }
 
     public void SetPlayerSystem(bool v)
     {

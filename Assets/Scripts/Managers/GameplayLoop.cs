@@ -16,7 +16,7 @@ public class GameplayLoop : MonoBehaviour
     [HideInInspector]
     public int NukeCount = 0;
     int MaxNukeCount = 1;
-    float roundDuration = 150;
+    readonly float roundDuration = 150;
     public Transform bombsParent, Arena, Players;
     public TextMeshProUGUI globalText, intensityText, roundTimerText;
     public Image roundTimerBar;
@@ -70,6 +70,7 @@ public class GameplayLoop : MonoBehaviour
         Intensity = v;
         SetIntensityColor();
         intensityText.text = $"{GetIntensityText()} {Intensity}";
+        SceneControl.instance.SetSkybox(Intensity >= 4);
     }
 
     void SpawnBomb()

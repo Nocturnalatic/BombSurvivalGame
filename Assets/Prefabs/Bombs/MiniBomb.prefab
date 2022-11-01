@@ -5095,6 +5095,7 @@ GameObject:
   - component: {fileID: 7237942699976219647}
   - component: {fileID: 7237942699976219646}
   - component: {fileID: 7237942699976219644}
+  - component: {fileID: 426089532039613807}
   m_Layer: 0
   m_Name: MiniBomb
   m_TagString: Untagged
@@ -5215,4 +5216,27 @@ MonoBehaviour:
   detonationTime: 1
   explosionRadius: 4
   explosionForce: 100
+  knockbackForce: 5
   damage: 20
+  animator: {fileID: 426089532039613807}
+  type: 0
+--- !u!95 &426089532039613807
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7237942699976219641}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e91370cd7fa264f43852761fe248c5ef, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

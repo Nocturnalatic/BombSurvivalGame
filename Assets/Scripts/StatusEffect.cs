@@ -25,6 +25,7 @@ public class StatusEffect
         CHILLED,
         REGEN,
         PROTECTED,
+        CONTROL_IMMUNE,
         TOTAL
     }
 

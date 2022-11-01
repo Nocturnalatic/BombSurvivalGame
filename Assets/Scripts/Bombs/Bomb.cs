@@ -11,10 +11,12 @@ public class Bomb : MonoBehaviour
     public float explosionForce = 500f;
     public float knockbackForce = 5;
     public float damage = 30;
-    
+
+    float updatedDetonationTime;
     float frameTime;
     ParticleSystem ps;
     AudioSource explosionSound;
+    public Animator animator;
     WaitForFixedUpdate waitFrame = new WaitForFixedUpdate();
 
     public enum BOMB_TYPE
@@ -27,9 +29,10 @@ public class Bomb : MonoBehaviour
 
     IEnumerator Detonate()
     {
-        while (detonationTime > 0)
+        while (updatedDetonationTime > 0)
         {
-            detonationTime -= frameTime;
+            animator.speed = detonationTime / updatedDetonationTime;
+            updatedDetonationTime -= frameTime;
             yield return waitFrame;
         }
         //Explode
@@ -40,6 +43,7 @@ public class Bomb : MonoBehaviour
 
             if (rb != null && !rb.gameObject.CompareTag("Bomb"))
             {
+                rb.isKinematic = false;
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 1);
             }
 
@@ -73,6 +77,7 @@ public class Bomb : MonoBehaviour
         frameTime = Time.fixedDeltaTime;
         ps = transform.GetComponentInChildren<ParticleSystem>();
         explosionSound = transform.GetComponentInChildren<AudioSource>();
+        updatedDetonationTime = detonationTime;
         StartCoroutine(Detonate());
     }
 }

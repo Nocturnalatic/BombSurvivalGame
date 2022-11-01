@@ -26,14 +26,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1059315465896009508}
-  m_LocalRotation: {x: 0, y: 0, z: 0.28191444, w: 0.9594396}
-  m_LocalPosition: {x: -0.005951843, y: 0.0060116127, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.95830595, w: 0.2857443}
+  m_LocalPosition: {x: -0.006323725, y: 0.0063851164, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3631885003199783312}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 32.749}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -146.793}
 --- !u!33 &1059315465896009514
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -124,14 +124,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1356803626445839417}
-  m_LocalRotation: {x: -0, y: -0, z: -0.28191808, w: 0.9594385}
-  m_LocalPosition: {x: 0.0059518428, y: 0.0060116127, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.9402412, w: 0.34050915}
+  m_LocalPosition: {x: 0.0061690263, y: 0.0064906944, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3631885003199783312}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32.749}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 140.184}
 --- !u!33 &7160454488935961428
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -547,7 +547,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.9689878, g: 1, b: 0, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -608,8 +608,8 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     startSize:
       serializedVersion: 2
-      minMaxState: 3
-      scalar: 0.25
+      minMaxState: 0
+      scalar: 12
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -661,7 +661,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 3
+      minMaxState: 0
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -714,7 +714,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 3
+      minMaxState: 0
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -5167,8 +5167,8 @@ ParticleSystemRenderer:
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 1
-  m_MinParticleSize: 0.2
-  m_MaxParticleSize: 0.2
+  m_MinParticleSize: 0
+  m_MaxParticleSize: 2
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: 2
@@ -5208,6 +5208,7 @@ GameObject:
   - component: {fileID: 3380828164129989286}
   - component: {fileID: 3380828164129989287}
   - component: {fileID: 6872567332737101260}
+  - component: {fileID: 4716615475811610848}
   m_Layer: 0
   m_Name: ClusterBomb
   m_TagString: Untagged
@@ -5330,8 +5331,30 @@ MonoBehaviour:
   detonationTime: 6
   explosionRadius: 10
   explosionForce: 600
+  knockbackForce: 7.5
   damage: 40
+  animator: {fileID: 4716615475811610848}
   miniBomb: {fileID: 7237942699976219641, guid: ea4ce95f6cdccac4da7d053e9473835f, type: 3}
+--- !u!95 &4716615475811610848
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3380828164129989280}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e91370cd7fa264f43852761fe248c5ef, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7767191456644525516
 GameObject:
   m_ObjectHideFlags: 0

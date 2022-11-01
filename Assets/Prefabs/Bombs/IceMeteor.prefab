@@ -232,7 +232,7 @@ MonoBehaviour:
   explosionRadius: 10
   explosionForce: 300
   damage: 20
-  iceEffects: {fileID: 8522114889497136950}
+  explosionFX: {fileID: 8522114889497136950}
   fire: {fileID: 0}
   type: 1
 --- !u!108 &4521245920983904796

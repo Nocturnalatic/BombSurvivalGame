@@ -9,7 +9,6 @@ public class PlayerStats : MonoBehaviour
     float health, shield;
     float maxhealth = 100;
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
-    public float moveSpeedMultiplier = 1;
     public float cooldownReduction = 1;
     public float noiseCooldown = 2;
 
@@ -29,6 +28,7 @@ public class PlayerStats : MonoBehaviour
     public List<AudioSource> lightdamagetakenNoises;
     public List<AudioSource> heavydamagetakenNoises;
     public List<AudioSource> deathNoises;
+    public AudioSource skillReady;
 
     [Header("Health Bar UI")]
     public Image ShieldBar, HPbar, HPBarBG;
@@ -43,8 +43,8 @@ public class PlayerStats : MonoBehaviour
     public GameObject Menu;
     public List<Sprite> skillIcons;
     public Image selectedSkillIcon, cooldownUI;
-    public AudioSource ForceBlastSound;
-    public Animator barrierEffect;
+    public List<AudioSource> skillSoundFX;
+    public Animator barrierEffect, skillUsageAnimator;
 
     [Header("Perks")]
     [HideInInspector]
@@ -57,6 +57,7 @@ public class PlayerStats : MonoBehaviour
     [HideInInspector]
     public bool isInFire = false;
     bool isChilled = false;
+    bool skillReadyPlayed = true;
 
     #region Scoring Variables
     public float damageTaken = 0;
@@ -88,7 +89,7 @@ public class PlayerStats : MonoBehaviour
         StartCoroutine(ApplyBurn());
     }
 
-    public void Skill4(bool empowered = false)
+    public void Dispel()
     {
         foreach (StatusEffect effect in effects)
         {
@@ -97,6 +98,11 @@ public class PlayerStats : MonoBehaviour
                 effect.duration = 0;
             }
         }
+    }    
+
+    public void Skill4(bool empowered = false)
+    {
+        Dispel();
         AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 15, empowered ? 5 : 3, true, StatusEffect.BuffType.POSITIVE));
     }
 
@@ -160,6 +166,8 @@ public class PlayerStats : MonoBehaviour
                 return "REGEN";
             case StatusEffect.EffectType.PROTECTED:
                 return "PROTECTED";
+            case StatusEffect.EffectType.CONTROL_IMMUNE:
+                return "CTRL. IMM.";
         }
         return "ERROR";
     }
@@ -217,11 +225,26 @@ public class PlayerStats : MonoBehaviour
     {
         
         List<StatusEffect> toberemoved = new List<StatusEffect>();
-        foreach (StatusEffect effect in effects) //Movement Effects put in PlayerMovement.cs
+        foreach (StatusEffect effect in effects) 
         {
             effect.duration -= Time.deltaTime;
             if (effect.duration > 0)
             {
+                //Control Immune
+                if (effect.type == StatusEffect.EffectType.CONTROL_IMMUNE)
+                {
+                    StatusEffect check = GetEffect(StatusEffect.EffectType.CHILLED);
+                    StatusEffect check2 = GetEffect(StatusEffect.EffectType.STUNNED);
+                    if (check != null)
+                    {
+                        check.duration = 0;
+                    }
+                    if (check2 != null)
+                    {
+                        check2.duration = 0;
+                    }
+                }
+
                 if (effect.type == StatusEffect.EffectType.CHILLED)
                 {
                     if (!isChilled)
@@ -331,6 +354,7 @@ public class PlayerStats : MonoBehaviour
         {
             if (selectedSkill.currentcooldown <= 0 && GameplayLoop.instance.GameInProgress && !hardcoreMode)
             {
+                skillUsageAnimator.SetTrigger("UsedSkill");
                 selectedSkill.ActivateSkill();
             }
         }
@@ -505,7 +529,6 @@ public class PlayerStats : MonoBehaviour
         ShieldBar.fillAmount = 0;
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
-        moveSpeedMultiplier = 1;
         cooldownReduction = 1;
         effects.Clear();
         PlayerControls.instance.moveSpeedModifiers.Clear();
@@ -528,12 +551,19 @@ public class PlayerStats : MonoBehaviour
             //Process Skills
             if (selectedSkill.currentcooldown > 0)
             {
+                skillReadyPlayed = false;
                 selectedSkill.currentcooldown -= Time.deltaTime * cooldownReduction;
                 cooldownUI.fillAmount = selectedSkill.currentcooldown / selectedSkill.cooldown;
                 cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = System.Math.Round(selectedSkill.currentcooldown, 1).ToString();
             }
             else
             {
+                if (!skillReadyPlayed)
+                {
+                    skillUsageAnimator.SetTrigger("UsedSkill");
+                    skillReady.Play();
+                    skillReadyPlayed = true;
+                }
                 cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = "";
             }
         }

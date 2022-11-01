@@ -9,7 +9,7 @@ public class Meteor : MonoBehaviour
     public float damage = 20;
     bool Triggered = false;
     [SerializeField]
-    ParticleSystem iceEffects;
+    ParticleSystem explosionFX;
     public enum METEOR_TYPE
     {
         FIRE = 0,
@@ -38,6 +38,7 @@ public class Meteor : MonoBehaviour
 
             if (rb != null && rb != localrb && !rb.gameObject.CompareTag("Bomb"))
             {
+                rb.isKinematic = false;
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0.1f);
             }
 
@@ -71,9 +72,9 @@ public class Meteor : MonoBehaviour
                 mb.GetComponent<Rigidbody>().AddForce(posDev * 10, ForceMode.Acceleration);
             }
         }
-        else if (type == METEOR_TYPE.ICE)
+        if (explosionFX != null)
         {
-            iceEffects.Play();
+            explosionFX.Play();
         }
         GetComponent<AudioSource>().Play();
         yield return new WaitUntil(() => GetComponent<AudioSource>().isPlaying == false);

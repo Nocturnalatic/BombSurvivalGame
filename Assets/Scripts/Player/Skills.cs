@@ -47,7 +47,6 @@ public class Skills
         {
             case 0:
                 {
-                    PlayerStats.instance.ForceBlastSound.Play();
                     Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 15);
                     foreach (Collider col in result)
                     {
@@ -78,7 +77,9 @@ public class Skills
             case 4:
                 {
                     StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 3, 1, false, StatusEffect.BuffType.POSITIVE);
+                    StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 3, 1, false, StatusEffect.BuffType.POSITIVE);
                     PlayerStats.instance.AddStatus(effect);
+                    PlayerStats.instance.AddStatus(effect2);
                     PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
                     break;
                 }
@@ -88,6 +89,7 @@ public class Skills
                     break;
                 }
         }
+        PlayerStats.instance.skillSoundFX[ID].Play();
         currentcooldown = cooldown;
     }
 
@@ -98,7 +100,6 @@ public class Skills
         {
             case 0:
                 {
-                    PlayerStats.instance.ForceBlastSound.Play();
                     Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 20);
                     foreach (Collider col in result)
                     {
@@ -129,10 +130,13 @@ public class Skills
             case 4:
                 {
                     StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 4, 1, false, StatusEffect.BuffType.POSITIVE);
+                    StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 4, 1, false, StatusEffect.BuffType.POSITIVE);
                     PlayerStats.instance.AddStatus(effect);
+                    PlayerStats.instance.AddStatus(effect2);
                     PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
                     break;
                 }
         }
+        PlayerStats.instance.skillSoundFX[SID].Play();
     }
 }

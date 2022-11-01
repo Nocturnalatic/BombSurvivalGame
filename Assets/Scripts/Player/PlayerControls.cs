@@ -59,7 +59,10 @@ public class PlayerControls : MonoBehaviour
 
     public void AddKnockback(Vector3 direction, float force)
     {
-        knockBack = (direction * force + Vector3.up) * 5;
+        if (!PlayerStats.instance.HasEffect(StatusEffect.EffectType.CONTROL_IMMUNE))
+        {
+            knockBack = (direction * force + Vector3.up) * 5;
+        }
     }
 
     // Update is called once per frame
@@ -79,6 +82,7 @@ public class PlayerControls : MonoBehaviour
             {
                 PlayerStats.instance.ToggleMenu();
             }
+            else
             {
                 GlobalSettings.instance.ToggleIngameSettings();
             }
