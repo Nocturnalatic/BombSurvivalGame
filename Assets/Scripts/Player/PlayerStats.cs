@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using TMPro;
 
 public class PlayerStats : MonoBehaviour
@@ -11,6 +13,7 @@ public class PlayerStats : MonoBehaviour
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public float cooldownReduction = 1;
     public float noiseCooldown = 2;
+    public Volume volume;
 
     public static PlayerStats instance;
     WaitForSeconds waitupdate;
@@ -70,6 +73,25 @@ public class PlayerStats : MonoBehaviour
         IN_GAME,
         WIN,
         LOSE
+    }
+
+    public void ToggleLowHPMode(bool lowHP)
+    {
+        ChromaticAberration chromatic;
+        Vignette vignette;
+        PlayerControls.instance.mainCamera.GetComponent<AudioLowPassFilter>().enabled = lowHP;
+        PlayerControls.instance.mainCamera.GetComponent<AudioReverbFilter>().enabled = lowHP;
+        if (volume.profile != null)
+        {
+            if (volume.profile.TryGet(out chromatic))
+            {
+                chromatic.active = lowHP;
+            }
+            if (volume.profile.TryGet(out vignette))
+            {
+                vignette.active = lowHP;
+            }
+        }
     }
 
     public enum DAMAGE_TYPE
@@ -406,7 +428,7 @@ public class PlayerStats : MonoBehaviour
         HPBarBG.fillAmount = hpperc;
         HPbar.fillAmount = hpperc;
         ShieldBar.fillAmount = shield / maxhealth;
-        if (hpperc > 0.25f)
+        if (hpperc > 0.35f)
         {
             hpbar.enabled = true;
             HPbar.color = new Color(0.6735849f, 1, 1);
@@ -489,7 +511,7 @@ public class PlayerStats : MonoBehaviour
         hpperc = health / maxhealth;
         HPbar.fillAmount = hpperc;
         ShieldBar.fillAmount = shield / maxhealth;
-        if (hpperc <= 0.25f)
+        if (hpperc <= 0.35f)
         {
             hpbar.enabled = true;
         }
@@ -542,6 +564,10 @@ public class PlayerStats : MonoBehaviour
     {
         ProcessEffects();
         ProcessStatusUI();
+        ToggleLowHPMode(health / maxhealth <= 0.35f);
+        ColorAdjustments ca;
+        volume.profile.TryGet(out ca);
+        ca.saturation.value = -(((maxhealth - health) / maxhealth) * 100);
         if (noiseCooldown > 0)
         {
             noiseCooldown -= Time.deltaTime;

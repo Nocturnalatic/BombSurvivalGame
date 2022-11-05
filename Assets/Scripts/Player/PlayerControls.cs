@@ -17,6 +17,8 @@ public class PlayerControls : MonoBehaviour
     public bool processCamera = true;
     public Image staminaBarUI;
 
+    public Camera mainCamera;
+    public GameObject postProcessVolume;
     Transform playerHead, mainCam, playerLeg;
     float stamina;
     float maxStamina = 100;
