@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using TMPro;
 
 public class GameplayLoop : MonoBehaviour
 {
     public static GameplayLoop instance;
-
+    
     [Range(1, 5)]
     public float Intensity;
     public bool GameInProgress = false;
@@ -21,6 +22,7 @@ public class GameplayLoop : MonoBehaviour
     public TextMeshProUGUI globalText, intensityText, roundTimerText;
     public Image roundTimerBar;
     public List<GameObject> Environments;
+    public List<Sprite> MapThumbnails;
     GameObject chosenEnv;
     [SerializeField]
     [Header("Bombs")]
@@ -41,6 +43,10 @@ public class GameplayLoop : MonoBehaviour
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
 
+    public Image mapThumbail;
+    public TextMeshProUGUI mapText, tipBar;
+    public Animator loadingscn;
+    private string[] lines;
     public enum INTENSITY
     {
         LOW,
@@ -256,7 +262,10 @@ public class GameplayLoop : MonoBehaviour
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
         AudioManager.instance.PlayLobbyMusic();
-        chosenEnv = Environments[Random.Range(0, Environments.Count)];
+        int mapIndex = Random.Range(0, Environments.Count);
+        chosenEnv = Environments[mapIndex];
+        mapThumbail.sprite = MapThumbnails[mapIndex];
+        mapText.text = "Now Entering: " + chosenEnv.name;
         SetIntensity(Intensity);
         GameObject env = Instantiate(chosenEnv, Vector3.zero, Quaternion.identity, Arena);
         foreach (PlayerStats player in allPlayers) //Reset Players
@@ -304,6 +313,11 @@ public class GameplayLoop : MonoBehaviour
                 }
             }
         }
+        globalText.text = "Loading Players";
+        loadingscn.SetTrigger("DoLoadingScn");
+        //Loading Screen Sequence
+        tipBar.text = "TIP! | " + lines[Random.Range(0, lines.Length)];
+        yield return new WaitForSeconds(4);
         GameInProgress = true;
         timer = 3;
         AudioManager.instance.StopAudio();
@@ -328,20 +342,6 @@ public class GameplayLoop : MonoBehaviour
         while (roundSeconds > 0 && GameInProgress == true)
         {
             SpawnBomb();
-            if ((int)roundSeconds == 30)
-            {
-                foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
-                {
-                    PlayerStats playerStats = player.GetComponent<PlayerStats>();
-                    if (playerStats.selectedPerk != null)
-                    {
-                        if (playerStats.selectedPerk.ID == 1 && playerStats.selectedPerk.enabled)
-                        {
-                            playerStats.Reset();
-                        }
-                    }
-                }
-            }
             yield return waitDelay;
         }
         StopCoroutine(countdown);
@@ -396,6 +396,8 @@ public class GameplayLoop : MonoBehaviour
         waitforupdate = new WaitForFixedUpdate();
         instance = this;
         Intensity = 3.0f;
+        StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/Tips.txt");
+        lines = sr.ReadToEnd().Split('\n');
         StartCoroutine(Gameplay());
     }
 }

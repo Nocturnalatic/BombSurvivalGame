@@ -5173,7 +5173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 10
-  explosionForce: 300
+  explosionForce: 2000
   damage: 20
   explosionFX: {fileID: 6968280214567518672}
   fire: {fileID: 5184489482573067770, guid: b2b948e88e66bb348be96252429294e0, type: 3}

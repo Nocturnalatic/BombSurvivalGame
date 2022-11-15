@@ -136,7 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detonationTime: 5
   explosionRadius: 10
-  explosionForce: 20
+  explosionForce: 500
   knockbackForce: 5
   damage: 5
   animator: {fileID: 5619098669582229222}

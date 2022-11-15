@@ -53,7 +53,7 @@ public class ClusterBomb : MonoBehaviour
         {
             mr.enabled = false;
         }
-        for (int i = 0; i < Random.Range(3, 6); ++i)
+        for (int i = 0; i < Random.Range(5, 10); ++i)
         {
             Vector3 posDev = new Vector3(Random.Range(-3, 3), 0, Random.Range(-3, 3));
             GameObject mb = Instantiate(miniBomb, transform.position + posDev, Quaternion.identity, GameplayLoop.instance.bombsParent);

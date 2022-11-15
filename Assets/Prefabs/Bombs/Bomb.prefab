@@ -189,7 +189,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -5215,7 +5215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detonationTime: 7
   explosionRadius: 5
-  explosionForce: 100
+  explosionForce: 1000
   knockbackForce: 5
   damage: 30
   animator: {fileID: 3605555636904144062}

@@ -310,10 +310,6 @@ public class PlayerStats : MonoBehaviour
 
     void ProcessStatusUI()
     {
-        foreach (GameObject ui in UI_Icons)
-        {
-            ui.SetActive(false);
-        }
         for (int i = 0; i < (int)StatusEffect.EffectType.TOTAL; ++i)
         {
             StatusEffect.EffectType type = (StatusEffect.EffectType)i;
@@ -321,6 +317,7 @@ public class PlayerStats : MonoBehaviour
             {
                 StatusEffect t_effect = GetEffect(type);
                 UI_Icons[i].SetActive(true);
+                UI_Icons[i].GetComponent<Animator>().speed = t_effect.original_duration / t_effect.duration;
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
                 {
@@ -330,6 +327,10 @@ public class PlayerStats : MonoBehaviour
                 {
                     UI_Icons[i].transform.GetComponentInChildren<TextMeshProUGUI>().text = $"{GetEffectName(type)}";
                 }
+            }
+            else
+            {
+                UI_Icons[i].SetActive(false);
             }
         }
     }
@@ -514,6 +515,17 @@ public class PlayerStats : MonoBehaviour
         if (hpperc <= 0.35f)
         {
             hpbar.enabled = true;
+            if (selectedPerk != null) //Trigger Perk 1
+            {
+                if (selectedPerk.ID == 1 && selectedPerk.enabled)
+                {
+                    StatusEffect effect1 = new StatusEffect(StatusEffect.EffectType.REGEN, 30, 3, true, StatusEffect.BuffType.POSITIVE);
+                    AddStatus(effect1);
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 2, 1, false, StatusEffect.BuffType.POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 2, 1, false, StatusEffect.BuffType.POSITIVE));
+                    selectedPerk.enabled = false;
+                }
+            }
         }
         if (shield <= 0)
         {

@@ -8,6 +8,7 @@ public class AudioManager : MonoBehaviour
     public List<AudioSource> LowIntensityMusic;
     public List<AudioSource> MidIntensityMusic;
     public List<AudioSource> HighIntensityMusic;
+    public List<AudioSource> ExtIntensityMusic;
 
     public AudioSource currentlyPlaying;
     public WaitUntil waitForWhistle;
@@ -44,12 +45,16 @@ public class AudioManager : MonoBehaviour
                     break;
                 }
             case GameplayLoop.INTENSITY.HIGH:
-            case GameplayLoop.INTENSITY.EXTREME:
                 {
                     currentlyPlaying = HighIntensityMusic[Random.Range(0, HighIntensityMusic.Count)];
                     break;
                 }
-                
+            case GameplayLoop.INTENSITY.EXTREME:
+                {
+                    currentlyPlaying = ExtIntensityMusic[Random.Range(0, ExtIntensityMusic.Count)];
+                    break;
+                }
+
         }
         currentlyPlaying.volume = 1;
         currentlyPlaying.Play();

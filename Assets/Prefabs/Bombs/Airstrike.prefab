@@ -5002,7 +5002,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 12
-  explosionForce: 600
+  explosionForce: 3000
   knockbackForce: 10
   damage: 35
   speedMultiplier: 2

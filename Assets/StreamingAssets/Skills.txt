@@ -29,7 +29,7 @@
         {
             "ID":5,
             "skillName":"Random",
-            "cooldown":30
+            "cooldown":20
         }
     ]  
 }
