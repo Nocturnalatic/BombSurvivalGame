@@ -190,6 +190,8 @@ public class PlayerStats : MonoBehaviour
                 return "PROTECTED";
             case StatusEffect.EffectType.CONTROL_IMMUNE:
                 return "CTRL. IMM.";
+            case StatusEffect.EffectType.HASTE:
+                return "HASTE";
         }
         return "ERROR";
     }
@@ -202,9 +204,10 @@ public class PlayerStats : MonoBehaviour
             {
                 if (f.type == effect.type)
                 {
-                    if (f.d_Multiplier > effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
+                    if (f.d_Multiplier >= effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
                     {
-                        f.duration = effect.duration; //Add the new effects duration
+                        f.duration += effect.duration; //Add the new effects duration
+                        f.original_duration += effect.original_duration;
                     }
                     else
                     {
@@ -277,14 +280,21 @@ public class PlayerStats : MonoBehaviour
                         isChilled = true;
                     }
                 }
-                else if (effect.type == StatusEffect.EffectType.BURN)
+                if (effect.type == StatusEffect.EffectType.BURN)
                 {
                     burnVig.SetTrigger("Flash");
                     DamagePlayer(effect.d_Multiplier * Time.deltaTime, false, DAMAGE_TYPE.FIRE);
                 }
-                else if (effect.type == StatusEffect.EffectType.REGEN)
+                if (effect.type == StatusEffect.EffectType.REGEN)
                 {
                     HealPlayer(effect.d_Multiplier * Time.deltaTime);
+                }
+                if (effect.type == StatusEffect.EffectType.HASTE)
+                {
+                    if (!PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.HASTE_MOVEMENT_BUFF))
+                    {
+                        PlayerControls.instance.moveSpeedModifiers.Add(Globals.hasteMovementbuff);
+                    }
                 }
             }
             else
@@ -302,6 +312,13 @@ public class PlayerStats : MonoBehaviour
                 {
                     PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
                     damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                }
+            }
+            if (f.type == StatusEffect.EffectType.HASTE) //When Haste Ends
+            {
+                if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.HASTE_MOVEMENT_BUFF))
+                {
+                    PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementbuff);
                 }
             }
             effects.Remove(f);
@@ -485,6 +502,20 @@ public class PlayerStats : MonoBehaviour
                 else
                 {
                     PlayHDT();
+                    if (selectedPerk != null)
+                    {
+                        if (selectedPerk.ID == 3)
+                        {
+                            List<StatusEffect.EffectType> types = new List<StatusEffect.EffectType>();
+                            types.Add(StatusEffect.EffectType.REGEN);
+                            types.Add(StatusEffect.EffectType.PROTECTED);
+                            types.Add(StatusEffect.EffectType.HASTE);
+                            types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
+                            StatusEffect.EffectType selected = types[Random.Range(0, types.Count)];
+                            AddStatus(new StatusEffect(selected, Random.Range(3, 10f), 3, false));
+                            types.Remove(selected);
+                        }
+                    }
                 }
                 noiseCooldown = 1;
             }

@@ -12,6 +12,14 @@
         {
             "ID":2,
             "perkName":"Tanky"
+        },
+        {
+            "ID":3,
+            "perkName":"Counter Strike"
+        },
+        {
+            "ID":4,
+            "perkName":"Lucky Roll"
         }
     ]  
 }

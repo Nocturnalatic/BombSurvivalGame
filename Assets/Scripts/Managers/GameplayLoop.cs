@@ -85,13 +85,13 @@ public class GameplayLoop : MonoBehaviour
         //Specialise rng for nukes and other big bombs
         if (Intensity >= 3)
         {
-            MaxNukeCount = 1 + ((int)Intensity - 3);
+            MaxNukeCount = 2;
             float nukeChance = Random.Range(0, 1f);
             if ((nukeChance <= 0.1 + (Intensity / 5f - 0.6f)) && NukeCount < MaxNukeCount)
             {
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
-                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.1f);
+                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.05f);
                 if (Intensity >= 5)
                 {
                     nukeObj.transform.Find("Sphere").GetComponent<MeshRenderer>().enabled = false;
@@ -262,12 +262,7 @@ public class GameplayLoop : MonoBehaviour
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
         AudioManager.instance.PlayLobbyMusic();
-        int mapIndex = Random.Range(0, Environments.Count);
-        chosenEnv = Environments[mapIndex];
-        mapThumbail.sprite = MapThumbnails[mapIndex];
-        mapText.text = "Now Entering: " + chosenEnv.name;
         SetIntensity(Intensity);
-        GameObject env = Instantiate(chosenEnv, Vector3.zero, Quaternion.identity, Arena);
         foreach (PlayerStats player in allPlayers) //Reset Players
         {
             if (player.selectedSkill != null)
@@ -313,6 +308,11 @@ public class GameplayLoop : MonoBehaviour
                 }
             }
         }
+        int mapIndex = Random.Range(0, Environments.Count);
+        chosenEnv = Environments[mapIndex];
+        GameObject env = Instantiate(chosenEnv,Arena);
+        mapThumbail.sprite = MapThumbnails[mapIndex];
+        mapText.text = "Now Entering: " + chosenEnv.name;
         globalText.text = "Loading Players";
         loadingscn.SetTrigger("DoLoadingScn");
         //Loading Screen Sequence
@@ -365,15 +365,15 @@ public class GameplayLoop : MonoBehaviour
             {
                 player.survivalTime = 150;
             }
-            player.GetComponentInChildren<Scoring>().CalculateScore();
+            player.GetComponentInChildren<Scoring>().StartCoroutine(player.GetComponentInChildren<Scoring>().CalculateScore());
         }
         if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
         {
-            Intensity += 0.5f;
+            Intensity += Random.Range(0.1f, 0.5f);
         }
         else
         {
-            Intensity -= 0.5f;
+            Intensity -= Random.Range(0.1f, 0.5f);
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);

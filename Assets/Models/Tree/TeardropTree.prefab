@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2593328452572355316}
   - component: {fileID: 7487740649119179550}
   - component: {fileID: 1180565581763207338}
-  - component: {fileID: 8788460690063026601}
   m_Layer: 0
   m_Name: TeardropTree
   m_TagString: Untagged
@@ -29,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3395064605983369952}
   m_LocalRotation: {x: -0.7069834, y: 0, z: 0, w: 0.7072302}
   m_LocalPosition: {x: 10.97691, y: 0.31056756, z: 5.828881}
-  m_LocalScale: {x: 20.060001, y: 20.060001, z: 20.060001}
+  m_LocalScale: {x: 32.826187, y: 32.826187, z: 32.826187}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 871867123533948877}
@@ -100,22 +99,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 8792586484180348971, guid: 3c02b8fe0febcf94186421b3417cfce6, type: 3}
---- !u!54 &8788460690063026601
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3395064605983369952}
-  serializedVersion: 2
-  m_Mass: 2
-  m_Drag: 0.05
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &5527320292017574866
 GameObject:
   m_ObjectHideFlags: 0

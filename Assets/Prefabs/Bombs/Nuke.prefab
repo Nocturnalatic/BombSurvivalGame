@@ -223,7 +223,7 @@ Transform:
   m_GameObject: {fileID: 2565530884076903736}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1.3333334, z: 2}
+  m_LocalScale: {x: 3, y: 2, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5128013164650050141}
@@ -5763,7 +5763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16bf9295733c8204fa97ab26734f012f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 20
+  explosionRadius: 30
   explosionForce: 1500
   knockbackForce: 10
   damage: 120

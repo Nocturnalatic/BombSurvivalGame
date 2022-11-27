@@ -26,6 +26,7 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
         player.SetActive(v);
         player.GetComponent<PlayerStats>().enabled = v;
         player.GetComponent<PlayerControls>().enabled = v;
+        player.GetComponent<PlayerData>().enabled = v;
     }
 
     void Start()

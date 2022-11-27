@@ -63,7 +63,7 @@ public class PlayerControls : MonoBehaviour
     {
         if (!PlayerStats.instance.HasEffect(StatusEffect.EffectType.CONTROL_IMMUNE))
         {
-            knockBack = (direction * force + Vector3.up) * 5;
+            knockBack = (direction * force + Vector3.up) * 6;
         }
     }
 

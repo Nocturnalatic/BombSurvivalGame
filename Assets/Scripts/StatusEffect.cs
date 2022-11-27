@@ -8,7 +8,7 @@ public class StatusEffect
     {
 
     }
-
+    
     public StatusEffect(EffectType t, float d, float m, bool s, BuffType bT = BuffType.NEGATIVE)
     {
         type = t;
@@ -26,6 +26,7 @@ public class StatusEffect
         REGEN,
         PROTECTED,
         CONTROL_IMMUNE,
+        HASTE,
         TOTAL
     }
 

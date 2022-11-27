@@ -85,6 +85,11 @@ public class Skills
                 }
             case 5:
                 {
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false));
+                    break;
+                }
+            case 6:
+                {
                     RandomSkill();
                     break;
                 }
@@ -95,19 +100,19 @@ public class Skills
 
     public void RandomSkill()
     {
-        int SID = Random.Range(0, 5);
+        int SID = Random.Range(0, 6);
         switch (SID)
         {
             case 0:
                 {
-                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 20);
+                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 40);
                     foreach (Collider col in result)
                     {
                         Rigidbody rb = col.GetComponent<Rigidbody>();
 
                         if (rb != null && !rb.gameObject.CompareTag("Bomb"))
                         {
-                            rb.AddExplosionForce(1750, PlayerStats.instance.transform.position, 20, 1);
+                            rb.AddExplosionForce(1750, PlayerStats.instance.transform.position, 40, 1);
                         }
                     }
                     break;
@@ -134,6 +139,11 @@ public class Skills
                     PlayerStats.instance.AddStatus(effect);
                     PlayerStats.instance.AddStatus(effect2);
                     PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
+                    break;
+                }
+            case 5:
+                {
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 10, 1, false));
                     break;
                 }
         }

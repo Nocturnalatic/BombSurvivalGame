@@ -51,6 +51,17 @@ public class Perks
                     PlayerControls.instance.moveSpeedModifiers.Add(Globals.tankyMovementDebuff);
                     break;
                 }
+            case (4):
+                {
+                    List<StatusEffect.EffectType> types = new List<StatusEffect.EffectType>();
+                    types.Add(StatusEffect.EffectType.REGEN);
+                    types.Add(StatusEffect.EffectType.PROTECTED);
+                    types.Add(StatusEffect.EffectType.HASTE);
+                    types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
+
+                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 30, 1, false));
+                    break;
+                }
         }
     }
 }

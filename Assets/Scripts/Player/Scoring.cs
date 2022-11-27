@@ -7,6 +7,7 @@ public class Scoring : MonoBehaviour
 {
     public float MaxDamageTaken = 100;
 
+    PlayerData data;
     public AudioSource ding, woosh, finalDing;
 
     [Header("UI Elements")]
@@ -16,9 +17,15 @@ public class Scoring : MonoBehaviour
     public TextMeshProUGUI HardcoreBonus;
     public TextMeshProUGUI IntensityMultiplier;
     public TextMeshProUGUI FinalScore;
+    public TextMeshProUGUI ExpGain;
     public Animator scoreAnimator;
 
     int survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
+
+    private void Start()
+    {
+        data = GetComponentInParent<PlayerData>();
+    }
 
     string GetRankFromScore(int score)
     {
@@ -124,7 +131,7 @@ public class Scoring : MonoBehaviour
         }
     }
 
-    public void CalculateScore()
+    public IEnumerator CalculateScore()
     {
         survivalT = survivalB = Hardcore = 0;
         survivalT = (int)PlayerStats.instance.survivalTime;
@@ -157,5 +164,8 @@ public class Scoring : MonoBehaviour
         FinalScore.text = (Final.ToString("#,##0")) + " - " + GetRankFromScore(Final);
         FinalScore.color = GetColorFromScore(Final);
         scoreAnimator.SetTrigger("DoScore");
+        ExpGain.text = $"+{Final / 10} EXP";
+        yield return new WaitForSeconds(3.75f);
+        data.AddEXP(Final / 10);
     }
 }
