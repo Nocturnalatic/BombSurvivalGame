@@ -32,8 +32,15 @@ public class Meteor : MonoBehaviour
     IEnumerator Explode()
     {
         Collider[] result = Physics.OverlapSphere(transform.position, explosionRadius);
+
         foreach (Collider col in result)
         {
+            CusTerrain terrain = col.GetComponent<CusTerrain>();
+            if (terrain != null) //Damage Terrain
+            {
+                terrain.DamageTerrain(Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius));
+            }
+
             Rigidbody rb = col.GetComponent<Rigidbody>();
 
             if (rb != null && rb != localrb && !rb.gameObject.CompareTag("Bomb"))
@@ -44,20 +51,31 @@ public class Meteor : MonoBehaviour
 
             if (col.gameObject.CompareTag("Player"))
             {
-                float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
-                if (type == METEOR_TYPE.ICE)
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, (col.transform.position + Vector3.up), out hit))
                 {
-                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.CHILLED, 10 * distanceMod, 0.5f, false);
-                    col.GetComponentInParent<PlayerStats>().AddStatus(effect);
-                }
-                if (type == METEOR_TYPE.FIRE)
-                {
-                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.BURN, (5 * distanceMod) + 1, 0.5f, true);
-                    col.GetComponentInParent<PlayerStats>().AddStatus(effect);
+                    if (hit.collider.transform.parent != null)
+                    {
+                        if (hit.collider.transform.parent.CompareTag("Player"))
+                        {
+                            float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            if (type == METEOR_TYPE.ICE)
+                            {
+                                StatusEffect effect = new StatusEffect(StatusEffect.EffectType.CHILLED, 10 * distanceMod, 0.5f, false);
+                                col.GetComponentInParent<PlayerStats>().AddStatus(effect);
+                            }
+                            if (type == METEOR_TYPE.FIRE)
+                            {
+                                StatusEffect effect = new StatusEffect(StatusEffect.EffectType.BURN, (5 * distanceMod) + 1, 0.5f, true);
+                                col.GetComponentInParent<PlayerStats>().AddStatus(effect);
+                            }
+                        }
+                    }
                 }
             }
         }
+
         foreach (MeshRenderer mr in GetComponentsInChildren<MeshRenderer>())
         {
             mr.enabled = false;

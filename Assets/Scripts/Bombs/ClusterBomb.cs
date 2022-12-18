@@ -19,19 +19,36 @@ public class ClusterBomb : MonoBehaviour
     AudioSource explosionSound;
     [SerializeField]
     GameObject miniBomb;
+    [SerializeField]
+    AudioSource beepNoise;
     WaitForFixedUpdate waitFrame = new WaitForFixedUpdate();
+
+    public void PlayBeep()
+    {
+        if (beepNoise.isPlaying)
+            beepNoise.Stop();
+        beepNoise.Play();
+    }
+
     IEnumerator Detonate()
     {
         while (updatedDetonationTime > 0)
         {
-            animator.speed = detonationTime / updatedDetonationTime;
+            animator.speed = Mathf.Clamp(detonationTime / updatedDetonationTime, 1, 10);
             updatedDetonationTime -= frameTime;
             yield return waitFrame;
         }
         //Explode
         Collider[] result = Physics.OverlapSphere(transform.position, explosionRadius);
         foreach (Collider col in result)
-        {
+        { 
+            CusTerrain terrain = col.GetComponent<CusTerrain>();
+            if (terrain != null) //Damage Terrain
+            {
+                terrain.DamageTerrain(Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius));
+            }
+
+
             Rigidbody rb = col.GetComponent<Rigidbody>();
 
             if (rb != null && !rb.gameObject.CompareTag("Bomb"))
@@ -42,11 +59,22 @@ public class ClusterBomb : MonoBehaviour
 
             if (col.gameObject.CompareTag("Player"))
             {
-                Vector3 dir = (col.transform.position - transform.position).normalized;
-                dir += Vector3.up;
-                float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
-                col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, (col.transform.position + Vector3.up), out hit))
+                {
+                    if (hit.collider.transform.parent != null)
+                    {
+                        if (hit.collider.transform.parent.CompareTag("Player"))
+                        {
+                            Vector3 dir = (col.transform.position - transform.position).normalized;
+                            dir += Vector3.up;
+                            float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
+                        }
+                    }
+                }
+
             }
         }
         foreach (MeshRenderer mr in GetComponentsInChildren<MeshRenderer>())
@@ -62,6 +90,7 @@ public class ClusterBomb : MonoBehaviour
         }
         explosionSound.Play();
         ps.Play();
+        animator.enabled = false;
         yield return new WaitUntil(() => explosionSound.isPlaying == false);
         Destroy(gameObject);
     }

@@ -7,7 +7,7 @@ public class SingleThreadedDeformer : MonoBehaviour
     Mesh deformingMesh;
     Vector3[] originalVertices, displacedVertices;
     Vector3[] vertexVelocities;
-    public float springForce = 20f;
+    public float springForce = 10f;
     public float damping = 5f;
 
     private void Start()
@@ -54,9 +54,9 @@ public class SingleThreadedDeformer : MonoBehaviour
     {
         Vector3 velocity = vertexVelocities[i];
         Vector3 displacement = displacedVertices[i] - originalVertices[i];
-        velocity -= displacement * springForce * Time.deltaTime;
+        //velocity -= displacement * springForce * Time.deltaTime;
         velocity *= 1f - damping * Time.deltaTime;
         vertexVelocities[i] = velocity;
-        displacedVertices[i] += velocity * Time.deltaTime;
+        displacedVertices[i] -= velocity * Time.deltaTime;
     }
 }

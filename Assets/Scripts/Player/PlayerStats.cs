@@ -334,7 +334,7 @@ public class PlayerStats : MonoBehaviour
             {
                 StatusEffect t_effect = GetEffect(type);
                 UI_Icons[i].SetActive(true);
-                UI_Icons[i].GetComponent<Animator>().speed = t_effect.original_duration / t_effect.duration;
+                UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(t_effect.original_duration / t_effect.duration, 0, 5);
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
                 {
@@ -588,6 +588,7 @@ public class PlayerStats : MonoBehaviour
     public void Reset() //Resets other things
     {
         StopAllCoroutines();
+        transform.position = new Vector3(0, 10, 0);
         damageTaken = 0;
         shield = 0;
         health = maxhealth;

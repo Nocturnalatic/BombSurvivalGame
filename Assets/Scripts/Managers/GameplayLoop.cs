@@ -23,6 +23,8 @@ public class GameplayLoop : MonoBehaviour
     public Image roundTimerBar;
     public List<GameObject> Environments;
     public List<Sprite> MapThumbnails;
+    [SerializeField]
+    GameObject ArenaFloor;
     GameObject chosenEnv;
     [SerializeField]
     [Header("Bombs")]
@@ -47,6 +49,9 @@ public class GameplayLoop : MonoBehaviour
     public TextMeshProUGUI mapText, tipBar;
     public Animator loadingscn;
     private string[] lines;
+    private bool eventChosen = false;
+    private float spawnDelayMultiplier = 1f;
+
     public enum INTENSITY
     {
         LOW,
@@ -54,10 +59,33 @@ public class GameplayLoop : MonoBehaviour
         HIGH,
         EXTREME
     }
+
+    public enum EVENTS
+    {
+        METEORS = 0,
+        FOG = 1,
+    }
+
+    public enum BOMB_TYPES
+    {
+        BOMB,
+        CLUSTER_BOMB,
+        METEOR,
+        ICE_METEOR,
+        NUKE,
+        FLASHBANG,
+        AIRSTRIKE
+    }
+
+    private List<BOMB_TYPES> typesToSpawn = new List<BOMB_TYPES>() { BOMB_TYPES.BOMB, BOMB_TYPES.CLUSTER_BOMB,
+    BOMB_TYPES.METEOR, BOMB_TYPES.ICE_METEOR, BOMB_TYPES.FLASHBANG, BOMB_TYPES.NUKE};
+
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS };
+
     Vector3 GenerateBombSpawn()
     {
-        float x = Random.Range(-24f, 24f); //2 units for safe distance to prevent bombs from falling off
-        float z = Random.Range(-24f, 24f); //Same for x position
+        float x = Random.Range(-24.5f, 24.5f); //2 units for safe distance to prevent bombs from falling off
+        float z = Random.Range(-24.5f, 24.5f); //Same for x position
         float y = 15;
 
         return new Vector3(x, y, z);
@@ -83,7 +111,7 @@ public class GameplayLoop : MonoBehaviour
     {
         //Can generate bomb types here in the future
         //Specialise rng for nukes and other big bombs
-        if (Intensity >= 3)
+        if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
             MaxNukeCount = 2;
             float nukeChance = Random.Range(0, 1f);
@@ -92,37 +120,34 @@ public class GameplayLoop : MonoBehaviour
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
                 nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.05f);
-                if (Intensity >= 5)
-                {
-                    nukeObj.transform.Find("Sphere").GetComponent<MeshRenderer>().enabled = false;
-                }
+                nukeObj.GetComponent<Animator>().speed = nukeObj.GetComponent<Nuke>().speedMultiplier;
                 NukeCount++;
             }
         }
-        int bombSelect = Random.Range(0, 6);
+        BOMB_TYPES bombSelect = typesToSpawn[Random.Range(0, typesToSpawn.Count)];
         switch (bombSelect)
         {
-            case (0): //Normal Bomb
+            case (BOMB_TYPES.BOMB): //Normal Bomb
                 {
                     Vector3 pos = GenerateBombSpawn();
                     GameObject bomb = Instantiate(genericBomb, pos, Quaternion.identity, bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
-            case (1): //Fire Meteor
+            case (BOMB_TYPES.METEOR): //Fire Meteor
                 {
                     Vector3 pos = GenerateBombSpawn();
                     Instantiate(meteor, pos, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
-            case (2): //Cluster Bomb
+            case (BOMB_TYPES.CLUSTER_BOMB): //Cluster Bomb
                 {
                     Vector3 pos = GenerateBombSpawn();
                     GameObject Cbomb = Instantiate(clusterBomb, pos, Quaternion.Euler(0, 0, 0), bombsParent);
                     Cbomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
-            case (3): //AirStrike
+            case (BOMB_TYPES.AIRSTRIKE): //AirStrike
                 {
                     Vector3 pos;
                     float rng = Random.Range(0, 1f);
@@ -141,13 +166,13 @@ public class GameplayLoop : MonoBehaviour
                     go.GetComponent<Nuke>().speedMultiplier = speed;
                     break;
                 }
-            case (4): //Ice Meteor
+            case (BOMB_TYPES.ICE_METEOR): //Ice Meteor
                 {
                     Vector3 pos = GenerateBombSpawn();
                     Instantiate(iceMeteor, pos, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
-            case (5): //Flashbang
+            case (BOMB_TYPES.FLASHBANG): //Flashbang
                 {
                     Vector3 pos = GenerateBombSpawn();
                     GameObject fb = Instantiate(flashbang, pos, Quaternion.identity, bombsParent);
@@ -237,6 +262,26 @@ public class GameplayLoop : MonoBehaviour
         }
     }
 
+    IEnumerator LaunchEvent()
+    {
+        EVENTS chosenEvent = eventList[Random.Range(0, eventList.Count)];
+        switch (chosenEvent)
+        {
+            case EVENTS.METEORS:
+                {
+                    globalText.text = "NEW EVENT: METEOR SHOWER!";
+                    typesToSpawn = Globals.MeteorsOnly;
+                    spawnDelayMultiplier = 0.33f; //Spawn triple bombs
+                    yield return new WaitForSeconds(15);
+                    break;
+                }
+        }
+        globalText.text = "Round In Progress";
+        spawnDelayMultiplier = 1f;
+        typesToSpawn = Globals.defaultList;
+        yield return null;
+    }
+
     IEnumerator CountdownRoundTime()
     {
         while (roundSeconds > 0)
@@ -255,12 +300,12 @@ public class GameplayLoop : MonoBehaviour
         {
             if (player.GetComponent<PlayerStats>() != null)
             {
-                //player.transform.SetParent(Players);
                 allPlayers.Add(player.GetComponent<PlayerStats>());
                 player.GetComponent<PlayerControls>().gravity = -9.81f;
             }
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
+        eventChosen = false;
         AudioManager.instance.PlayLobbyMusic();
         SetIntensity(Intensity);
         foreach (PlayerStats player in allPlayers) //Reset Players
@@ -315,8 +360,9 @@ public class GameplayLoop : MonoBehaviour
         mapText.text = "Now Entering: " + chosenEnv.name;
         globalText.text = "Loading Players";
         loadingscn.SetTrigger("DoLoadingScn");
+        ArenaFloor.SetActive(false);
         //Loading Screen Sequence
-        tipBar.text = "TIP! | " + lines[Random.Range(0, lines.Length)];
+        tipBar.text = lines[Random.Range(0, lines.Length)];
         yield return new WaitForSeconds(4);
         GameInProgress = true;
         timer = 3;
@@ -331,18 +377,26 @@ public class GameplayLoop : MonoBehaviour
         globalText.text = "BEGIN!";
         AudioManager.instance.PlayWhistle();
         yield return AudioManager.instance.waitForWhistle;
-        globalText.text = "Round In Progress...";
+        globalText.text = "Round In Progress";
         // Start Spawning Bombs Based On Intensity
         roundSeconds = roundDuration;
         roundTimerBar.fillAmount = 1;
-        float spawnDelay = 0.6f / (Intensity * 1.1f) + 0.75f;
-        WaitForSeconds waitDelay = new WaitForSeconds(spawnDelay);
+        float spawnDelay = 1 / (Intensity * 0.8f) + 0.5f;
         Coroutine countdown = StartCoroutine(CountdownRoundTime());
         AudioManager.instance.PlayBGM(GetIntensity());
         while (roundSeconds > 0 && GameInProgress == true)
         {
             SpawnBomb();
-            yield return waitDelay;
+            if (!eventChosen)
+            {
+                float chance = Random.Range(0, 1f);
+                if (chance < 0.1f)
+                {
+                    StartCoroutine(LaunchEvent());
+                    eventChosen = true;
+                }
+            }
+            yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
         }
         StopCoroutine(countdown);
         foreach (PlayerStats player in allPlayers) //Set all player's state to WIN if they are IN GAME
@@ -369,17 +423,18 @@ public class GameplayLoop : MonoBehaviour
         }
         if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
         {
-            Intensity += Random.Range(0.1f, 0.5f);
+            Intensity += 0.25f;
         }
         else
         {
-            Intensity -= Random.Range(0.1f, 0.5f);
+            Intensity -= 0.25f;
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
         GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";
         yield return new WaitForSeconds(8);
+        ArenaFloor.SetActive(true);
         Destroy(env);
         allPlayers.Clear();
         foreach (Transform go in bombsParent)

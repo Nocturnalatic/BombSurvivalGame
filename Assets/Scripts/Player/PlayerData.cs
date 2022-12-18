@@ -19,7 +19,7 @@ public class PlayerData : MonoBehaviour
         {
             Level++;
             EXP -= ReqEXP;
-            ReqEXP = 100 + (Level * 2);
+            ReqEXP = 100 + (int)Mathf.Pow(Level, 1.9f);
             expBar.fillAmount = EXP / (float)ReqEXP;
             levelText.text = $"Level {Level}";
             CheckLevelUp(); //Call again in the case of double level ups;

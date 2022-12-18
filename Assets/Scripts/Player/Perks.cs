@@ -59,7 +59,7 @@ public class Perks
                     types.Add(StatusEffect.EffectType.HASTE);
                     types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
 
-                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 30, 1, false));
+                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 30, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
         }

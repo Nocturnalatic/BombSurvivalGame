@@ -2,12 +2,23 @@ Nukes will causes a red glow. Keep an eye out!
 Flashbangs are hard to spot, make sure to stay alert!
 Nukes will only spawn at Intensity 3 and higher.
 Make sure to turn around to check for bombs that may have appeared behind you.
-At Intensity 5 and higher, nukes will lose their blast area indicator. Watch out!
 Looking up is as important as looking down.
 Meteors don't damage you much, but their effects can be devastating.
 Certain skills can synergize well with different perks, try them all out!
-Any issues or suggestions? DM the developer at Nocturnalatic#0001 on discord;
+Any issues? DM the developer at Nocturnalatic#0001 on discord.
 The Random skill will improve the skill chosen upon usage.
-Don't walk in fire.
 Meteors, like nukes, will also cause glows near their landing zone.
 Do not try hardcode mode if you're new.
+Terrain will gradually crack as they get damaged.
+FROSTED and BURNING can stack, surprising.
+You can survive falling into lava by being PROTECTED or using a cure.
+BURNING stacks! Do not walk into fire multiple times.
+BURNING deals damage over time and the damage can stack.
+STUNNED prevents you from doing anything.
+FROSTED slows you, your cooldowns and makes you take more damage.
+REGEN will regenerate health over time.
+PROTECTED prevents you from taking damage.
+CTRL. IMM. stands for control immunity, which prevents you from being STUNNED, FROSTED or knocked back.
+HASTE increases your movement speed.
+Bombs require line of sight to damage you. Hiding behind a tree from a nuke works.
+The developer is actually homosexual! #GayPride!

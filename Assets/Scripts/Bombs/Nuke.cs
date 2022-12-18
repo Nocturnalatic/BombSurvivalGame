@@ -23,6 +23,12 @@ public class Nuke : MonoBehaviour
         Collider[] result = Physics.OverlapSphere(transform.position, explosionRadius);
         foreach (Collider col in result)
         {
+            CusTerrain terrain = col.GetComponent<CusTerrain>();
+            if (terrain != null) //Damage Terrain
+            {
+                terrain.DamageTerrain(Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius));
+            }
+
             Rigidbody rb = col.GetComponent<Rigidbody>();
 
             if (rb != null && rb != localrb && !rb.gameObject.CompareTag("Bomb"))
@@ -33,11 +39,21 @@ public class Nuke : MonoBehaviour
 
             if (col.gameObject.CompareTag("Player"))
             {
-                Vector3 dir = (col.transform.position - transform.position).normalized;
-                dir += Vector3.up;
-                float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
-                col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, (col.transform.position + Vector3.up), out hit))
+                {
+                    if (hit.collider.transform.parent != null)
+                    {
+                        if (hit.collider.transform.parent.CompareTag("Player"))
+                        {
+                            Vector3 dir = (col.transform.position - transform.position).normalized;
+                            dir += Vector3.up;
+                            float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
+                        }
+                    }
+                }
             }
         }
         foreach (MeshRenderer mr in GetComponentsInChildren<MeshRenderer>())

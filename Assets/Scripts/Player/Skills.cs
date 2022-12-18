@@ -85,7 +85,7 @@ public class Skills
                 }
             case 5:
                 {
-                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
             case 6:
