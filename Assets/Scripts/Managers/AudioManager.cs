@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     public WaitUntil waitForWhistle;
     public AudioSource tick;
     public AudioSource whistle;
+    public AudioSource eventTrigger;
 
     public static AudioManager instance;
 
@@ -50,6 +51,8 @@ public class AudioManager : MonoBehaviour
                     break;
                 }
             case GameplayLoop.INTENSITY.EXTREME:
+            case GameplayLoop.INTENSITY.GLITCH:
+            case GameplayLoop.INTENSITY.CRASH:
                 {
                     currentlyPlaying = ExtIntensityMusic[Random.Range(0, ExtIntensityMusic.Count)];
                     break;

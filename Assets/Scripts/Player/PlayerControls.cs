@@ -146,7 +146,7 @@ public class PlayerControls : MonoBehaviour
         {
             if (staminaRegenDelay > 0)
             {
-                staminaRegenDelay -= Time.deltaTime;
+                staminaRegenDelay -= Time.deltaTime * PlayerStats.instance.cooldownReduction;
             }
             else
             {
@@ -163,6 +163,14 @@ public class PlayerControls : MonoBehaviour
             result *= mod.value;
         }
         moveSpeed = baseMoveSpeed * result;
+        if (moveSpeed > baseMoveSpeed)
+        {
+            PlayerStats.instance.AttributeModifiers[0].SetActive(true);
+        }
+        else if (moveSpeed < baseMoveSpeed)
+        {
+            PlayerStats.instance.AttributeModifiers[1].SetActive(true);
+        }
         if (controller.enabled)
         {
             controller.Move((isSprinting ? moveSpeed * 1.5f : moveSpeed) * Time.deltaTime * moveDir); // move player

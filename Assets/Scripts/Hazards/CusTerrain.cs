@@ -20,6 +20,10 @@ public class CusTerrain : MonoBehaviour
         m_Material.SetFloat(Shader.PropertyToID("_DetailAlbedoMapScale"), (baseStability - stability) / baseStability);
         if (stability <= 0)
         {
+            GetComponent<Rigidbody>().isKinematic = false;
+        }
+        if (stability <= -1f)
+        {
             Destroy(gameObject);
         }
     }

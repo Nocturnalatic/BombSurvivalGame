@@ -45,7 +45,10 @@ public class Meteor : MonoBehaviour
 
             if (rb != null && rb != localrb && !rb.gameObject.CompareTag("Bomb"))
             {
-                rb.isKinematic = false;
+                if (!rb.gameObject.CompareTag("Terrain"))
+                {
+                    rb.isKinematic = false;
+                }
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0.1f);
             }
 

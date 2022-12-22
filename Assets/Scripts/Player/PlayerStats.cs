@@ -11,7 +11,9 @@ public class PlayerStats : MonoBehaviour
     float health, shield;
     float maxhealth = 100;
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
+    public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
     public float cooldownReduction = 1;
+    public float damageReduction = 1;
     public float noiseCooldown = 2;
     public Volume volume;
 
@@ -57,6 +59,7 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Effects")]
     public List<GameObject> UI_Icons = new List<GameObject>();
+    public List<GameObject> AttributeModifiers = new List<GameObject>();
     [HideInInspector]
     public bool isInFire = false;
     bool isChilled = false;
@@ -277,6 +280,7 @@ public class PlayerStats : MonoBehaviour
                         PlayerControls.instance.moveSpeedModifiers.Add(Globals.chillMovementDebuff);
                         cooldownReduction = 0.5f;
                         damageResistModifiers.Add(Globals.chillDamageDebuff);
+                        cooldownReductionModifiers.Add(Globals.chillCDRedDebuff);
                         isChilled = true;
                     }
                 }
@@ -293,7 +297,7 @@ public class PlayerStats : MonoBehaviour
                 {
                     if (!PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.HASTE_MOVEMENT_BUFF))
                     {
-                        PlayerControls.instance.moveSpeedModifiers.Add(Globals.hasteMovementbuff);
+                        PlayerControls.instance.moveSpeedModifiers.Add(Globals.hasteMovementBuff);
                     }
                 }
             }
@@ -312,13 +316,14 @@ public class PlayerStats : MonoBehaviour
                 {
                     PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
                     damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                    cooldownReductionModifiers.RemoveAt(cooldownReductionModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_CDRED_DEBUFF));
                 }
             }
             if (f.type == StatusEffect.EffectType.HASTE) //When Haste Ends
             {
                 if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.HASTE_MOVEMENT_BUFF))
                 {
-                    PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementbuff);
+                    PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementBuff);
                 }
             }
             effects.Remove(f);
@@ -327,6 +332,38 @@ public class PlayerStats : MonoBehaviour
 
     void ProcessStatusUI()
     {
+        foreach (GameObject attMod in AttributeModifiers)
+        {
+            attMod.SetActive(false);
+        }
+        float result = 1;
+        foreach (Globals.MODIFIERS mod in damageResistModifiers)
+        {
+            result *= mod.value;
+        }
+        damageReduction = result;
+        float result2 = 1;
+        foreach (Globals.MODIFIERS mod in cooldownReductionModifiers)
+        {
+            result2 *= mod.value;
+        }
+        cooldownReduction = result2;
+        if (cooldownReduction < 1)
+        {
+            AttributeModifiers[5].SetActive(true);
+        }
+        else if (cooldownReduction > 1)
+        {
+            AttributeModifiers[4].SetActive(true);
+        }
+        if (damageReduction > 1)
+        {
+            AttributeModifiers[2].SetActive(true);
+        }
+        else if (damageReduction < 1)
+        {
+            AttributeModifiers[3].SetActive(true);
+        }
         for (int i = 0; i < (int)StatusEffect.EffectType.TOTAL; ++i)
         {
             StatusEffect.EffectType type = (StatusEffect.EffectType)i;
@@ -463,12 +500,7 @@ public class PlayerStats : MonoBehaviour
     {
         float hpperc;
         bool dodge = false;
-        float result = 1;
-        foreach (Globals.MODIFIERS mod in damageResistModifiers)
-        {
-            result *= mod.value;
-        }
-        float damageResist = result;
+      
         if (selectedPerk != null)
         {
             if (selectedPerk.ID == 0 && selectedPerk.enabled && dodgeable) //Dodge
@@ -491,7 +523,7 @@ public class PlayerStats : MonoBehaviour
         {
             if (GameplayLoop.instance.GameInProgress)
             {
-                damageTaken += dmg / damageResist;
+                damageTaken += dmg / damageReduction;
             }
             if (noiseCooldown <= 0)
             {
@@ -533,7 +565,7 @@ public class PlayerStats : MonoBehaviour
                     remainingDmg = 0;
                 }
             }
-            health -= (remainingDmg / damageResist);
+            health -= (remainingDmg / damageReduction);
             StartCoroutine(LerpHPBarBG());
             if (type == DAMAGE_TYPE.EXPLOSION)
             {
@@ -599,6 +631,7 @@ public class PlayerStats : MonoBehaviour
         effects.Clear();
         PlayerControls.instance.moveSpeedModifiers.Clear();
         damageResistModifiers.Clear();
+        cooldownReductionModifiers.Clear();
         hpbar.enabled = false;
         HPbar.color = new Color(0.6735849f, 1, 1);
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";

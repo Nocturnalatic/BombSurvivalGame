@@ -41,6 +41,8 @@ public class GameplayLoop : MonoBehaviour
     GameObject iceMeteor;
     [SerializeField]
     GameObject flashbang;
+    [SerializeField]
+    GameObject powerUp;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -51,19 +53,22 @@ public class GameplayLoop : MonoBehaviour
     private string[] lines;
     private bool eventChosen = false;
     private float spawnDelayMultiplier = 1f;
+    private float powerupTimer = 10f;
 
     public enum INTENSITY
     {
         LOW,
         MID,
         HIGH,
-        EXTREME
+        EXTREME,
+        GLITCH,
+        CRASH
     }
 
     public enum EVENTS
     {
         METEORS = 0,
-        FOG = 1,
+        POWERUPS = 1
     }
 
     public enum BOMB_TYPES
@@ -80,7 +85,7 @@ public class GameplayLoop : MonoBehaviour
     private List<BOMB_TYPES> typesToSpawn = new List<BOMB_TYPES>() { BOMB_TYPES.BOMB, BOMB_TYPES.CLUSTER_BOMB,
     BOMB_TYPES.METEOR, BOMB_TYPES.ICE_METEOR, BOMB_TYPES.FLASHBANG, BOMB_TYPES.NUKE};
 
-    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS };
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS};
 
     Vector3 GenerateBombSpawn()
     {
@@ -111,6 +116,11 @@ public class GameplayLoop : MonoBehaviour
     {
         //Can generate bomb types here in the future
         //Specialise rng for nukes and other big bombs
+        if (powerupTimer <= 0)
+        {
+            powerupTimer = Random.Range(15, 30);
+            Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+        }
         if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
             MaxNukeCount = 2;
@@ -206,6 +216,16 @@ public class GameplayLoop : MonoBehaviour
                     intensityText.color = Color.magenta;
                     break;
                 }
+            case INTENSITY.GLITCH:
+                {
+                    intensityText.color = Color.cyan;
+                    break;
+                }
+            case INTENSITY.CRASH:
+                {
+                    intensityText.color = new Color(1, 0.5f, 0);
+                    break;
+                }
         }
     }
 
@@ -228,7 +248,7 @@ public class GameplayLoop : MonoBehaviour
         {
             return INTENSITY.LOW;
         }
-        else if (Intensity > 2 && Intensity < 4)
+        else if (Intensity >= 2 && Intensity < 4)
         {
             return INTENSITY.MID;
         }
@@ -236,35 +256,45 @@ public class GameplayLoop : MonoBehaviour
         {
             return INTENSITY.HIGH;
         }
-        else
+        else if (Intensity > 5 && Intensity <= 6)
         {
             return INTENSITY.EXTREME;
+        }
+        else if (Intensity > 6 && Intensity <= 7)
+        {
+            return INTENSITY.GLITCH;
+        }
+        else
+        {
+            return INTENSITY.CRASH;
         }
     }
 
     string GetIntensityText()
     {
-        if (Intensity <= 2)
+        switch (GetIntensity())
         {
-            return "EASY";
-        }
-        else if (Intensity > 2 && Intensity < 4)
-        {
-            return "MEDIUM";
-        }
-        else if (Intensity >= 4 && Intensity <= 5)
-        {
-            return "HARD";
-        }
-        else
-        {
-            return "EXTREME";
+            case INTENSITY.LOW:
+                return "EASY";
+            case INTENSITY.MID:
+                return "MEDIUM";
+            case INTENSITY.HIGH:
+                return "HARD";
+            case INTENSITY.EXTREME:
+                return "EXTREME";
+            case INTENSITY.GLITCH:
+                return "GLITCH";
+            case INTENSITY.CRASH:
+                return "CRASH";
+            default:
+                return "UNKNOWN";
         }
     }
 
     IEnumerator LaunchEvent()
     {
         EVENTS chosenEvent = eventList[Random.Range(0, eventList.Count)];
+        AudioManager.instance.eventTrigger.Play();
         switch (chosenEvent)
         {
             case EVENTS.METEORS:
@@ -273,6 +303,16 @@ public class GameplayLoop : MonoBehaviour
                     typesToSpawn = Globals.MeteorsOnly;
                     spawnDelayMultiplier = 0.33f; //Spawn triple bombs
                     yield return new WaitForSeconds(15);
+                    break;
+                }
+            case EVENTS.POWERUPS:
+                {
+                    globalText.text = "NEW EVENT: A LOT OF POWERUPS!";
+                    for (int i = 0; i < 10; i++)
+                    {
+                        Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+                    }
+                    yield return new WaitForSeconds(3);
                     break;
                 }
         }
@@ -289,6 +329,10 @@ public class GameplayLoop : MonoBehaviour
             roundSeconds -= Time.deltaTime;
             roundTimerText.text = $"{MiscFunctions.FormatTimeString(roundSeconds)}";
             roundTimerBar.fillAmount = roundSeconds / roundDuration;
+            if (powerupTimer > 0)
+            {
+                powerupTimer -= Time.deltaTime;
+            }
             yield return waitforupdate;
         }
     }
@@ -429,7 +473,7 @@ public class GameplayLoop : MonoBehaviour
         {
             Intensity -= 0.25f;
         }
-        Intensity = Mathf.Clamp(Intensity, 1.0f, 6.0f);
+        Intensity = Mathf.Clamp(Intensity, 1.0f, 9.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
         GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";

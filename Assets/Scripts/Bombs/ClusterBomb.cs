@@ -53,7 +53,10 @@ public class ClusterBomb : MonoBehaviour
 
             if (rb != null && !rb.gameObject.CompareTag("Bomb"))
             {
-                rb.isKinematic = false;
+                if (!rb.gameObject.CompareTag("Terrain"))
+                {
+                    rb.isKinematic = false;
+                }
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 1);
             }
 
