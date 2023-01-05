@@ -9,7 +9,7 @@ public class GameplayLoop : MonoBehaviour
 {
     public static GameplayLoop instance;
     
-    [Range(1, 5)]
+    [Range(1, 9)]
     public float Intensity;
     public bool GameInProgress = false;
     public float roundSeconds;
@@ -43,6 +43,8 @@ public class GameplayLoop : MonoBehaviour
     GameObject flashbang;
     [SerializeField]
     GameObject powerUp;
+    [SerializeField]
+    GameObject blackHole;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -54,6 +56,7 @@ public class GameplayLoop : MonoBehaviour
     private bool eventChosen = false;
     private float spawnDelayMultiplier = 1f;
     private float powerupTimer = 10f;
+    private bool intenseMode = false;
 
     public enum INTENSITY
     {
@@ -79,11 +82,11 @@ public class GameplayLoop : MonoBehaviour
         ICE_METEOR,
         NUKE,
         FLASHBANG,
-        AIRSTRIKE
+        AIRSTRIKE,
+        BLACKHOLE
     }
 
-    private List<BOMB_TYPES> typesToSpawn = new List<BOMB_TYPES>() { BOMB_TYPES.BOMB, BOMB_TYPES.CLUSTER_BOMB,
-    BOMB_TYPES.METEOR, BOMB_TYPES.ICE_METEOR, BOMB_TYPES.FLASHBANG, BOMB_TYPES.NUKE};
+    private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
 
     private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS};
 
@@ -135,58 +138,66 @@ public class GameplayLoop : MonoBehaviour
             }
         }
         BOMB_TYPES bombSelect = typesToSpawn[Random.Range(0, typesToSpawn.Count)];
+        GameObject bomb;
+        Vector3 spawnPosition;
         switch (bombSelect)
         {
             case (BOMB_TYPES.BOMB): //Normal Bomb
                 {
-                    Vector3 pos = GenerateBombSpawn();
-                    GameObject bomb = Instantiate(genericBomb, pos, Quaternion.identity, bombsParent);
+                    spawnPosition = GenerateBombSpawn();
+                    bomb = Instantiate(genericBomb, spawnPosition, Quaternion.identity, bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
             case (BOMB_TYPES.METEOR): //Fire Meteor
                 {
-                    Vector3 pos = GenerateBombSpawn();
-                    Instantiate(meteor, pos, Quaternion.Euler(0, 0, 0), bombsParent);
+                    spawnPosition = GenerateBombSpawn();
+                    Instantiate(meteor, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
             case (BOMB_TYPES.CLUSTER_BOMB): //Cluster Bomb
                 {
-                    Vector3 pos = GenerateBombSpawn();
-                    GameObject Cbomb = Instantiate(clusterBomb, pos, Quaternion.Euler(0, 0, 0), bombsParent);
-                    Cbomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                    spawnPosition = GenerateBombSpawn();
+                    bomb = Instantiate(clusterBomb, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
+                    bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
             case (BOMB_TYPES.AIRSTRIKE): //AirStrike
                 {
-                    Vector3 pos;
                     float rng = Random.Range(0, 1f);
-                    float speed = 0;
+                    float speed;
                     if (rng <= 0.2f)
                     {
-                        pos = TargetedPlayerSpawn();
+                        spawnPosition = TargetedPlayerSpawn();
                         speed = 2;
                     }
                     else
                     {
-                        pos = GenerateBombSpawn();
+                        spawnPosition = GenerateBombSpawn();
                         speed = 5;
                     }
-                    GameObject go = Instantiate(Airstrike, pos, Quaternion.Euler(180, 0, 0), bombsParent);
-                    go.GetComponent<Nuke>().speedMultiplier = speed;
+                    bomb = Instantiate(Airstrike, spawnPosition, Quaternion.Euler(180, 0, 0), bombsParent);
+                    bomb.GetComponent<Nuke>().speedMultiplier = speed;
                     break;
                 }
             case (BOMB_TYPES.ICE_METEOR): //Ice Meteor
                 {
-                    Vector3 pos = GenerateBombSpawn();
-                    Instantiate(iceMeteor, pos, Quaternion.Euler(0, 0, 0), bombsParent);
+                    spawnPosition = GenerateBombSpawn();
+                    Instantiate(iceMeteor, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
             case (BOMB_TYPES.FLASHBANG): //Flashbang
                 {
-                    Vector3 pos = GenerateBombSpawn();
-                    GameObject fb = Instantiate(flashbang, pos, Quaternion.identity, bombsParent);
-                    fb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                    spawnPosition = GenerateBombSpawn();
+                    bomb = Instantiate(flashbang, spawnPosition, Quaternion.identity, bombsParent);
+                    bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                    break;
+                }
+            case (BOMB_TYPES.BLACKHOLE):
+                {
+                    spawnPosition = GenerateBombSpawn();
+                    bomb = Instantiate(blackHole, spawnPosition, Quaternion.identity, bombsParent);
+                    bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
         }
@@ -351,6 +362,10 @@ public class GameplayLoop : MonoBehaviour
         yield return new WaitUntil(() => AudioManager.instance != null);
         eventChosen = false;
         AudioManager.instance.PlayLobbyMusic();
+        intenseMode = false;
+        roundTimerBar.GetComponent<Animator>().enabled = false;
+        roundTimerText.text = "2:30";
+        roundTimerBar.color = Color.white;
         SetIntensity(Intensity);
         foreach (PlayerStats player in allPlayers) //Reset Players
         {
@@ -426,8 +441,10 @@ public class GameplayLoop : MonoBehaviour
         roundSeconds = roundDuration;
         roundTimerBar.fillAmount = 1;
         float spawnDelay = 1 / (Intensity * 0.8f) + 0.5f;
+        spawnDelayMultiplier = 1;
         Coroutine countdown = StartCoroutine(CountdownRoundTime());
         AudioManager.instance.PlayBGM(GetIntensity());
+        AudioManager.instance.currentlyPlaying.pitch = 1;
         while (roundSeconds > 0 && GameInProgress == true)
         {
             SpawnBomb();
@@ -439,6 +456,15 @@ public class GameplayLoop : MonoBehaviour
                     StartCoroutine(LaunchEvent());
                     eventChosen = true;
                 }
+            }
+            if (!intenseMode && roundSeconds <= 30)
+            {
+                roundTimerBar.GetComponent<Animator>().enabled = true;
+                intenseMode = true;
+                AudioManager.instance.PlayWhistle();
+                AudioManager.instance.currentlyPlaying.pitch = 1.5f;
+                spawnDelayMultiplier = 1 / 1.5f; //50% more bombs
+                globalText.text = "Final Frenzy!";
             }
             yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
         }

@@ -1067,13 +1067,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42.4
+  m_fontSize: 40.1
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -3359,8 +3359,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895547159}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -15, z: 25.49}
-  m_LocalScale: {x: 50, y: 30, z: 1}
+  m_LocalPosition: {x: 0, y: -15, z: 40}
+  m_LocalScale: {x: 150, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1459809897}
@@ -3519,8 +3519,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 956703103}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -25.49, y: -15, z: 0}
-  m_LocalScale: {x: 50.000023, y: 30, z: 1}
+  m_LocalPosition: {x: -50, y: -15, z: 0}
+  m_LocalScale: {x: 50, y: 30, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1459809897}
@@ -4684,6 +4684,7 @@ MonoBehaviour:
   iceMeteor: {fileID: 7446772486200735150, guid: f77e47a9fc632324e928f9873a86641b, type: 3}
   flashbang: {fileID: 1689670725695502319, guid: e5a560e55de57a54998cc41db85a63e8, type: 3}
   powerUp: {fileID: 7899997355908478687, guid: bcb35baadb570724aab9b37d4646352e, type: 3}
+  blackHole: {fileID: 3888445224017440522, guid: fe7f1544a61038c47811ae3d5e9d200b, type: 3}
   mapThumbail: {fileID: 1495692781}
   mapText: {fileID: 293935057}
   tipBar: {fileID: 284889604}
@@ -9773,8 +9774,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508694614}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 25.49, y: -15, z: 0}
-  m_LocalScale: {x: 50.000023, y: 30, z: 1}
+  m_LocalPosition: {x: 50, y: -15, z: 0}
+  m_LocalScale: {x: 50, y: 30, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1459809897}
@@ -10360,6 +10361,7 @@ GameObject:
   - component: {fileID: 1742259541}
   - component: {fileID: 1742259543}
   - component: {fileID: 1742259542}
+  - component: {fileID: 1742259544}
   m_Layer: 5
   m_Name: TimerBar
   m_TagString: Untagged
@@ -10425,6 +10427,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1742259540}
   m_CullTransparentMesh: 1
+--- !u!95 &1742259544
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742259540}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4fa7c69449d1a9a44a7ff2df6dbdeb74, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1753462596
 GameObject:
   m_ObjectHideFlags: 0
@@ -10452,8 +10474,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1753462596}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: -15, z: -25.49}
-  m_LocalScale: {x: 50, y: 30, z: 1}
+  m_LocalPosition: {x: 0, y: -15, z: -40}
+  m_LocalScale: {x: 150, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1459809897}
@@ -10678,7 +10700,7 @@ Transform:
   m_GameObject: {fileID: 1776181400}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 15, z: 25.49}
-  m_LocalScale: {x: 50, y: 30, z: 1}
+  m_LocalScale: {x: 52, y: 30, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1602691119}

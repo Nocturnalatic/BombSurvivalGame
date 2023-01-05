@@ -18,6 +18,14 @@ public class Powerups : MonoBehaviour
 
     IEnumerator ActivatePowerup(POWERUP_TYPE type, PlayerStats player)
     {
+        if (player.selectedPerk != null)
+        {
+            if (player.selectedPerk.ID == 3)
+            {
+                StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 11), 1, false, StatusEffect.BuffType.POSITIVE);
+                player.AddStatus(effectSelected);
+            }
+        }
         switch (type)
         {
             case POWERUP_TYPE.CD_REDUCTION_BUFF:

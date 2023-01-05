@@ -12,6 +12,10 @@ public class Nuke : MonoBehaviour
     bool triggered = false;
     public bool isNuke = true;
     Rigidbody localrb;
+    [SerializeField]
+    AudioSource hissingNoise;
+    [SerializeField]
+    ParticleSystem trail;
     private void Start()
     {
         localrb = GetComponent<Rigidbody>();
@@ -65,6 +69,11 @@ public class Nuke : MonoBehaviour
         }
         GetComponentInChildren<ParticleSystem>().Play();
         GetComponent<AudioSource>().Play();
+        if (!isNuke)
+        {
+            trail.Stop();
+            hissingNoise.Stop();
+        }
         yield return new WaitUntil(() => GetComponent<AudioSource>().isPlaying == false);
         if (isNuke)
         {

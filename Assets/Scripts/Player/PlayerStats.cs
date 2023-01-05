@@ -209,8 +209,8 @@ public class PlayerStats : MonoBehaviour
                 {
                     if (f.d_Multiplier >= effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
                     {
-                        f.duration += effect.duration; //Add the new effects duration
-                        f.original_duration += effect.original_duration;
+                        f.duration = effect.duration; 
+                        f.original_duration = effect.original_duration;
                     }
                     else
                     {
@@ -275,6 +275,9 @@ public class PlayerStats : MonoBehaviour
 
                 if (effect.type == StatusEffect.EffectType.CHILLED)
                 {
+                    ColorAdjustments ca;
+                    volume.profile.TryGet(out ca);
+                    ca.colorFilter.Override(new Color(0.6f, 1, 1));
                     if (!isChilled)
                     {
                         PlayerControls.instance.moveSpeedModifiers.Add(Globals.chillMovementDebuff);
@@ -286,6 +289,9 @@ public class PlayerStats : MonoBehaviour
                 }
                 if (effect.type == StatusEffect.EffectType.BURN)
                 {
+                    ColorAdjustments ca;
+                    volume.profile.TryGet(out ca);
+                    ca.colorFilter.Override(new Color(1f, 0.5f, 0));
                     burnVig.SetTrigger("Flash");
                     DamagePlayer(effect.d_Multiplier * Time.deltaTime, false, DAMAGE_TYPE.FIRE);
                 }
@@ -311,7 +317,9 @@ public class PlayerStats : MonoBehaviour
             if (f.type == StatusEffect.EffectType.CHILLED) //When Chill Ends
             {
                 isChilled = false;
-                cooldownReduction = 1;
+                ColorAdjustments ca;
+                volume.profile.TryGet(out ca);
+                ca.colorFilter.Override(new Color(1, 1, 1));
                 if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF)) //Bug 2 Attempt Fix
                 {
                     PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
@@ -325,6 +333,12 @@ public class PlayerStats : MonoBehaviour
                 {
                     PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementBuff);
                 }
+            }
+            if (f.type == StatusEffect.EffectType.BURN)
+            {
+                ColorAdjustments ca;
+                volume.profile.TryGet(out ca);
+                ca.colorFilter.Override(new Color(1, 1, 1));
             }
             effects.Remove(f);
         }
@@ -534,20 +548,6 @@ public class PlayerStats : MonoBehaviour
                 else
                 {
                     PlayHDT();
-                    if (selectedPerk != null)
-                    {
-                        if (selectedPerk.ID == 3)
-                        {
-                            List<StatusEffect.EffectType> types = new List<StatusEffect.EffectType>();
-                            types.Add(StatusEffect.EffectType.REGEN);
-                            types.Add(StatusEffect.EffectType.PROTECTED);
-                            types.Add(StatusEffect.EffectType.HASTE);
-                            types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
-                            StatusEffect.EffectType selected = types[Random.Range(0, types.Count)];
-                            AddStatus(new StatusEffect(selected, Random.Range(3, 10f), 3, false));
-                            types.Remove(selected);
-                        }
-                    }
                 }
                 noiseCooldown = 1;
             }
@@ -565,11 +565,13 @@ public class PlayerStats : MonoBehaviour
                     remainingDmg = 0;
                 }
             }
-            health -= (remainingDmg / damageReduction);
+            float finalDamage = remainingDmg / damageReduction;
+            health -= finalDamage;
             StartCoroutine(LerpHPBarBG());
             if (type == DAMAGE_TYPE.EXPLOSION)
             {
                 shockwave.SetTrigger("Shockwave");
+                StartCoroutine(DamageEffect(finalDamage / (health + finalDamage)));
             }
         }
         hpperc = health / maxhealth;
@@ -635,6 +637,20 @@ public class PlayerStats : MonoBehaviour
         hpbar.enabled = false;
         HPbar.color = new Color(0.6735849f, 1, 1);
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+    }
+
+    private IEnumerator DamageEffect(float dmgPerc)
+    {
+        ColorAdjustments ca;
+        volume.profile.TryGet(out ca);
+        float duration = 0.25f + dmgPerc;
+        while (duration > 0)
+        {
+            ca.colorFilter.Override(new Color(1, 1 - duration, 1 - duration));
+            duration -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        ca.colorFilter.Override(Color.white);
     }
 
     private void Update()

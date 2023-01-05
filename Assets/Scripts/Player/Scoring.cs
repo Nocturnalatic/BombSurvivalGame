@@ -31,35 +31,35 @@ public class Scoring : MonoBehaviour
     {
         if (score < 1000)
         {
-            return "FAIL";
+            return "AMATEUR";
         }
         else if (score < 2000)
         {
-            return "AMATEUR";
+            return "NOVICE";
         }
         else if (score < 2500)
         {
-            return "NOVICE";
+            return "SKILLED";
         }
         else if (score < 3000)
         {
-            return "SKILLED";
+            return "VETERAN";
         }
         else if (score < 3500)
         {
-            return "VETERAN";
+            return "EPIC";
         }
         else if (score < 4000)
         {
-            return "EPIC";
+            return "LEGENDARY";
         }
         else if (score < 4500)
         {
-            return "LEGENDARY";
+            return "MYTHICAL";
         }
         else if (score < 5000)
         {
-            return "MYTHICAL";
+            return "GODLIKE";
         }
         else if (score >= 5000)
         {
@@ -75,39 +75,39 @@ public class Scoring : MonoBehaviour
     {
         if (score < 1000)
         {
-            return Color.red;
+            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
         }
         else if (score < 2000)
         {
-            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
+            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
         }
         else if (score < 2500)
         {
-            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
+            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
         }
         else if (score < 3000)
         {
-            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
+            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
         }
         else if (score < 3500)
         {
-            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
+            return Color.magenta;
         }
         else if (score < 4000)
         {
-            return new Color(185 / 255f, 242 / 255f, 255 / 255f);
+            return new Color(1, 0.5f, 0);
         }
         else if (score < 4500)
         {
-            return Color.blue;
+            return Color.red;
         }
         else if (score < 5000)
         {
-            return Color.magenta;
+            return Color.white;
         }
         else if (score >= 5000)
         {
-            return Color.white;
+            return Color.green;
         }
         else
         {
@@ -134,7 +134,7 @@ public class Scoring : MonoBehaviour
     public IEnumerator CalculateScore()
     {
         survivalT = survivalB = Hardcore = 0;
-        survivalT = (int)PlayerStats.instance.survivalTime;
+        survivalT = (int)(PlayerStats.instance.survivalTime * 1.5f);
         if (PlayerStats.instance.state == PlayerStats.GAME_STATE.WIN)
         {
             survivalB = (int)(survivalT * 1.5f);
