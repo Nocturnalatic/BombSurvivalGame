@@ -28,7 +28,7 @@ public class PlayerControls : MonoBehaviour
     float mouseSensMultiplier = 5;
     Vector3 moveDir, velocity, knockBack;
     public bool isGrounded = false;
-    bool isSprinting = false;
+    public bool isSprinting = false;
 
     float x, z;
 
@@ -72,9 +72,19 @@ public class PlayerControls : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (!GlobalSettings.instance.isInGameSettingsOpen && !GameplayLoop.instance.GameInProgress)
+            if (!GlobalSettings.instance.isInGameSettingsOpen)
             {
-                PlayerStats.instance.ToggleMenu();
+                if (GameplayLoop.instance != null)
+                {
+                    if (!GameplayLoop.instance.GameInProgress)
+                    {
+                        PlayerStats.instance.ToggleMenu();
+                    }
+                }
+                else
+                {
+                    PlayerStats.instance.ToggleMenu();
+                }
             }
         }
 
@@ -112,9 +122,19 @@ public class PlayerControls : MonoBehaviour
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.E) && GameplayLoop.instance.GameInProgress)
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            PlayerStats.instance.UseSkill();
+            if (GameplayLoop.instance != null)
+            {
+                if (GameplayLoop.instance.GameInProgress)
+                {
+                    PlayerStats.instance.UseSkill();
+                }
+            }
+            else
+            {
+                PlayerStats.instance.UseSkill();
+            }
         }
 
         x = Input.GetAxisRaw("Horizontal"); // get left right movement

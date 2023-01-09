@@ -11,6 +11,7 @@ public class GlobalSettings : MonoBehaviour
     public Slider mouseSensSlider, intensityControl;
     public GameObject settingsCanvas;
     public bool isInGameSettingsOpen = false;
+    public List<CharacterVoicePack> characterVoicePacks;
 
     [HideInInspector]
     public float mouseSensitivity = 100;
@@ -37,11 +38,21 @@ public class GlobalSettings : MonoBehaviour
         intensityControl.interactable = v;
     }
 
+    public void SetMasterVolume(float masterVol)
+    {
+        AudioListener.volume = masterVol / 100f;
+    }
+
     public void SetHardcoreMode(bool v)
     {
         PlayerStats.instance.hardcoreMode = v;
         PlayerStats.instance.lockIcons.SetActive(v);
         PlayerStats.instance.hardcoreText.SetActive(v);
+    }
+
+    public void SetVoicePack(int v)
+    {
+        PlayerStats.instance.voicePack = characterVoicePacks[v];
     }
 
     public void SetSensitivity(float v)
@@ -56,8 +67,7 @@ public class GlobalSettings : MonoBehaviour
 
     public void QuitToMenu()
     {
-        settingsCanvas.SetActive(false);
-        isInGameSettingsOpen = false;
+        ToggleIngameSettings();
         StartCoroutine(SceneControl.instance.LoadScene(SceneControl.SCENE_TYPE.MAIN_MENU));
         hardcoretoggle.isOn = false;
     }

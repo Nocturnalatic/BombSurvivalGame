@@ -8,7 +8,8 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
     public enum SCENE_TYPE
     {
         MAIN_MENU = 0,
-        GAMEPLAY = 1
+        GAMEPLAY = 1,
+        TUTORIAL = 2
     }
     public Material defaultSkybox;
     public Material HighIntSkybox;
@@ -52,6 +53,11 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
                     SceneManager.UnloadSceneAsync("GameScene");
                     break;
                 }
+            case SCENE_TYPE.TUTORIAL:
+                {
+                    SceneManager.UnloadSceneAsync("TutorialScene");
+                    break;
+                }
         }
         AsyncOperation nScene = null;
         //Then load the new scene
@@ -70,6 +76,13 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
                     setplayer = true;
                     nScene = SceneManager.LoadSceneAsync("GameScene", LoadSceneMode.Additive);
                     currentScene = SCENE_TYPE.GAMEPLAY;
+                    break;
+                }
+            case SCENE_TYPE.TUTORIAL:
+                {
+                    setplayer = true;
+                    nScene = SceneManager.LoadSceneAsync("TutorialScene", LoadSceneMode.Additive);
+                    currentScene = SCENE_TYPE.TUTORIAL;
                     break;
                 }
         }

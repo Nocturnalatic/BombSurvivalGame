@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132c7abd083684e4ba55607b56e9c2cb, type: 3}
+  m_Name: Widowmaker
+  m_EditorClassIdentifier: 
+  lightDamageTakenNoises:
+  - {fileID: 8523148591576272469, guid: 1e4cc7860acd80b4584044184b16570e, type: 3}
+  - {fileID: 2802758262528785292, guid: fe73d3e4a7551584880a83a23b26e743, type: 3}
+  - {fileID: 5361226358300668562, guid: d94aa4c488741bc4285a13fe8a0831cb, type: 3}
+  - {fileID: 624654376657077967, guid: c911b92dbc1c03748a8b53dbb4ef912e, type: 3}
+  - {fileID: 4539801860379679379, guid: ddd755edad14f474698a627a6580e44a, type: 3}
+  heavyDamageTakenNoises:
+  - {fileID: 7154588412960962061, guid: de07a294a1acb214ba667c345d76c0c9, type: 3}
+  - {fileID: 9088600608043264108, guid: 9078d73c9ddea8d4b8ece5c256becbf2, type: 3}
+  - {fileID: 5476412112332582043, guid: 88ea92374bcbedd40b9997913fc22ad2, type: 3}
+  - {fileID: 296620251853830742, guid: 8d7ce93e2f510d34887f4eb07187c1eb, type: 3}
+  - {fileID: 789113611642546707, guid: 7547a74afde51274a8a796cfb0ce1bd3, type: 3}
+  deathNoises:
+  - {fileID: 2143798156570260538, guid: cd1c0bb1838655d43aea930057605863, type: 3}
+  - {fileID: 5614420760204499504, guid: 421717d6225c93f478b08ddacc0c479f, type: 3}
+  - {fileID: 5160537766064753195, guid: ccec6f8933d19684e988492f23aacadd, type: 3}
+  - {fileID: 658173463824182197, guid: ae703eb87beefd74db41d24e716c1b61, type: 3}

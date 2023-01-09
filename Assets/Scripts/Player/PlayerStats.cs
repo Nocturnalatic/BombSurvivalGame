@@ -30,9 +30,7 @@ public class PlayerStats : MonoBehaviour
 
     public Animator dodgeTextAnimator;
     [Header("Audio")]
-    public List<AudioSource> lightdamagetakenNoises;
-    public List<AudioSource> heavydamagetakenNoises;
-    public List<AudioSource> deathNoises;
+    public CharacterVoicePack voicePack;
     public AudioSource skillReady;
 
     [Header("Health Bar UI")]
@@ -443,7 +441,7 @@ public class PlayerStats : MonoBehaviour
     {
         if (selectedSkill != null)
         {
-            if (selectedSkill.currentcooldown <= 0 && GameplayLoop.instance.GameInProgress && !hardcoreMode)
+            if (selectedSkill.currentcooldown <= 0 && !hardcoreMode)
             {
                 skillUsageAnimator.SetTrigger("UsedSkill");
                 selectedSkill.ActivateSkill();
@@ -453,17 +451,23 @@ public class PlayerStats : MonoBehaviour
 
     public void PlayLDT()
     {
-        lightdamagetakenNoises[Random.Range(0, lightdamagetakenNoises.Count)].Play();
+        AudioSource sound = Instantiate(voicePack.lightDamageTakenNoises[Random.Range(0, voicePack.lightDamageTakenNoises.Count)]);
+        sound.Play();
+        Destroy(sound, sound.clip.length);
     }
 
     public void PlayHDT()
     {
-        heavydamagetakenNoises[Random.Range(0, heavydamagetakenNoises.Count)].Play();
+        AudioSource sound = Instantiate(voicePack.heavyDamageTakenNoises[Random.Range(0, voicePack.heavyDamageTakenNoises.Count)]);
+        sound.Play();
+        Destroy(sound, sound.clip.length);
     }
 
     public void PlayDeath()
     {
-        deathNoises[Random.Range(0, deathNoises.Count)].Play();
+        AudioSource sound = Instantiate(voicePack.deathNoises[Random.Range(0, voicePack.deathNoises.Count)]);
+        sound.Play();
+        Destroy(sound, sound.clip.length);
     }
 
     public void AddShield(float v)
@@ -622,6 +626,9 @@ public class PlayerStats : MonoBehaviour
     public void Reset() //Resets other things
     {
         StopAllCoroutines();
+        ColorAdjustments ca;
+        volume.profile.TryGet(out ca);
+        ca.colorFilter.Override(new Color(1, 1, 1));
         transform.position = new Vector3(0, 10, 0);
         damageTaken = 0;
         shield = 0;

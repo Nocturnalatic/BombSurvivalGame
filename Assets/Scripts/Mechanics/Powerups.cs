@@ -22,7 +22,7 @@ public class Powerups : MonoBehaviour
         {
             if (player.selectedPerk.ID == 3)
             {
-                StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 11), 1, false, StatusEffect.BuffType.POSITIVE);
+                StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 11), 2, false, StatusEffect.BuffType.POSITIVE);
                 player.AddStatus(effectSelected);
             }
         }

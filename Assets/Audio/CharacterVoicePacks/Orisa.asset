@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132c7abd083684e4ba55607b56e9c2cb, type: 3}
+  m_Name: Orisa
+  m_EditorClassIdentifier: 
+  lightDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: 61bff2ad8da960d41a074d55ef7ecced, type: 3}
+  - {fileID: -6731454708704800911, guid: 05ddcd8b8d65729478942c715912a891, type: 3}
+  - {fileID: -6731454708704800911, guid: 1decda74487ffe94f854f366bc491af1, type: 3}
+  heavyDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: 57b72ec890a6ca0499ec1a5d51f1245b, type: 3}
+  - {fileID: -6731454708704800911, guid: a826a6e4ee41e674a8d5476d836b996b, type: 3}
+  - {fileID: -6731454708704800911, guid: 640ce0d9e67a31f4bb76453c08d3baec, type: 3}
+  deathNoises:
+  - {fileID: -6731454708704800911, guid: ad89f2ee8c45e6642895a70521ab2c59, type: 3}
+  - {fileID: -6731454708704800911, guid: 1b53b5d0fb64bbe46b4d05371f56c269, type: 3}
+  - {fileID: -6731454708704800911, guid: f3e0087790916f248bd652dcd8d6e4e5, type: 3}

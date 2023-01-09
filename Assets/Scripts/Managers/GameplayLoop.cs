@@ -395,7 +395,7 @@ public class GameplayLoop : MonoBehaviour
             player.skillUI.SetActive(false);
             if (player.hardcoreMode) //Apply hardcore mode modifier
             {
-                player.SetMaxHealth(25);
+                player.SetMaxHealth(50);
                 player.GetComponentInParent<PlayerControls>().moveSpeedModifiers.Add(Globals.hardcoreMovementDebuff);
                 if (player.selectedPerk != null)
                 {
@@ -463,7 +463,7 @@ public class GameplayLoop : MonoBehaviour
                 intenseMode = true;
                 AudioManager.instance.PlayWhistle();
                 AudioManager.instance.currentlyPlaying.pitch = 1.5f;
-                spawnDelayMultiplier = 1 / 1.5f; //50% more bombs
+                spawnDelayMultiplier /= 1.75f; //75% more bombs
                 globalText.text = "Final Frenzy!";
             }
             yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
