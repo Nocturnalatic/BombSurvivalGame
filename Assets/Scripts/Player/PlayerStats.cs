@@ -48,6 +48,7 @@ public class PlayerStats : MonoBehaviour
     public Image selectedSkillIcon, cooldownUI;
     public List<AudioSource> skillSoundFX;
     public Animator barrierEffect, skillUsageAnimator;
+    public Image glitchedSkillEffect;
 
     [Header("Perks")]
     [HideInInspector]
@@ -98,7 +99,9 @@ public class PlayerStats : MonoBehaviour
     public enum DAMAGE_TYPE
     {
         EXPLOSION = 0,
-        FIRE
+        FIRE,
+        GRAVITY,
+        ELECTRIC
     }
 
     public void Flash()
@@ -112,16 +115,16 @@ public class PlayerStats : MonoBehaviour
         StartCoroutine(ApplyBurn());
     }
 
-    public void Dispel()
+    public void Dispel(bool reverse = false)
     {
         foreach (StatusEffect effect in effects)
         {
-            if (effect.buffType == StatusEffect.BuffType.NEGATIVE)
+            if (effect.buffType == (reverse ? StatusEffect.BuffType.POSITIVE : StatusEffect.BuffType.NEGATIVE))
             {
                 effect.duration = 0;
             }
         }
-    }    
+    }
 
     public void Skill4(bool empowered = false)
     {
@@ -193,6 +196,10 @@ public class PlayerStats : MonoBehaviour
                 return "CTRL. IMM.";
             case StatusEffect.EffectType.HASTE:
                 return "HASTE";
+            case StatusEffect.EffectType.SUCTION:
+                return "SUCTION";
+            case StatusEffect.EffectType.CORRUPTED:
+                return "CORRUPTED";
         }
         return "ERROR";
     }
@@ -205,15 +212,18 @@ public class PlayerStats : MonoBehaviour
             {
                 if (f.type == effect.type)
                 {
-                    if (f.d_Multiplier >= effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
+                    if (f.d_Multiplier > effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
                     {
                         f.duration = effect.duration; 
                         f.original_duration = effect.original_duration;
                     }
                     else
                     {
-                        effects.Remove(f);  //Remove the existing weaker effect
-                        effects.Add(effect); //Add the stronger one
+                        if (f.duration <= effect.original_duration) //if the current effect is shorter, new one overrides
+                        {
+                            effects.Remove(f);  //Remove the existing lesser effect
+                            effects.Add(effect); //Add the longer one
+                        }
                     }
                     return;
                 }
@@ -295,7 +305,7 @@ public class PlayerStats : MonoBehaviour
                 }
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
-                    HealPlayer(effect.d_Multiplier * Time.deltaTime);
+                    HealPlayer(effect.d_Multiplier * Time.deltaTime, true, 0.5f);
                 }
                 if (effect.type == StatusEffect.EffectType.HASTE)
                 {
@@ -303,6 +313,11 @@ public class PlayerStats : MonoBehaviour
                     {
                         PlayerControls.instance.moveSpeedModifiers.Add(Globals.hasteMovementBuff);
                     }
+                }
+                if (effect.type == StatusEffect.EffectType.CORRUPTED)
+                {
+                    glitchedSkillEffect.enabled = true;
+                    Dispel(true);
                 }
             }
             else
@@ -337,6 +352,10 @@ public class PlayerStats : MonoBehaviour
                 ColorAdjustments ca;
                 volume.profile.TryGet(out ca);
                 ca.colorFilter.Override(new Color(1, 1, 1));
+            }
+            if (f.type == StatusEffect.EffectType.CORRUPTED)
+            {
+                glitchedSkillEffect.enabled = false;
             }
             effects.Remove(f);
         }
@@ -440,8 +459,8 @@ public class PlayerStats : MonoBehaviour
     public void UseSkill()
     {
         if (selectedSkill != null)
-        {
-            if (selectedSkill.currentcooldown <= 0 && !hardcoreMode)
+        { 
+            if (selectedSkill.currentcooldown <= 0 && !hardcoreMode && !HasEffect(StatusEffect.EffectType.CORRUPTED))
             {
                 skillUsageAnimator.SetTrigger("UsedSkill");
                 selectedSkill.ActivateSkill();
@@ -475,7 +494,7 @@ public class PlayerStats : MonoBehaviour
         shield += v;
     }
 
-    public void HealPlayer(float hp, bool overHeal = false) //Extra HP gets added to shield
+    public void HealPlayer(float hp, bool overHeal = false, float ratio = 1) //Extra HP gets added to shield
     {
         if (overHeal)
         {
@@ -490,7 +509,7 @@ public class PlayerStats : MonoBehaviour
             }
             if (hp - missingHP > 0)
             {
-                AddShield(hp - missingHP);
+                AddShield((hp - missingHP) * ratio);
             }
         }
         else
@@ -512,6 +531,11 @@ public class PlayerStats : MonoBehaviour
             health = maxhealth;
         }
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+    }
+
+    public void DestroyShields()
+    {
+        DamagePlayer(shield, false, DAMAGE_TYPE.ELECTRIC);
     }
 
     public void DamagePlayer(float dmg, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION)

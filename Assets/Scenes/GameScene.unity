@@ -4685,6 +4685,7 @@ MonoBehaviour:
   flashbang: {fileID: 1689670725695502319, guid: e5a560e55de57a54998cc41db85a63e8, type: 3}
   powerUp: {fileID: 7899997355908478687, guid: bcb35baadb570724aab9b37d4646352e, type: 3}
   blackHole: {fileID: 3888445224017440522, guid: fe7f1544a61038c47811ae3d5e9d200b, type: 3}
+  empBomb: {fileID: 4764977878734373287, guid: fda7c55c5bdd8f944aae280566ea1281, type: 3}
   mapThumbail: {fileID: 1495692781}
   mapText: {fileID: 293935057}
   tipBar: {fileID: 284889604}

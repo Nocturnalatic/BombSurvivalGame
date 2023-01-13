@@ -67,10 +67,16 @@ public class Blackhole : MonoBehaviour
 
                 if (col.gameObject.CompareTag("Player"))
                 {
+                    float distanceFactor = (explosionRadius - (transform.position - col.transform.position).magnitude) / explosionRadius;
                     Vector3 playerDir = (transform.position - col.transform.position).normalized;
-                    col.GetComponentInParent<PlayerControls>().controller.Move(playerDir);
-                    col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 0.5f, 1, false));
-                    col.GetComponentInParent<PlayerStats>().DamagePlayer(Time.deltaTime * damage, false);
+                    distanceFactor = Mathf.Abs(distanceFactor);
+                    col.GetComponentInParent<PlayerControls>().controller.Move((playerDir * 0.5f) * (distanceFactor));
+                    col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.SUCTION, 0.25f, 1, false));
+                    if (distanceFactor > 0.7f)
+                    {
+                        col.GetComponentInParent<PlayerStats>().DamagePlayer(Time.deltaTime * damage, false);
+                        col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 0.25f, 1, false));
+                    }
                 }
             }
             blackholeDuration -= Time.deltaTime;

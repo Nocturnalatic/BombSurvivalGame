@@ -59,7 +59,7 @@ public class AudioManager : MonoBehaviour
                 }
 
         }
-        currentlyPlaying.volume = 1;
+        currentlyPlaying.volume = 0.75f;
         currentlyPlaying.Play();
     }
 
@@ -76,7 +76,7 @@ public class AudioManager : MonoBehaviour
 
     public IEnumerator FadeOutTrack()
     {
-        float volume = 1;
+        float volume = currentlyPlaying.volume;
         while (volume > 0)
         {
             volume -= (Time.deltaTime * 0.25f);

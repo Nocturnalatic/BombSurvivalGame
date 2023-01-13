@@ -27,6 +27,8 @@ public class StatusEffect
         PROTECTED,
         CONTROL_IMMUNE,
         HASTE,
+        SUCTION,
+        CORRUPTED,
         TOTAL
     }
 

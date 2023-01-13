@@ -24,7 +24,8 @@ public class Bomb : MonoBehaviour
     public enum BOMB_TYPE
     {
         BOMB = 0,
-        FLASHBANG
+        FLASHBANG,
+        EMP
     }
 
     public BOMB_TYPE type = BOMB_TYPE.BOMB;
@@ -78,12 +79,18 @@ public class Bomb : MonoBehaviour
                             dir += Vector3.up;
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
                             col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
-                            col.GetComponentInParent<PlayerControls>().AddKnockback(dir, 5 * distanceMod);
+                            col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
                             if (type == BOMB_TYPE.FLASHBANG)
                             {
                                 col.GetComponentInParent<PlayerStats>().Flash();
                                 StatusEffect effect = new(StatusEffect.EffectType.STUNNED, 3 * distanceMod, 1, false);
                                 col.GetComponentInParent<PlayerStats>().AddStatus(effect);
+                            }
+                            else if (type == BOMB_TYPE.EMP)
+                            {
+                                col.GetComponentInParent<PlayerStats>().AddStatus(new(StatusEffect.EffectType.STUNNED, 0.5f, 1, false));
+                                col.GetComponentInParent<PlayerStats>().AddStatus(new(StatusEffect.EffectType.CORRUPTED, 2 + 10 * distanceMod, 1, false));
+                                col.GetComponentInParent<PlayerStats>().DestroyShields();
                             }
                         }
                     }

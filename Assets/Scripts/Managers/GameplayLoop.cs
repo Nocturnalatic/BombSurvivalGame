@@ -45,6 +45,8 @@ public class GameplayLoop : MonoBehaviour
     GameObject powerUp;
     [SerializeField]
     GameObject blackHole;
+    [SerializeField]
+    GameObject empBomb;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -83,7 +85,9 @@ public class GameplayLoop : MonoBehaviour
         NUKE,
         FLASHBANG,
         AIRSTRIKE,
-        BLACKHOLE
+        BLACKHOLE,
+        EMP,
+        TOTAL
     }
 
     private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
@@ -115,7 +119,12 @@ public class GameplayLoop : MonoBehaviour
         SceneControl.instance.SetSkybox(Intensity >= 4);
     }
 
-    void SpawnBomb()
+    public void SpawnBombPublic(BOMB_TYPES t, bool spawnAtPlayer = false)
+    {
+        SpawnBomb(t, spawnAtPlayer);
+    }
+
+    void SpawnBomb(BOMB_TYPES t = BOMB_TYPES.TOTAL, bool spawnAtPlayerOverride = false)
     {
         //Can generate bomb types here in the future
         //Specialise rng for nukes and other big bombs
@@ -137,27 +146,35 @@ public class GameplayLoop : MonoBehaviour
                 NukeCount++;
             }
         }
-        BOMB_TYPES bombSelect = typesToSpawn[Random.Range(0, typesToSpawn.Count)];
+        BOMB_TYPES bombSelect;
+        if (t == BOMB_TYPES.TOTAL)
+        {
+            bombSelect = typesToSpawn[Random.Range(0, typesToSpawn.Count)];
+        }
+        else
+        {
+            bombSelect = t;
+        }
         GameObject bomb;
         Vector3 spawnPosition;
         switch (bombSelect)
         {
             case (BOMB_TYPES.BOMB): //Normal Bomb
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     bomb = Instantiate(genericBomb, spawnPosition, Quaternion.identity, bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
             case (BOMB_TYPES.METEOR): //Fire Meteor
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     Instantiate(meteor, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
             case (BOMB_TYPES.CLUSTER_BOMB): //Cluster Bomb
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     bomb = Instantiate(clusterBomb, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
@@ -166,7 +183,7 @@ public class GameplayLoop : MonoBehaviour
                 {
                     float rng = Random.Range(0, 1f);
                     float speed;
-                    if (rng <= 0.2f)
+                    if (rng <= 0.2f || spawnAtPlayerOverride)
                     {
                         spawnPosition = TargetedPlayerSpawn();
                         speed = 2;
@@ -182,21 +199,28 @@ public class GameplayLoop : MonoBehaviour
                 }
             case (BOMB_TYPES.ICE_METEOR): //Ice Meteor
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     Instantiate(iceMeteor, spawnPosition, Quaternion.Euler(0, 0, 0), bombsParent);
                     break;
                 }
             case (BOMB_TYPES.FLASHBANG): //Flashbang
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     bomb = Instantiate(flashbang, spawnPosition, Quaternion.identity, bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
             case (BOMB_TYPES.BLACKHOLE):
                 {
-                    spawnPosition = GenerateBombSpawn();
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
                     bomb = Instantiate(blackHole, spawnPosition, Quaternion.identity, bombsParent);
+                    bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                    break;
+                }
+            case (BOMB_TYPES.EMP):
+                {
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
+                    bomb = Instantiate(empBomb, spawnPosition, Quaternion.identity, bombsParent);
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }

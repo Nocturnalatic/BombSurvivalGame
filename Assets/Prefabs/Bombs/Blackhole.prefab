@@ -283,7 +283,7 @@ Transform:
   m_GameObject: {fileID: 354283403753782510}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.48, y: 0.48, z: 0.48}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4520867426491954608}
@@ -1087,7 +1087,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 10
+      value: 12
       mode: 0
       spread: 0
       speed:
@@ -5257,8 +5257,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detonationTime: 5
   damage: 5
-  explosionRadius: 10
-  blackholeDuration: 5
+  explosionRadius: 12
+  blackholeDuration: 6
   beepNoise: {fileID: 354283402258717471}
   blackholeFX: {fileID: 354283403753782510}
   animator: {fileID: 4520867426491954604}

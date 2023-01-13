@@ -59,13 +59,10 @@ public class PlayerData : MonoBehaviour
         expBar.fillAmount = EXP / (float)ReqEXP;
     }
 
-    private void Update()
+    private void ResetLevel()
     {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            EXP = 0;
-            Level = 1;
-        }
+        EXP = 0;
+        Level = 1;
     }
 
     private void OnApplicationQuit()
