@@ -20,7 +20,7 @@ public class Powerups : MonoBehaviour
     {
         if (player.selectedPerk != null)
         {
-            if (player.selectedPerk.ID == 3)
+            if (player.selectedPerk.ID == 3 && player.selectedPerk.enabled)
             {
                 StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 11), 2, false, StatusEffect.BuffType.POSITIVE);
                 player.AddStatus(effectSelected);

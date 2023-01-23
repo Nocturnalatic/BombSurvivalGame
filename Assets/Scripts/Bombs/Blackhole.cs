@@ -74,7 +74,7 @@ public class Blackhole : MonoBehaviour
                     col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.SUCTION, 0.25f, 1, false));
                     if (distanceFactor > 0.7f)
                     {
-                        col.GetComponentInParent<PlayerStats>().DamagePlayer(Time.deltaTime * damage, false);
+                        col.GetComponentInParent<PlayerStats>().DamagePlayer(Time.deltaTime * damage, transform.position, false, PlayerStats.DAMAGE_TYPE.GRAVITY);
                         col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 0.25f, 1, false));
                     }
                 }

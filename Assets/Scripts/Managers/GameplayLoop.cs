@@ -59,6 +59,12 @@ public class GameplayLoop : MonoBehaviour
     private float spawnDelayMultiplier = 1f;
     private float powerupTimer = 10f;
     private bool intenseMode = false;
+    private bool eventActive = false;
+
+    [Header("Events")]
+    public Animator eventPopupAnim;
+    public TextMeshProUGUI eventName;
+    public TextMeshProUGUI eventDescription;
 
     public enum INTENSITY
     {
@@ -73,7 +79,8 @@ public class GameplayLoop : MonoBehaviour
     public enum EVENTS
     {
         METEORS = 0,
-        POWERUPS = 1
+        POWERUPS = 1,
+        MISSILERAIN
     }
 
     public enum BOMB_TYPES
@@ -92,7 +99,7 @@ public class GameplayLoop : MonoBehaviour
 
     private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
 
-    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS};
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN};
 
     Vector3 GenerateBombSpawn()
     {
@@ -183,7 +190,7 @@ public class GameplayLoop : MonoBehaviour
                 {
                     float rng = Random.Range(0, 1f);
                     float speed;
-                    if (rng <= 0.2f || spawnAtPlayerOverride)
+                    if ((rng <= 0.2f || spawnAtPlayerOverride) && !eventActive)
                     {
                         spawnPosition = TargetedPlayerSpawn();
                         speed = 2;
@@ -330,11 +337,14 @@ public class GameplayLoop : MonoBehaviour
     {
         EVENTS chosenEvent = eventList[Random.Range(0, eventList.Count)];
         AudioManager.instance.eventTrigger.Play();
+        eventPopupAnim.SetTrigger("DoEventPopup");
+        eventActive = true;
         switch (chosenEvent)
         {
             case EVENTS.METEORS:
                 {
-                    globalText.text = "NEW EVENT: METEOR SHOWER!";
+                    eventName.text = "EVENT: METEOR SHOWER";
+                    eventDescription.text = "Better watch the skies. Only meteors will spawn at a 3x rate!";
                     typesToSpawn = Globals.MeteorsOnly;
                     spawnDelayMultiplier = 0.33f; //Spawn triple bombs
                     yield return new WaitForSeconds(15);
@@ -342,7 +352,8 @@ public class GameplayLoop : MonoBehaviour
                 }
             case EVENTS.POWERUPS:
                 {
-                    globalText.text = "NEW EVENT: A LOT OF POWERUPS!";
+                    eventName.text = "EVENT: POWERUPS RAIN";
+                    eventDescription.text = "A lot of powerups are falling! Better grab them all!";
                     for (int i = 0; i < 10; i++)
                     {
                         Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
@@ -350,8 +361,17 @@ public class GameplayLoop : MonoBehaviour
                     yield return new WaitForSeconds(3);
                     break;
                 }
+            case EVENTS.MISSILERAIN:
+                {
+                    eventName.text = "EVENT: MISSILE RAIN";
+                    eventDescription.text = "A lot of airstrikes are falling! Find cover!";
+                    typesToSpawn = Globals.missileRain;
+                    spawnDelayMultiplier = 0.25f;
+                    yield return new WaitForSeconds(10);
+                    break;
+                }
         }
-        globalText.text = "Round In Progress";
+        eventActive = false;
         spawnDelayMultiplier = 1f;
         typesToSpawn = Globals.defaultList;
         yield return null;
@@ -381,6 +401,7 @@ public class GameplayLoop : MonoBehaviour
             {
                 allPlayers.Add(player.GetComponent<PlayerStats>());
                 player.GetComponent<PlayerControls>().gravity = -9.81f;
+                player.GetComponentInChildren<Scoring>().ResetScoreboard();
             }
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
@@ -483,12 +504,16 @@ public class GameplayLoop : MonoBehaviour
             }
             if (!intenseMode && roundSeconds <= 30)
             {
-                roundTimerBar.GetComponent<Animator>().enabled = true;
+                float rng = Random.Range(0, 1f);
+                if (rng <= 0.2f)
+                {
+                    roundTimerBar.GetComponent<Animator>().enabled = true;
+                    AudioManager.instance.PlayWhistle();
+                    AudioManager.instance.currentlyPlaying.pitch = 1.5f;
+                    spawnDelayMultiplier /= 2f; //100% more bombs
+                    globalText.text = "Final Frenzy!";
+                }
                 intenseMode = true;
-                AudioManager.instance.PlayWhistle();
-                AudioManager.instance.currentlyPlaying.pitch = 1.5f;
-                spawnDelayMultiplier /= 1.75f; //75% more bombs
-                globalText.text = "Final Frenzy!";
             }
             yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
         }

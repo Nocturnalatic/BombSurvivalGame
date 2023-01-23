@@ -78,7 +78,7 @@ public class Bomb : MonoBehaviour
                             Vector3 dir = (col.transform.position - transform.position).normalized;
                             dir += Vector3.up;
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position, true);
                             col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
                             if (type == BOMB_TYPE.FLASHBANG)
                             {
@@ -90,7 +90,7 @@ public class Bomb : MonoBehaviour
                             {
                                 col.GetComponentInParent<PlayerStats>().AddStatus(new(StatusEffect.EffectType.STUNNED, 0.5f, 1, false));
                                 col.GetComponentInParent<PlayerStats>().AddStatus(new(StatusEffect.EffectType.CORRUPTED, 2 + 10 * distanceMod, 1, false));
-                                col.GetComponentInParent<PlayerStats>().DestroyShields();
+                                col.GetComponentInParent<PlayerStats>().DestroyShields(transform.position);
                             }
                         }
                     }

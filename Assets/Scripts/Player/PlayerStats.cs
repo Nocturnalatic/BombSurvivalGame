@@ -59,6 +59,8 @@ public class PlayerStats : MonoBehaviour
     [Header("Effects")]
     public List<GameObject> UI_Icons = new List<GameObject>();
     public List<GameObject> AttributeModifiers = new List<GameObject>();
+    public GameObject damageIndicator;
+    public Canvas playerCanvas;
     [HideInInspector]
     public bool isInFire = false;
     bool isChilled = false;
@@ -301,7 +303,7 @@ public class PlayerStats : MonoBehaviour
                     volume.profile.TryGet(out ca);
                     ca.colorFilter.Override(new Color(1f, 0.5f, 0));
                     burnVig.SetTrigger("Flash");
-                    DamagePlayer(effect.d_Multiplier * Time.deltaTime, false, DAMAGE_TYPE.FIRE);
+                    DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.FIRE);
                 }
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
@@ -472,21 +474,21 @@ public class PlayerStats : MonoBehaviour
     {
         AudioSource sound = Instantiate(voicePack.lightDamageTakenNoises[Random.Range(0, voicePack.lightDamageTakenNoises.Count)]);
         sound.Play();
-        Destroy(sound, sound.clip.length);
+        Destroy(sound.gameObject, sound.clip.length);
     }
 
     public void PlayHDT()
     {
         AudioSource sound = Instantiate(voicePack.heavyDamageTakenNoises[Random.Range(0, voicePack.heavyDamageTakenNoises.Count)]);
         sound.Play();
-        Destroy(sound, sound.clip.length);
+        Destroy(sound.gameObject, sound.clip.length);
     }
 
     public void PlayDeath()
     {
         AudioSource sound = Instantiate(voicePack.deathNoises[Random.Range(0, voicePack.deathNoises.Count)]);
         sound.Play();
-        Destroy(sound, sound.clip.length);
+        Destroy(sound.gameObject, sound.clip.length);
     }
 
     public void AddShield(float v)
@@ -533,13 +535,18 @@ public class PlayerStats : MonoBehaviour
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
     }
 
-    public void DestroyShields()
+    public void DestroyShields(Vector3 origin)
     {
-        DamagePlayer(shield, false, DAMAGE_TYPE.ELECTRIC);
+        DamagePlayer(shield, origin, false,  DAMAGE_TYPE.ELECTRIC);
     }
 
-    public void DamagePlayer(float dmg, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION)
+    public void DamagePlayer(float dmg, Vector3 origin, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION)
     {
+        if (type != DAMAGE_TYPE.FIRE)
+        {
+            GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
+            di.GetComponent<DamageIndicator>().Init(origin, type, this);
+        }
         float hpperc;
         bool dodge = false;
       

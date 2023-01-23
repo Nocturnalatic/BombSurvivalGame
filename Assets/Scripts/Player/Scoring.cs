@@ -22,6 +22,12 @@ public class Scoring : MonoBehaviour
 
     int survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
 
+    public void ResetScoreboard()
+    {
+        scoreAnimator.enabled = false;
+        scoreAnimator.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(1800, 0, 0);
+    }
+
     private void Start()
     {
         data = GetComponentInParent<PlayerData>();
@@ -163,6 +169,7 @@ public class Scoring : MonoBehaviour
         IntensityMultiplier.text = IntMult.ToString("#,##0");
         FinalScore.text = (Final.ToString("#,##0")) + " - " + GetRankFromScore(Final);
         FinalScore.color = GetColorFromScore(Final);
+        scoreAnimator.enabled = true;
         scoreAnimator.SetTrigger("DoScore");
         ExpGain.text = $"+{Final / 10} EXP";
         yield return new WaitForSeconds(3.75f);

@@ -72,7 +72,7 @@ public class ClusterBomb : MonoBehaviour
                             Vector3 dir = (col.transform.position - transform.position).normalized;
                             dir += Vector3.up;
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position);
                             col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
                         }
                     }

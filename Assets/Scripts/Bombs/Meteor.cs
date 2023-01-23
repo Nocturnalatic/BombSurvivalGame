@@ -62,7 +62,7 @@ public class Meteor : MonoBehaviour
                         if (hit.collider.transform.parent.CompareTag("Player"))
                         {
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position);
                             if (type == METEOR_TYPE.ICE)
                             {
                                 StatusEffect effect = new StatusEffect(StatusEffect.EffectType.CHILLED, 10 * distanceMod, 0.5f, false);
