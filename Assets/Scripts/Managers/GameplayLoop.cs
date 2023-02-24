@@ -25,6 +25,8 @@ public class GameplayLoop : MonoBehaviour
     public List<Sprite> MapThumbnails;
     [SerializeField]
     GameObject ArenaFloor;
+    [SerializeField]
+    GameObject Lava;
     GameObject chosenEnv;
     [SerializeField]
     [Header("Bombs")]
@@ -80,7 +82,9 @@ public class GameplayLoop : MonoBehaviour
     {
         METEORS = 0,
         POWERUPS = 1,
-        MISSILERAIN
+        MISSILERAIN,
+        LAVA_RISE,
+        TIME_EXTEND
     }
 
     public enum BOMB_TYPES
@@ -99,7 +103,7 @@ public class GameplayLoop : MonoBehaviour
 
     private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
 
-    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN};
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN, EVENTS.LAVA_RISE, EVENTS.TIME_EXTEND};
 
     Vector3 GenerateBombSpawn()
     {
@@ -188,20 +192,13 @@ public class GameplayLoop : MonoBehaviour
                 }
             case (BOMB_TYPES.AIRSTRIKE): //AirStrike
                 {
-                    float rng = Random.Range(0, 1f);
-                    float speed;
-                    if ((rng <= 0.2f || spawnAtPlayerOverride) && !eventActive)
-                    {
-                        spawnPosition = TargetedPlayerSpawn();
-                        speed = 2;
-                    }
-                    else
-                    {
-                        spawnPosition = GenerateBombSpawn();
-                        speed = 5;
-                    }
-                    bomb = Instantiate(Airstrike, spawnPosition, Quaternion.Euler(180, 0, 0), bombsParent);
+                    float speed = 4f;
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
+                    PlayerStats targetedPlayer = allPlayers[Random.Range(0, allPlayers.Count)];
+                    Vector3 direction = (targetedPlayer.transform.position - spawnPosition).normalized;
+                    bomb = Instantiate(Airstrike, spawnPosition, Quaternion.FromToRotation(spawnPosition, targetedPlayer.transform.position), bombsParent);
                     bomb.GetComponent<Nuke>().speedMultiplier = speed;
+                    bomb.GetComponent<Rigidbody>().velocity = direction * speed;
                     break;
                 }
             case (BOMB_TYPES.ICE_METEOR): //Ice Meteor
@@ -364,10 +361,24 @@ public class GameplayLoop : MonoBehaviour
             case EVENTS.MISSILERAIN:
                 {
                     eventName.text = "EVENT: MISSILE RAIN";
-                    eventDescription.text = "A lot of airstrikes are falling! Find cover!";
+                    eventDescription.text = "A lot of airstrikes will spawn! DO NOT STOP RUNNING!";
                     typesToSpawn = Globals.missileRain;
                     spawnDelayMultiplier = 0.25f;
                     yield return new WaitForSeconds(10);
+                    break;
+                }
+            case EVENTS.LAVA_RISE:
+                {
+                    eventName.text = "EVENT: LAVA RISING";
+                    eventDescription.text = "Lava will slowly rise over time. Stay on high ground!";
+                    Lava.GetComponent<Lava>().StartLavaRiseEvent();
+                    break;
+                }
+            case EVENTS.TIME_EXTEND:
+                {
+                    eventName.text = "EVENT: LONGER ROUND";
+                    eventDescription.text = "You gotta survive longer! However, your score will be higher.";
+                    roundSeconds += Random.Range(15, 30);
                     break;
                 }
         }
@@ -381,6 +392,13 @@ public class GameplayLoop : MonoBehaviour
     {
         while (roundSeconds > 0)
         {
+            foreach (PlayerStats player in allPlayers)
+            {
+                if (player.state == PlayerStats.GAME_STATE.IN_GAME)
+                {
+                    player.survivalTime += Time.deltaTime;
+                }
+            }
             roundSeconds -= Time.deltaTime;
             roundTimerText.text = $"{MiscFunctions.FormatTimeString(roundSeconds)}";
             roundTimerBar.fillAmount = roundSeconds / roundDuration;
@@ -407,6 +425,7 @@ public class GameplayLoop : MonoBehaviour
         yield return new WaitUntil(() => AudioManager.instance != null);
         eventChosen = false;
         AudioManager.instance.PlayLobbyMusic();
+        Lava.transform.localScale = new Vector3(50, 1, 50);
         intenseMode = false;
         roundTimerBar.GetComponent<Animator>().enabled = false;
         roundTimerText.text = "2:30";
@@ -424,7 +443,7 @@ public class GameplayLoop : MonoBehaviour
         timer = 20;
         while (timer > 0)
         {
-            globalText.text = $"Game starting in {(int)timer} {((int)timer == 1 ? "second" : "seconds")}";
+            globalText.text = $"Round begins in {(int)timer} {((int)timer == 1 ? "second" : "seconds")}";
             timer -= Time.deltaTime;
             yield return waitforupdate;
         }
@@ -493,7 +512,7 @@ public class GameplayLoop : MonoBehaviour
         while (roundSeconds > 0 && GameInProgress == true)
         {
             SpawnBomb();
-            if (!eventChosen)
+            if (!eventChosen && roundSeconds <= 120)
             {
                 float chance = Random.Range(0, 1f);
                 if (chance < 0.1f)
@@ -505,7 +524,7 @@ public class GameplayLoop : MonoBehaviour
             if (!intenseMode && roundSeconds <= 30)
             {
                 float rng = Random.Range(0, 1f);
-                if (rng <= 0.2f)
+                if (rng <= 0.25f)
                 {
                     roundTimerBar.GetComponent<Animator>().enabled = true;
                     AudioManager.instance.PlayWhistle();
@@ -534,10 +553,6 @@ public class GameplayLoop : MonoBehaviour
         yield return new WaitForSeconds(2);
         foreach (PlayerStats player in allPlayers)
         {
-            if (player.state == PlayerStats.GAME_STATE.WIN)
-            {
-                player.survivalTime = 150;
-            }
             player.GetComponentInChildren<Scoring>().StartCoroutine(player.GetComponentInChildren<Scoring>().CalculateScore());
         }
         if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity

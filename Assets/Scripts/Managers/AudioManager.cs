@@ -10,6 +10,11 @@ public class AudioManager : MonoBehaviour
     public List<AudioSource> HighIntensityMusic;
     public List<AudioSource> ExtIntensityMusic;
 
+    private List<AudioSource> LowIntMusicRealTime;
+    private List<AudioSource> MidIntMusicRealTime;
+    private List<AudioSource> HighIntMusicRealTime;
+    private List<AudioSource> ExtIntMusicRealTime;
+
     public AudioSource currentlyPlaying;
     public WaitUntil waitForWhistle;
     public AudioSource tick;
@@ -33,28 +38,53 @@ public class AudioManager : MonoBehaviour
 
     public void PlayBGM(GameplayLoop.INTENSITY intensity)
     {
+        AudioSource chosen;
         switch (intensity)
         {
             case GameplayLoop.INTENSITY.LOW:
                 {
-                    currentlyPlaying = LowIntensityMusic[Random.Range(0, LowIntensityMusic.Count)];
+                    if (LowIntMusicRealTime.Count <= 0)
+                    {
+                        LowIntMusicRealTime = new List<AudioSource>(LowIntensityMusic);
+                    }
+                    chosen = LowIntMusicRealTime[Random.Range(0, LowIntMusicRealTime.Count)];
+                    currentlyPlaying = chosen;
+                    LowIntMusicRealTime.Remove(chosen);
                     break;
                 }
             case GameplayLoop.INTENSITY.MID:
                 {
-                    currentlyPlaying = MidIntensityMusic[Random.Range(0, MidIntensityMusic.Count)];
+                    if (MidIntMusicRealTime.Count <= 0)
+                    {
+                        MidIntMusicRealTime = new List<AudioSource>(MidIntensityMusic);
+                    }
+                    chosen = MidIntMusicRealTime[Random.Range(0, MidIntMusicRealTime.Count)];
+                    currentlyPlaying = chosen;
+                    MidIntMusicRealTime.Remove(chosen);
                     break;
                 }
             case GameplayLoop.INTENSITY.HIGH:
                 {
-                    currentlyPlaying = HighIntensityMusic[Random.Range(0, HighIntensityMusic.Count)];
+                    if (HighIntMusicRealTime.Count <= 0)
+                    {
+                        HighIntMusicRealTime = new List<AudioSource>(HighIntensityMusic);
+                    }
+                    chosen = HighIntMusicRealTime[Random.Range(0, HighIntMusicRealTime.Count)];
+                    currentlyPlaying = chosen;
+                    HighIntMusicRealTime.Remove(chosen);
                     break;
                 }
             case GameplayLoop.INTENSITY.EXTREME:
             case GameplayLoop.INTENSITY.GLITCH:
             case GameplayLoop.INTENSITY.CRASH:
                 {
-                    currentlyPlaying = ExtIntensityMusic[Random.Range(0, ExtIntensityMusic.Count)];
+                    if (ExtIntMusicRealTime.Count <= 0)
+                    {
+                        ExtIntMusicRealTime = new List<AudioSource>(ExtIntensityMusic);
+                    }
+                    chosen = ExtIntMusicRealTime[Random.Range(0, ExtIntMusicRealTime.Count)];
+                    currentlyPlaying = chosen;
+                    ExtIntMusicRealTime.Remove(chosen);
                     break;
                 }
 
@@ -88,6 +118,10 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         instance = this;
-        waitForWhistle = new WaitUntil(() => whistle.isPlaying == false); 
+        waitForWhistle = new WaitUntil(() => whistle.isPlaying == false);
+        LowIntMusicRealTime = new List<AudioSource>(LowIntensityMusic);
+        MidIntMusicRealTime = new List<AudioSource>(MidIntensityMusic);
+        HighIntMusicRealTime = new List<AudioSource>(HighIntensityMusic);
+        ExtIntMusicRealTime = new List<AudioSource>(ExtIntensityMusic);
     }
 }

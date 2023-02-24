@@ -6,7 +6,7 @@ using TMPro;
 
 public class GlobalSettings : MonoBehaviour
 {
-
+    public PlayerData data;
     public static GlobalSettings instance;
     public Toggle hardcoretoggle;
     public Slider mouseSensSlider, intensityControl;
@@ -63,6 +63,9 @@ public class GlobalSettings : MonoBehaviour
     public void SetSensitivity(float v)
     {
         mouseSensitivity = v;
+        mouseSensSlider.GetComponentInChildren<UITextSlider>().TextUpdate(v);
+        mouseSensSlider.value = v;
+        data.UpdateMouseSensivity((int)v);
     }
 
     public void SetIntensity(float i)

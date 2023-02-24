@@ -19,7 +19,10 @@ public class Nuke : MonoBehaviour
     private void Start()
     {
         localrb = GetComponent<Rigidbody>();
-        localrb.velocity = Vector3.down * speedMultiplier;
+        if (isNuke)
+        {
+            localrb.velocity = Vector3.down * speedMultiplier;
+        }
     }
 
     IEnumerator Explode()
@@ -82,6 +85,15 @@ public class Nuke : MonoBehaviour
         Destroy(gameObject);
     }
 
+
+    private void Update()
+    {
+        if (!isNuke)
+        {
+            transform.localRotation = Quaternion.LookRotation(localrb.velocity.normalized * 10);
+            transform.Rotate(90, 0, 0);
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (!triggered)

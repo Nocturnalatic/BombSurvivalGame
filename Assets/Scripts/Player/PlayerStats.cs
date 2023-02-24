@@ -191,11 +191,11 @@ public class PlayerStats : MonoBehaviour
             case StatusEffect.EffectType.CHILLED:
                 return "FROSTED";
             case StatusEffect.EffectType.REGEN:
-                return "REGEN";
+                return "REGENERATION";
             case StatusEffect.EffectType.PROTECTED:
                 return "PROTECTED";
             case StatusEffect.EffectType.CONTROL_IMMUNE:
-                return "CTRL. IMM.";
+                return "IMMOVABLE";
             case StatusEffect.EffectType.HASTE:
                 return "HASTE";
             case StatusEffect.EffectType.SUCTION:
@@ -301,7 +301,7 @@ public class PlayerStats : MonoBehaviour
                 {
                     ColorAdjustments ca;
                     volume.profile.TryGet(out ca);
-                    ca.colorFilter.Override(new Color(1f, 0.5f, 0));
+                    ca.colorFilter.Override(new Color(1f, 0.5f, 0.3f));
                     burnVig.SetTrigger("Flash");
                     DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.FIRE);
                 }
@@ -408,11 +408,11 @@ public class PlayerStats : MonoBehaviour
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
                 {
-                    UI_Icons[i].transform.GetComponentInChildren<TextMeshProUGUI>().text = $"{GetEffectName(type)}{((t_effect.stacks <= 1) == true ? "" : $" x{t_effect.stacks}")}";
+                    UI_Icons[i].transform.GetComponentInChildren<TextMeshProUGUI>().text = $"{GetEffectName(type)}{((t_effect.stacks <= 1) == true ? "" : $" x{t_effect.stacks}")}\n{MiscFunctions.FormatTimeString(t_effect.duration)}";
                 }
                 else
                 {
-                    UI_Icons[i].transform.GetComponentInChildren<TextMeshProUGUI>().text = $"{GetEffectName(type)}";
+                    UI_Icons[i].transform.GetComponentInChildren<TextMeshProUGUI>().text = $"{GetEffectName(type)}\n{MiscFunctions.FormatTimeString(t_effect.duration)}";
                 }
             }
             else
@@ -570,10 +570,6 @@ public class PlayerStats : MonoBehaviour
         }
         if (!dodge && !HasEffect(StatusEffect.EffectType.PROTECTED))
         {
-            if (GameplayLoop.instance.GameInProgress)
-            {
-                damageTaken += dmg / damageReduction;
-            }
             if (noiseCooldown <= 0)
             {
                 if (dmg <= 10)
@@ -602,6 +598,10 @@ public class PlayerStats : MonoBehaviour
             }
             float finalDamage = remainingDmg / damageReduction;
             health -= finalDamage;
+            if (GameplayLoop.instance.GameInProgress)
+            {
+                damageTaken += finalDamage;
+            }
             StartCoroutine(LerpHPBarBG());
             if (type == DAMAGE_TYPE.EXPLOSION)
             {
@@ -638,7 +638,6 @@ public class PlayerStats : MonoBehaviour
             {
                 GameplayLoop.instance.GameInProgress = false;
                 state = GAME_STATE.LOSE;
-                survivalTime = 150 - GameplayLoop.instance.roundSeconds;
                 PlayDeath();
             }
         }
@@ -664,6 +663,7 @@ public class PlayerStats : MonoBehaviour
         damageTaken = 0;
         shield = 0;
         health = maxhealth;
+        survivalTime = 0;
         ShieldBar.fillAmount = 0;
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
@@ -681,7 +681,7 @@ public class PlayerStats : MonoBehaviour
     {
         ColorAdjustments ca;
         volume.profile.TryGet(out ca);
-        float duration = 0.25f + dmgPerc;
+        float duration = 0.5f + dmgPerc;
         while (duration > 0)
         {
             ca.colorFilter.Override(new Color(1, 1 - duration, 1 - duration));
@@ -696,9 +696,6 @@ public class PlayerStats : MonoBehaviour
         ProcessEffects();
         ProcessStatusUI();
         ToggleLowHPMode(health / maxhealth <= 0.35f);
-        ColorAdjustments ca;
-        volume.profile.TryGet(out ca);
-        ca.saturation.value = -(((maxhealth - health) / maxhealth) * 100);
         if (noiseCooldown > 0)
         {
             noiseCooldown -= Time.deltaTime;
@@ -711,7 +708,7 @@ public class PlayerStats : MonoBehaviour
                 skillReadyPlayed = false;
                 selectedSkill.currentcooldown -= Time.deltaTime * cooldownReduction;
                 cooldownUI.fillAmount = selectedSkill.currentcooldown / selectedSkill.cooldown;
-                cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = System.Math.Round(selectedSkill.currentcooldown, 1).ToString();
+                cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = System.Math.Ceiling(selectedSkill.currentcooldown).ToString();
             }
             else
             {

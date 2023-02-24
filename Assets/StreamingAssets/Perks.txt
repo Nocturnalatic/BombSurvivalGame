@@ -20,6 +20,10 @@
         {
             "ID":4,
             "perkName":"Lucky Roll"
+        },
+        {
+            "ID":5,
+            "PerkName":"Quick and Fragile"
         }
     ]  
 }

@@ -47,7 +47,7 @@ public class Perks
             case (2):
                 {
                     PlayerStats.instance.damageResistModifiers.Add(Globals.tankydamageBuff);
-                    PlayerStats.instance.SetMaxHealth(250);
+                    PlayerStats.instance.SetMaxHealth(200);
                     PlayerControls.instance.moveSpeedModifiers.Add(Globals.tankyMovementDebuff);
                     break;
                 }
@@ -59,7 +59,14 @@ public class Perks
                     types.Add(StatusEffect.EffectType.HASTE);
                     types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
 
-                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 30, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 35, 1, false, StatusEffect.BuffType.POSITIVE));
+                    break;
+                }
+            case 5:
+                {
+                    PlayerStats.instance.cooldownReductionModifiers.Add(Globals.qnqCDRedBuff);
+                    PlayerStats.instance.damageResistModifiers.Add(Globals.qnqDmgRedDebuff);
+                    PlayerControls.instance.moveSpeedModifiers.Add(Globals.qnqMoveSpdBuff);
                     break;
                 }
         }

@@ -74,14 +74,7 @@ public class PlayerControls : MonoBehaviour
         {
             if (!GlobalSettings.instance.isInGameSettingsOpen)
             {
-                if (GameplayLoop.instance != null)
-                {
-                    if (!GameplayLoop.instance.GameInProgress)
-                    {
-                        PlayerStats.instance.ToggleMenu();
-                    }
-                }
-                else
+                if (PlayerStats.instance.state != PlayerStats.GAME_STATE.IN_GAME)
                 {
                     PlayerStats.instance.ToggleMenu();
                 }

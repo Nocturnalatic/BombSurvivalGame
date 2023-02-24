@@ -12,13 +12,25 @@ Do not try hardcode mode if you're new.
 Terrain will gradually crack as they get damaged.
 FROSTED and BURNING can stack, surprising.
 You can survive falling into lava by being PROTECTED or using a cure.
-BURNING stacks! Do not walk into fire multiple times.
 BURNING deals damage over time and the damage can stack.
 STUNNED prevents you from doing anything.
 FROSTED slows you, your cooldowns and makes you take more damage.
-REGEN will regenerate health over time.
+REGENERATION will regenerate health over time.
 PROTECTED prevents you from taking damage.
-CTRL. IMM. stands for control immunity, which prevents you from being STUNNED, FROSTED or knocked back.
+IMMOVABLE which prevents you from being STUNNED, FROSTED or knocked back.
 HASTE increases your movement speed.
 Bombs require line of sight to damage you. Hiding behind a tree from a nuke works.
 The developer is actually homosexual! #GayPride!
+Homing Missiles will only target your position once, not constantly.
+Extra Health, called Shields, is not affected by damage reduction effects.
+There is no cap to stacking certain attributes.
+The border around your health bar is your shield bar.
+Use corners wisely, for they can save as well as trap you.
+Make a plan to help you combat certain difficulties.
+It is not wise to run through danger to grab powerups.
+Nukes emit a bright red laser, stay clear of it.
+Dropping to a lower level is a one way trip, usually. Think before leaping.
+REGENERATION at full health will convert into a shield.
+EMP bombs can be quite the nuisance if stacking shields and buffs.
+CORRUPTED destroys all ongoing buffs and shields.
+Black hole bombs can suck black hole bombs, it will be wise to dodge them.

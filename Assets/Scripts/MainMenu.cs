@@ -7,11 +7,13 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
+        GlobalSettings.instance.SetIntensityControlSetting(true);
         StartCoroutine(SceneControl.instance.LoadScene(SceneControl.SCENE_TYPE.GAMEPLAY));
     }
 
     public void StartTutorial()
     {
+        GlobalSettings.instance.SetIntensityControlSetting(false);
         StartCoroutine(SceneControl.instance.LoadScene(SceneControl.SCENE_TYPE.TUTORIAL));
     }
 

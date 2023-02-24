@@ -9,6 +9,7 @@ public class PlayerData : MonoBehaviour
     int Level;
     int EXP;
     int ReqEXP;
+    int SettingMouseSensitivity;
 
     [SerializeField] Image expBar;
     [SerializeField] TextMeshProUGUI levelText;
@@ -49,11 +50,18 @@ public class PlayerData : MonoBehaviour
         StartCoroutine(LerpExpBar());
     }
 
+    public void UpdateMouseSensivity(int sens)
+    {
+        SettingMouseSensitivity = sens;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         Level = PlayerPrefs.GetInt("Player Level", 1);
         EXP = PlayerPrefs.GetInt("Player EXP", 0);
+        SettingMouseSensitivity = PlayerPrefs.GetInt("SettingMouseSens", 100);
+        GlobalSettings.instance.SetSensitivity(SettingMouseSensitivity);
         ReqEXP = 100 + (int)Mathf.Pow(Level, 1.9f);
         levelText.text = $"Level {Level}";
         expBar.fillAmount = EXP / (float)ReqEXP;
@@ -69,5 +77,6 @@ public class PlayerData : MonoBehaviour
     {
         PlayerPrefs.SetInt("Player Level", Level);
         PlayerPrefs.SetInt("Player EXP", EXP);
+        PlayerPrefs.SetInt("SettingMouseSens", SettingMouseSensitivity);
     }
 }
