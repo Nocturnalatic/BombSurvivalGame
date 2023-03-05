@@ -10,6 +10,7 @@ public class PlayerStats : MonoBehaviour
 {
     float health, shield;
     float maxhealth = 100;
+    int damageblocked = 0; //Used to track PROTECTED effect damage
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
     public float cooldownReduction = 1;
@@ -38,6 +39,7 @@ public class PlayerStats : MonoBehaviour
     public GameObject hardcoreText;
     public TextMeshProUGUI hpText;
     public GameObject lockIcons;
+    public GameObject infoTextPrefab;
 
     [Header("Skills")]
     [HideInInspector]
@@ -154,6 +156,12 @@ public class PlayerStats : MonoBehaviour
         }
         HPBarBG.fillAmount = HPPerc;
         yield return null;
+    }
+
+    public void CreateInfoText(string text, Color color)
+    {
+        GameObject go = Instantiate(infoTextPrefab, playerCanvas.transform);
+        go.GetComponent<InfoText>().CreateInfoText(text, color);
     }
 
     public StatusEffect GetEffect(StatusEffect.EffectType t)
@@ -308,6 +316,7 @@ public class PlayerStats : MonoBehaviour
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
                     HealPlayer(effect.d_Multiplier * Time.deltaTime, true, 0.5f);
+                    PlayerControls.instance.stamina += effect.d_Multiplier * Time.deltaTime;
                 }
                 if (effect.type == StatusEffect.EffectType.HASTE)
                 {
@@ -358,6 +367,11 @@ public class PlayerStats : MonoBehaviour
             if (f.type == StatusEffect.EffectType.CORRUPTED)
             {
                 glitchedSkillEffect.enabled = false;
+            }
+            if (f.type == StatusEffect.EffectType.PROTECTED)
+            {
+                CreateInfoText($"{damageblocked} damage blocked", Color.cyan);
+                damageblocked = 0;
             }
             effects.Remove(f);
         }
@@ -559,12 +573,13 @@ public class PlayerStats : MonoBehaviour
                 {
                     //Dodge
                     dodge = true;
-                    if (dodgeTextAnimator.GetCurrentAnimatorStateInfo(0).IsName("Dodge"))
-                    {
-                        dodgeTextAnimator.enabled = false;
-                        dodgeTextAnimator.enabled = true;
-                    }
-                    dodgeTextAnimator.SetTrigger("Dodge");
+                    CreateInfoText($"{(int)dmg} damage dodged", Color.cyan);
+                    //if (dodgeTextAnimator.GetCurrentAnimatorStateInfo(0).IsName("Dodge"))
+                    //{
+                    //    dodgeTextAnimator.enabled = false;
+                    //    dodgeTextAnimator.enabled = true;
+                    //}
+                    //dodgeTextAnimator.SetTrigger("Dodge");
                 }
             }
         }
@@ -608,6 +623,10 @@ public class PlayerStats : MonoBehaviour
                 shockwave.SetTrigger("Shockwave");
                 StartCoroutine(DamageEffect(finalDamage / (health + finalDamage)));
             }
+        }
+        else if (HasEffect(StatusEffect.EffectType.PROTECTED))
+        {
+            damageblocked += Mathf.RoundToInt(dmg);
         }
         hpperc = health / maxhealth;
         HPbar.fillAmount = hpperc;
@@ -706,7 +725,10 @@ public class PlayerStats : MonoBehaviour
             if (selectedSkill.currentcooldown > 0)
             {
                 skillReadyPlayed = false;
-                selectedSkill.currentcooldown -= Time.deltaTime * cooldownReduction;
+                if (!HasEffect(StatusEffect.EffectType.CORRUPTED))
+                {
+                    selectedSkill.currentcooldown -= Time.deltaTime * cooldownReduction;
+                }
                 cooldownUI.fillAmount = selectedSkill.currentcooldown / selectedSkill.cooldown;
                 cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = System.Math.Ceiling(selectedSkill.currentcooldown).ToString();
             }

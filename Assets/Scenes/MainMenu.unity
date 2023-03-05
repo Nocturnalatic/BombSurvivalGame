@@ -181,12 +181,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Version 0.25 out now!
+  m_text: 'Version 0.26 out now!
 
-    Click "Patch Notes" to see what has changed.'
+    We hope you enjoy this new update!'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4140f58dffd435f48b3f4eaa8ec1cd6c, type: 2}
-  m_sharedMaterial: {fileID: 2764519967253577603, guid: 4140f58dffd435f48b3f4eaa8ec1cd6c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -210,13 +210,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.65
+  m_fontSize: 27.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 64.6
-  m_fontStyle: 0
+  m_fontStyle: 32
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1070,7 +1070,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: V0.25
+  m_text: V0.26
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6b416d331c0312c458eac97cf1726907, type: 2}
   m_sharedMaterial: {fileID: 2764519967253577603, guid: 6b416d331c0312c458eac97cf1726907, type: 2}
@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 1024
   m_textAlignment: 65535

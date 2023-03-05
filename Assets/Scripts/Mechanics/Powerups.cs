@@ -32,6 +32,7 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupCDRedBuff;
                     player.cooldownReductionModifiers.Add(effect);
+                    player.CreateInfoText("Cooldown Improved!", Color.cyan);
                     yield return new WaitForSeconds(Random.Range(5, 11));
                     player.cooldownReductionModifiers.Remove(effect);
                     break;
@@ -40,6 +41,7 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupMoveSpdBuff;
                     player.gameObject.GetComponent<PlayerControls>().moveSpeedModifiers.Add(effect);
+                    player.CreateInfoText("Movement Speed Improved!", Color.cyan);
                     yield return new WaitForSeconds(Random.Range(5, 11));
                     player.gameObject.GetComponent<PlayerControls>().moveSpeedModifiers.Remove(effect);
                     break;
@@ -48,12 +50,14 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupDmgRedBuff;
                     player.damageResistModifiers.Add(effect);
+                    player.CreateInfoText("Resistance Improved!", Color.cyan);
                     yield return new WaitForSeconds(Random.Range(5, 11));
                     player.damageResistModifiers.Remove(effect);
                     break;
                 }
             case POWERUP_TYPE.MEDIUM_HEAL:
                 {
+                    player.CreateInfoText("Minor Healing", Color.cyan);
                     player.HealPlayer(20);
                     break;
                 }

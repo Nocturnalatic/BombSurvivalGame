@@ -20,7 +20,7 @@ public class PlayerControls : MonoBehaviour
     public Camera mainCamera;
     public GameObject postProcessVolume;
     Transform playerHead, mainCam, playerLeg;
-    float stamina;
+    public float stamina;
     float maxStamina = 100;
     float staminaDrainRate = 1.00f;
     float staminaRegenDelay;
