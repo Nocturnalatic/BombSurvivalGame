@@ -181,9 +181,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Version 0.26 out now!
+  m_text: 'Version 0.27 out now!
 
-    We hope you enjoy this new update!'
+    Collect them coins!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.3
+  m_fontSize: 36.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1070,7 +1070,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: V0.26
+  m_text: V0.27
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6b416d331c0312c458eac97cf1726907, type: 2}
   m_sharedMaterial: {fileID: 2764519967253577603, guid: 6b416d331c0312c458eac97cf1726907, type: 2}

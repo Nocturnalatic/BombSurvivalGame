@@ -34,3 +34,5 @@ REGENERATION at full health will convert into a shield.
 EMP bombs can be quite the nuisance if stacking shields and buffs.
 CORRUPTED destroys all ongoing buffs and shields.
 Black hole bombs can suck black hole bombs, it will be wise to dodge them.
+Coin bombs disguise themselves as normal coins, they are heavier and less shiny.
+Power ups can block line of sight, use one to dodge a bomb before collecting.

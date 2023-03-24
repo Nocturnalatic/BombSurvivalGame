@@ -46,9 +46,13 @@ public class GameplayLoop : MonoBehaviour
     [SerializeField]
     GameObject powerUp;
     [SerializeField]
+    GameObject coin;
+    [SerializeField]
     GameObject blackHole;
     [SerializeField]
     GameObject empBomb;
+    [SerializeField]
+    GameObject coinBomb;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -60,6 +64,7 @@ public class GameplayLoop : MonoBehaviour
     private bool eventChosen = false;
     private float spawnDelayMultiplier = 1f;
     private float powerupTimer = 10f;
+    private float coinTimer = 5f;
     private bool intenseMode = false;
     private bool eventActive = false;
 
@@ -84,7 +89,8 @@ public class GameplayLoop : MonoBehaviour
         POWERUPS = 1,
         MISSILERAIN,
         LAVA_RISE,
-        TIME_EXTEND
+        TIME_EXTEND,
+        MAKE_IT_RAIN
     }
 
     public enum BOMB_TYPES
@@ -98,12 +104,13 @@ public class GameplayLoop : MonoBehaviour
         AIRSTRIKE,
         BLACKHOLE,
         EMP,
+        COINBOMB,
         TOTAL
     }
 
     private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
 
-    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN, EVENTS.LAVA_RISE, EVENTS.TIME_EXTEND};
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN, EVENTS.LAVA_RISE, EVENTS.TIME_EXTEND, EVENTS.MAKE_IT_RAIN};
 
     Vector3 GenerateBombSpawn()
     {
@@ -143,6 +150,11 @@ public class GameplayLoop : MonoBehaviour
         {
             powerupTimer = Random.Range(15, 30);
             Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+        }
+        if (coinTimer <= 0)
+        {
+            coinTimer = Random.Range(5, 10);
+            Instantiate(coin, GenerateBombSpawn(), Quaternion.identity, bombsParent);
         }
         if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
@@ -228,6 +240,13 @@ public class GameplayLoop : MonoBehaviour
                     bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
                     break;
                 }
+            case (BOMB_TYPES.COINBOMB):
+                {
+                    spawnPosition = spawnAtPlayerOverride ? TargetedPlayerSpawn() : GenerateBombSpawn();
+                    bomb = Instantiate(coinBomb, spawnPosition, Quaternion.identity, bombsParent);
+                    bomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                    break;
+                }
         }
     }
 
@@ -283,11 +302,11 @@ public class GameplayLoop : MonoBehaviour
 
     INTENSITY GetIntensity()
     {
-        if (Intensity <= 2)
+        if (Intensity < 3)
         {
             return INTENSITY.LOW;
         }
-        else if (Intensity >= 2 && Intensity < 4)
+        else if (Intensity >= 3 && Intensity < 4)
         {
             return INTENSITY.MID;
         }
@@ -381,6 +400,17 @@ public class GameplayLoop : MonoBehaviour
                     roundSeconds += Random.Range(15, 30);
                     break;
                 }
+            case EVENTS.MAKE_IT_RAIN:
+                {
+                    eventName.text = "EVENT: MAKE IT RAIN";
+                    eventDescription.text = "Coins are falling down, grab them! Quickly!";
+                    for (int i = 0; i < Random.Range(10, 20); i++)
+                    {
+                        Instantiate(coin, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+                    }
+                    yield return new WaitForSeconds(3);
+                    break;
+                }
         }
         eventActive = false;
         spawnDelayMultiplier = 1f;
@@ -406,6 +436,10 @@ public class GameplayLoop : MonoBehaviour
             {
                 powerupTimer -= Time.deltaTime;
             }
+            if (coinTimer > 0)
+            {
+                coinTimer -= Time.deltaTime;
+            }
             yield return waitforupdate;
         }
     }
@@ -420,6 +454,7 @@ public class GameplayLoop : MonoBehaviour
                 allPlayers.Add(player.GetComponent<PlayerStats>());
                 player.GetComponent<PlayerControls>().gravity = -9.81f;
                 player.GetComponentInChildren<Scoring>().ResetScoreboard();
+                player.GetComponent<PlayerStats>().ResetBoostShopPage();
             }
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
@@ -474,6 +509,14 @@ public class GameplayLoop : MonoBehaviour
                     player.selectedPerk.enabled = true;
                     player.selectedPerk.ActivatePerk(player.selectedPerk.ID);
                 }
+            }
+            if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.MAX_HEALTH_BOOST))
+            {
+                player.SetMaxHealth(player.GetMaxHealth() + 25);
+            }
+            if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.EFFECT_RESIST))
+            {
+                player.effectResistance = 1.25f;
             }
         }
         int mapIndex = Random.Range(0, Environments.Count);

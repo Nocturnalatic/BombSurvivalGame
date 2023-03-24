@@ -29,11 +29,13 @@ public class StatusEffect
         HASTE,
         SUCTION,
         CORRUPTED,
+        IMMORTAL,
         TOTAL
     }
 
     public enum BuffType
     {
+        SUPER_POSITIVE,
         POSITIVE,
         NEGATIVE
     }

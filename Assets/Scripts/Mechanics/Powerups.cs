@@ -12,7 +12,8 @@ public class Powerups : MonoBehaviour
         CD_REDUCTION_BUFF = 0,
         MOVE_SPEED_BUFF,
         DMG_RED_BUFF,
-        MEDIUM_HEAL,
+        MINOR_HEAL,
+        MAJOR_HEAL,
         TOTAL
     }
 
@@ -55,10 +56,16 @@ public class Powerups : MonoBehaviour
                     player.damageResistModifiers.Remove(effect);
                     break;
                 }
-            case POWERUP_TYPE.MEDIUM_HEAL:
+            case POWERUP_TYPE.MINOR_HEAL:
                 {
                     player.CreateInfoText("Minor Healing", Color.cyan);
-                    player.HealPlayer(20);
+                    player.HealPlayer(20, true, 0.5f);
+                    break;
+                }
+            case POWERUP_TYPE.MAJOR_HEAL:
+                {
+                    player.CreateInfoText("Major Healing", Color.cyan);
+                    player.HealPlayer(40, true, 0.5f);
                     break;
                 }
         }

@@ -10,12 +10,14 @@ public class PlayerStats : MonoBehaviour
 {
     float health, shield;
     float maxhealth = 100;
+    bool unkillable = false;
     int damageblocked = 0; //Used to track PROTECTED effect damage
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
     public float cooldownReduction = 1;
     public float damageReduction = 1;
     public float noiseCooldown = 2;
+    public float effectResistance = 1;
     public Volume volume;
 
     public static PlayerStats instance;
@@ -58,12 +60,16 @@ public class PlayerStats : MonoBehaviour
     public List<Sprite> perkIcons;
     public Image selectedPerkIcon;
 
+    [Header("Boosts")]
+    public SkillsMenu BoostScroll;
+
     [Header("Effects")]
     public List<GameObject> UI_Icons = new List<GameObject>();
     public List<GameObject> AttributeModifiers = new List<GameObject>();
     public GameObject damageIndicator;
     public Canvas playerCanvas;
     [HideInInspector]
+    public List<Boosts> playerBoosts = new List<Boosts>();
     public bool isInFire = false;
     bool isChilled = false;
     bool skillReadyPlayed = true;
@@ -79,6 +85,11 @@ public class PlayerStats : MonoBehaviour
         IN_GAME,
         WIN,
         LOSE
+    }
+
+    public void ResetBoostShopPage()
+    {
+        BoostScroll.UnequipAllButtons("Purchase");
     }
 
     public void ToggleLowHPMode(bool lowHP)
@@ -210,6 +221,8 @@ public class PlayerStats : MonoBehaviour
                 return "SUCTION";
             case StatusEffect.EffectType.CORRUPTED:
                 return "CORRUPTED";
+            case StatusEffect.EffectType.IMMORTAL:
+                return "IMMORTAL";
         }
         return "ERROR";
     }
@@ -273,7 +286,14 @@ public class PlayerStats : MonoBehaviour
         List<StatusEffect> toberemoved = new List<StatusEffect>();
         foreach (StatusEffect effect in effects) 
         {
-            effect.duration -= Time.deltaTime;
+            if (effect.buffType == StatusEffect.BuffType.NEGATIVE)
+            {
+                effect.duration -= Time.deltaTime * effectResistance;
+            }
+            else
+            {
+                effect.duration -= Time.deltaTime / effectResistance;
+            }
             if (effect.duration > 0)
             {
                 //Control Immune
@@ -410,6 +430,14 @@ public class PlayerStats : MonoBehaviour
         else if (damageReduction < 1)
         {
             AttributeModifiers[3].SetActive(true);
+        }
+        if (effectResistance > 1)
+        {
+            AttributeModifiers[6].SetActive(true);
+        }
+        else if (effectResistance < 1)
+        {
+            AttributeModifiers[7].SetActive(true);
         }
         for (int i = 0; i < (int)StatusEffect.EffectType.TOTAL; ++i)
         {
@@ -622,6 +650,7 @@ public class PlayerStats : MonoBehaviour
             {
                 shockwave.SetTrigger("Shockwave");
                 StartCoroutine(DamageEffect(finalDamage / (health + finalDamage)));
+                StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake(0.2f, finalDamage / (health + finalDamage)));
             }
         }
         else if (HasEffect(StatusEffect.EffectType.PROTECTED))
@@ -655,12 +684,36 @@ public class PlayerStats : MonoBehaviour
             health = 0;
             if (GameplayLoop.instance.GameInProgress)
             {
-                GameplayLoop.instance.GameInProgress = false;
-                state = GAME_STATE.LOSE;
-                PlayDeath();
+                if (playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.EXTRA_LIFE))
+                {
+                    Dispel();
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.IMMORTAL, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 5, maxhealth / 5f, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    playerBoosts.Remove(playerBoosts.Find(x => x.type == Globals.BOOST_TYPE.EXTRA_LIFE));
+                }
+                else
+                {
+                    if (HasEffect(StatusEffect.EffectType.IMMORTAL))
+                    {
+                        health = 1;
+                    }
+                    else
+                    {
+                        GameplayLoop.instance.GameInProgress = false;
+                        state = GAME_STATE.LOSE;
+                        PlayDeath();
+                    }
+                }
             }
         }
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxhealth;
     }
 
     public void SetMaxHealth(float v)
@@ -687,10 +740,12 @@ public class PlayerStats : MonoBehaviour
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
         cooldownReduction = 1;
+        effectResistance = 1;
         effects.Clear();
         PlayerControls.instance.moveSpeedModifiers.Clear();
         damageResistModifiers.Clear();
         cooldownReductionModifiers.Clear();
+        playerBoosts.Clear();
         hpbar.enabled = false;
         HPbar.color = new Color(0.6735849f, 1, 1);
         hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";

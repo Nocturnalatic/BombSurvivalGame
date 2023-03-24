@@ -9,10 +9,12 @@ public class PlayerData : MonoBehaviour
     int Level;
     int EXP;
     int ReqEXP;
+    int CurrencyCoin;
     int SettingMouseSensitivity;
 
     [SerializeField] Image expBar;
     [SerializeField] TextMeshProUGUI levelText;
+    [SerializeField] TextMeshProUGUI coinCounter;
 
     void CheckLevelUp()
     {
@@ -25,6 +27,11 @@ public class PlayerData : MonoBehaviour
             levelText.text = $"Level {Level}";
             CheckLevelUp(); //Call again in the case of double level ups;
         }
+    }
+
+    public int GetCoin()
+    {
+        return CurrencyCoin;
     }
 
     IEnumerator LerpExpBar()
@@ -50,6 +57,12 @@ public class PlayerData : MonoBehaviour
         StartCoroutine(LerpExpBar());
     }
 
+    public void AddCoin(int coin)
+    {
+        CurrencyCoin += coin;
+        coinCounter.text = $"{CurrencyCoin}";
+    }
+
     public void UpdateMouseSensivity(int sens)
     {
         SettingMouseSensitivity = sens;
@@ -60,10 +73,12 @@ public class PlayerData : MonoBehaviour
     {
         Level = PlayerPrefs.GetInt("Player Level", 1);
         EXP = PlayerPrefs.GetInt("Player EXP", 0);
+        CurrencyCoin = PlayerPrefs.GetInt("Player Coin", 100);
         SettingMouseSensitivity = PlayerPrefs.GetInt("SettingMouseSens", 100);
         GlobalSettings.instance.SetSensitivity(SettingMouseSensitivity);
         ReqEXP = 100 + (int)Mathf.Pow(Level, 1.9f);
         levelText.text = $"Level {Level}";
+        coinCounter.text = $"{CurrencyCoin}";
         expBar.fillAmount = EXP / (float)ReqEXP;
     }
 
@@ -71,6 +86,7 @@ public class PlayerData : MonoBehaviour
     {
         EXP = 0;
         Level = 1;
+        CurrencyCoin = 0;
     }
 
     private void OnApplicationQuit()
@@ -78,5 +94,6 @@ public class PlayerData : MonoBehaviour
         PlayerPrefs.SetInt("Player Level", Level);
         PlayerPrefs.SetInt("Player EXP", EXP);
         PlayerPrefs.SetInt("SettingMouseSens", SettingMouseSensitivity);
+        PlayerPrefs.SetInt("Player Coin", CurrencyCoin);
     }
 }

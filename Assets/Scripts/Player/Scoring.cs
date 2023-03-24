@@ -171,8 +171,9 @@ public class Scoring : MonoBehaviour
         FinalScore.color = GetColorFromScore(Final);
         scoreAnimator.enabled = true;
         scoreAnimator.SetTrigger("DoScore");
-        ExpGain.text = $"+{Final / 10} EXP";
+        ExpGain.text = $"+{Final / 10} EXP | +{Final / 100} Coins";
         yield return new WaitForSeconds(3.75f);
         data.AddEXP(Final / 10);
+        data.AddCoin(Final / 100);
     }
 }

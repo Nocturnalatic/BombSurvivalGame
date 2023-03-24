@@ -11,6 +11,7 @@ public class GlobalSettings : MonoBehaviour
     public Toggle hardcoretoggle;
     public Slider mouseSensSlider, intensityControl;
     public GameObject settingsCanvas;
+    public GameObject postProcessing;
     public bool isInGameSettingsOpen = false;
     public List<CharacterVoicePack> characterVoicePacks;
     public TextMeshProUGUI commandOutputText;
@@ -66,6 +67,16 @@ public class GlobalSettings : MonoBehaviour
         mouseSensSlider.GetComponentInChildren<UITextSlider>().TextUpdate(v);
         mouseSensSlider.value = v;
         data.UpdateMouseSensivity((int)v);
+    }
+
+    public void SetFOV(float v)
+    {
+        Camera.main.fieldOfView = v;
+    }
+
+    public void TogglePostProcessing(bool v)
+    {
+        postProcessing.SetActive(v);
     }
 
     public void SetIntensity(float i)
@@ -160,11 +171,29 @@ public class GlobalSettings : MonoBehaviour
                         StartCoroutine(displayCommandOutput("Spawning EMP Bomb"));
                         return;
                     }
+                case "coinbomb":
+                    {
+                        GameplayLoop.instance.SpawnBombPublic(GameplayLoop.BOMB_TYPES.COINBOMB, true);
+                        StartCoroutine(displayCommandOutput("Spawning Coin Bomb"));
+                        return;
+                    }
                 default:
                     {
                         StartCoroutine(displayCommandOutput("Unknown bomb specified"));
                         return;
                     }
+            }
+        }
+        else if (comm == "givecoin")
+        {
+            if (int.TryParse(argument, out int n))
+            {
+                PlayerStats.instance.gameObject.GetComponent<PlayerData>().AddCoin(n);
+                StartCoroutine(displayCommandOutput($"Added {n} coins"));
+            }
+            else
+            {
+                StartCoroutine(displayCommandOutput($"Argument error: {argument}"));
             }
         }
     }
