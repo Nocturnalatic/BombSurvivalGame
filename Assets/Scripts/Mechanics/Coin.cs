@@ -15,13 +15,14 @@ public class Coin : MonoBehaviour
             {
                 if (other.gameObject.transform.parent.CompareTag("Player"))
                 {
+                    PlayerData playerData = other.gameObject.GetComponentInParent<PlayerData>();
                     coinCollect.Play();
                     collected = true;
                     GetComponent<MeshRenderer>().enabled = false;
                     GetComponent<Rigidbody>().isKinematic = true;
                     GetComponent<MeshCollider>().enabled = false;
                     GetComponent<BoxCollider>().enabled = false;
-                    other.gameObject.GetComponentInParent<PlayerData>().AddCoin(1);
+                    playerData.AddCoin(other.gameObject.GetComponentInParent<PlayerStats>().playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.TRIPLE_COIN_PICKUP) ? 3 : 1);
                     Destroy(gameObject, coinCollect.clip.length);
                 }
             }

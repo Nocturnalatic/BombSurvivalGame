@@ -85,7 +85,7 @@ public class Skills
                 }
             case 5:
                 {
-                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 8, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
             case 6:
@@ -134,8 +134,8 @@ public class Skills
                 }
             case 4:
                 {
-                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 4, 1, false, StatusEffect.BuffType.POSITIVE);
-                    StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 4, 1, false, StatusEffect.BuffType.POSITIVE);
+                    StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 3.5f, 1, false, StatusEffect.BuffType.POSITIVE);
+                    StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 3.5f, 1, false, StatusEffect.BuffType.POSITIVE);
                     PlayerStats.instance.AddStatus(effect);
                     PlayerStats.instance.AddStatus(effect2);
                     PlayerStats.instance.barrierEffect.SetTrigger("ActivateBarrier");
@@ -143,7 +143,7 @@ public class Skills
                 }
             case 5:
                 {
-                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 15, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 10, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
         }

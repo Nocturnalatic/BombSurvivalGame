@@ -16,6 +16,7 @@ public class GameplayLoop : MonoBehaviour
     float timer;
     [HideInInspector]
     public int NukeCount = 0;
+    public int GigaBombCount = 0;
     int MaxNukeCount = 1;
     readonly float roundDuration = 150;
     public Transform bombsParent, Arena, Players;
@@ -53,6 +54,8 @@ public class GameplayLoop : MonoBehaviour
     GameObject empBomb;
     [SerializeField]
     GameObject coinBomb;
+    [SerializeField]
+    GameObject gigaBomb;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -105,6 +108,7 @@ public class GameplayLoop : MonoBehaviour
         BLACKHOLE,
         EMP,
         COINBOMB,
+        GIGA_BOMB,
         TOTAL
     }
 
@@ -148,17 +152,17 @@ public class GameplayLoop : MonoBehaviour
         //Specialise rng for nukes and other big bombs
         if (powerupTimer <= 0)
         {
-            powerupTimer = Random.Range(15, 30);
+            powerupTimer = Random.Range(20, 40);
             Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
         }
         if (coinTimer <= 0)
         {
-            coinTimer = Random.Range(5, 10);
+            coinTimer = Random.Range(3, 8);
             Instantiate(coin, GenerateBombSpawn(), Quaternion.identity, bombsParent);
         }
         if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
-            MaxNukeCount = 2;
+            MaxNukeCount = (Intensity >= 4.0f) ? 2 : 1;
             float nukeChance = Random.Range(0, 1f);
             if ((nukeChance <= 0.1 + (Intensity / 5f - 0.6f)) && NukeCount < MaxNukeCount)
             {
@@ -167,6 +171,16 @@ public class GameplayLoop : MonoBehaviour
                 nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.05f);
                 nukeObj.GetComponent<Animator>().speed = nukeObj.GetComponent<Nuke>().speedMultiplier;
                 NukeCount++;
+            }
+        }
+        if (Intensity > 5.0f && GigaBombCount < 1)
+        {
+            float gigaBombSpawnChance = Random.Range(0, 1f);
+            if (gigaBombSpawnChance <= 0.02f)
+            {
+                GigaBombCount += 1;
+                GameObject gBomb = Instantiate(gigaBomb, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+                gBomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
             }
         }
         BOMB_TYPES bombSelect;
@@ -328,6 +342,19 @@ public class GameplayLoop : MonoBehaviour
         }
     }
 
+    List<BOMB_TYPES> getBombListFromIntensity(INTENSITY intensity)
+    {
+        switch (intensity)
+        {
+            case INTENSITY.LOW:
+                return Globals.lowIntList;
+            case INTENSITY.MID:
+                return Globals.midIntList;
+            default:
+                return Globals.defaultList;
+        }
+    }
+
     string GetIntensityText()
     {
         switch (GetIntensity())
@@ -414,7 +441,7 @@ public class GameplayLoop : MonoBehaviour
         }
         eventActive = false;
         spawnDelayMultiplier = 1f;
-        typesToSpawn = Globals.defaultList;
+        typesToSpawn = getBombListFromIntensity(GetIntensity());
         yield return null;
     }
 
@@ -475,7 +502,7 @@ public class GameplayLoop : MonoBehaviour
             player.skillUI.SetActive(true);
             player.Reset();
         }
-        timer = 20;
+        timer = 30;
         while (timer > 0)
         {
             globalText.text = $"Round begins in {(int)timer} {((int)timer == 1 ? "second" : "seconds")}";
@@ -549,6 +576,11 @@ public class GameplayLoop : MonoBehaviour
         roundTimerBar.fillAmount = 1;
         float spawnDelay = 1 / (Intensity * 0.8f) + 0.5f;
         spawnDelayMultiplier = 1;
+        if (Intensity > 6)
+        {
+            spawnDelayMultiplier /= 1 + (Intensity - 6.0f);
+        }
+        typesToSpawn = getBombListFromIntensity(GetIntensity());
         Coroutine countdown = StartCoroutine(CountdownRoundTime());
         AudioManager.instance.PlayBGM(GetIntensity());
         AudioManager.instance.currentlyPlaying.pitch = 1;
@@ -600,11 +632,11 @@ public class GameplayLoop : MonoBehaviour
         }
         if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
         {
-            Intensity += 0.25f;
+            Intensity += 0.5f;
         }
         else
         {
-            Intensity -= 0.25f;
+            Intensity -= 0.5f;
         }
         Intensity = Mathf.Clamp(Intensity, 1.0f, 9.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
@@ -619,6 +651,7 @@ public class GameplayLoop : MonoBehaviour
             Destroy(go.gameObject);
         }
         NukeCount = 0;
+        GigaBombCount = 0;
         StartCoroutine(Gameplay());
     }
 

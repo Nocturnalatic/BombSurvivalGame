@@ -25,7 +25,8 @@ public class Bomb : MonoBehaviour
     {
         BOMB = 0,
         FLASHBANG,
-        EMP
+        EMP,
+        GIGA_BOMB
     }
 
     public BOMB_TYPE type = BOMB_TYPE.BOMB;
@@ -107,6 +108,10 @@ public class Bomb : MonoBehaviour
         ps.Play();
         animator.enabled = false;
         yield return new WaitUntil(() => explosionSound.isPlaying == false);
+        if (type == BOMB_TYPE.GIGA_BOMB)
+        {
+            GameplayLoop.instance.GigaBombCount--;
+        }
         Destroy(gameObject);
     }
     // Start is called before the first frame update

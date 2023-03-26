@@ -4,37 +4,37 @@
         {
             "ID":0,
             "skillName":"Force Blast",
-            "cooldown":8.5
+            "cooldown":8
         },
         {
             "ID":1,
             "skillName":"Self Heal",
-            "cooldown":30
+            "cooldown":25
         },
         {
             "ID":2,
             "skillName":"Hover Jump",
-            "cooldown":18.5
+            "cooldown":15
         },
         {
             "ID":3,
             "skillName":"Rejuvenate",
-            "cooldown":30
+            "cooldown":25
         },
         {
             "ID":4,
             "skillName":"Force Field",
-            "cooldown":16
+            "cooldown":14
         },
         {
             "ID":5,
             "skillName":"Super Speed",
-            "cooldown":15
+            "cooldown":12
         },
         {
             "ID":6,
             "skillName":"Random",
-            "cooldown":24
+            "cooldown":22
         }
     ]  
 }

@@ -10,7 +10,6 @@ public class PlayerStats : MonoBehaviour
 {
     float health, shield;
     float maxhealth = 100;
-    bool unkillable = false;
     int damageblocked = 0; //Used to track PROTECTED effect damage
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
@@ -144,12 +143,12 @@ public class PlayerStats : MonoBehaviour
     public void Skill4(bool empowered = false)
     {
         Dispel();
-        AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 15, empowered ? 5 : 3, true, StatusEffect.BuffType.POSITIVE));
+        AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 10, empowered ? 4 : 2.5f, true, StatusEffect.BuffType.POSITIVE));
     }
 
     IEnumerator ApplyBurn()
     {
-        StatusEffect effect = new(StatusEffect.EffectType.BURN, 2, 1, true);
+        StatusEffect effect = new(StatusEffect.EffectType.BURN, 2.5f, 1, true);
         while (isInFire)
         {
             AddStatus(effect);
@@ -335,7 +334,7 @@ public class PlayerStats : MonoBehaviour
                 }
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
-                    HealPlayer(effect.d_Multiplier * Time.deltaTime, true, 0.5f);
+                    HealPlayer(effect.d_Multiplier * Time.deltaTime, false, 1);
                     PlayerControls.instance.stamina += effect.d_Multiplier * Time.deltaTime;
                 }
                 if (effect.type == StatusEffect.EffectType.HASTE)
@@ -650,7 +649,10 @@ public class PlayerStats : MonoBehaviour
             {
                 shockwave.SetTrigger("Shockwave");
                 StartCoroutine(DamageEffect(finalDamage / (health + finalDamage)));
-                StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake(0.2f, finalDamage / (health + finalDamage)));
+                if (health > 0)
+                {
+                    StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake(0.2f, finalDamage / (health + finalDamage)));
+                }
             }
         }
         else if (HasEffect(StatusEffect.EffectType.PROTECTED))
@@ -667,10 +669,11 @@ public class PlayerStats : MonoBehaviour
             {
                 if (selectedPerk.ID == 1 && selectedPerk.enabled)
                 {
-                    StatusEffect effect1 = new StatusEffect(StatusEffect.EffectType.REGEN, 30, 3, true, StatusEffect.BuffType.POSITIVE);
+                    StatusEffect effect1 = new StatusEffect(StatusEffect.EffectType.REGEN, 15, maxhealth * 0.5f / 15, true, StatusEffect.BuffType.SUPER_POSITIVE);
                     AddStatus(effect1);
-                    AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 2, 1, false, StatusEffect.BuffType.POSITIVE));
-                    AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 2, 1, false, StatusEffect.BuffType.POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 3, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 3, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.IMMORTAL, 3, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
                     selectedPerk.enabled = false;
                 }
             }

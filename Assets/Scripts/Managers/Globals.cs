@@ -20,6 +20,7 @@ public class Globals
         MAX_HEALTH_BOOST = 0,
         EXTRA_LIFE,
         EFFECT_RESIST,
+        TRIPLE_COIN_PICKUP,
         TOTAL
     }
 
@@ -57,7 +58,9 @@ public class Globals
     public static List<StatusEffect.EffectType> positiveEffects = new List<StatusEffect.EffectType>() { StatusEffect.EffectType.REGEN, StatusEffect.EffectType.PROTECTED, StatusEffect.EffectType.CONTROL_IMMUNE, StatusEffect.EffectType.HASTE };
 
     #region EVENT_BOMB_TYPES
-    public static List<GameplayLoop.BOMB_TYPES> defaultList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR, GameplayLoop.BOMB_TYPES.NUKE, GameplayLoop.BOMB_TYPES.FLASHBANG, GameplayLoop.BOMB_TYPES.AIRSTRIKE, GameplayLoop.BOMB_TYPES.BLACKHOLE, GameplayLoop.BOMB_TYPES.EMP, GameplayLoop.BOMB_TYPES.COINBOMB };
+    public static List<GameplayLoop.BOMB_TYPES> defaultList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR, GameplayLoop.BOMB_TYPES.NUKE, GameplayLoop.BOMB_TYPES.FLASHBANG, GameplayLoop.BOMB_TYPES.AIRSTRIKE, GameplayLoop.BOMB_TYPES.BLACKHOLE, GameplayLoop.BOMB_TYPES.EMP, GameplayLoop.BOMB_TYPES.COINBOMB, GameplayLoop.BOMB_TYPES.GIGA_BOMB};
+    public static List<GameplayLoop.BOMB_TYPES> lowIntList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.COINBOMB, GameplayLoop.BOMB_TYPES.METEOR};
+    public static List<GameplayLoop.BOMB_TYPES> midIntList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.COINBOMB, GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR, GameplayLoop.BOMB_TYPES.FLASHBANG, GameplayLoop.BOMB_TYPES.AIRSTRIKE};
     public static List<GameplayLoop.BOMB_TYPES> MeteorsOnly = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR };
     public static List<GameplayLoop.BOMB_TYPES> missileRain = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.AIRSTRIKE };
     #endregion
@@ -66,6 +69,7 @@ public class Globals
     public static Boosts MAX_HEALTH = new(BOOST_TYPE.MAX_HEALTH_BOOST, 25);
     public static Boosts EXTRA_LIFE = new(BOOST_TYPE.EXTRA_LIFE, 100);
     public static Boosts EFFECT_RESIST_UP = new(BOOST_TYPE.EFFECT_RESIST, 35);
-    public static List<Boosts> BoostDatabase = new List<Boosts>() {MAX_HEALTH, EXTRA_LIFE, EFFECT_RESIST_UP};
+    public static Boosts MORE_COIN_PICKUP = new(BOOST_TYPE.TRIPLE_COIN_PICKUP, 15);
+    public static List<Boosts> BoostDatabase = new List<Boosts>() {MAX_HEALTH, EXTRA_LIFE, EFFECT_RESIST_UP, MORE_COIN_PICKUP};
     #endregion
 }

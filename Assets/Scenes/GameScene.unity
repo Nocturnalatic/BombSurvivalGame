@@ -5728,6 +5728,7 @@ MonoBehaviour:
   GameInProgress: 0
   roundSeconds: 0
   NukeCount: 0
+  GigaBombCount: 0
   bombsParent: {fileID: 764104423}
   Arena: {fileID: 443019935}
   Players: {fileID: 924005325}
@@ -5754,6 +5755,7 @@ MonoBehaviour:
   blackHole: {fileID: 3888445224017440522, guid: fe7f1544a61038c47811ae3d5e9d200b, type: 3}
   empBomb: {fileID: 4764977878734373287, guid: fda7c55c5bdd8f944aae280566ea1281, type: 3}
   coinBomb: {fileID: 2984693687241447230, guid: 806ced2fcb0617d48a2822175f281f1f, type: 3}
+  gigaBomb: {fileID: 5809916480219242440, guid: d306fc5d7b7c5a841a18e3744cd3810c, type: 3}
   mapThumbail: {fileID: 1495692781}
   mapText: {fileID: 293935057}
   tipBar: {fileID: 284889604}
