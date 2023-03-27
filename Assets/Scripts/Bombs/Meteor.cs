@@ -86,7 +86,7 @@ public class Meteor : MonoBehaviour
         GetComponent<Collider>().enabled = false;
         if (type == METEOR_TYPE.FIRE)
         {
-            for (int i = 0; i < 20; ++i)
+            for (int i = 0; i < Random.Range(10, 20) + (int)GameplayLoop.instance.Intensity; ++i)
             {
                 Vector3 posDev = new Vector3(Random.Range(-5, 5), 0.2f, Random.Range(-5, 5));
                 GameObject mb = Instantiate(fire, transform.position + posDev, Quaternion.identity, GameplayLoop.instance.bombsParent);

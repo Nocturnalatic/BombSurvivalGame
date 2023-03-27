@@ -9,11 +9,13 @@ public class AudioManager : MonoBehaviour
     public List<AudioSource> MidIntensityMusic;
     public List<AudioSource> HighIntensityMusic;
     public List<AudioSource> ExtIntensityMusic;
+    public List<AudioSource> GchIntensityMusic;
 
     private List<AudioSource> LowIntMusicRealTime;
     private List<AudioSource> MidIntMusicRealTime;
     private List<AudioSource> HighIntMusicRealTime;
     private List<AudioSource> ExtIntMusicRealTime;
+    private List<AudioSource> GchIntMusicRealTime;
 
     public AudioSource currentlyPlaying;
     public WaitUntil waitForWhistle;
@@ -75,8 +77,6 @@ public class AudioManager : MonoBehaviour
                     break;
                 }
             case GameplayLoop.INTENSITY.EXTREME:
-            case GameplayLoop.INTENSITY.GLITCH:
-            case GameplayLoop.INTENSITY.CRASH:
                 {
                     if (ExtIntMusicRealTime.Count <= 0)
                     {
@@ -85,6 +85,18 @@ public class AudioManager : MonoBehaviour
                     chosen = ExtIntMusicRealTime[Random.Range(0, ExtIntMusicRealTime.Count)];
                     currentlyPlaying = chosen;
                     ExtIntMusicRealTime.Remove(chosen);
+                    break;
+                }
+            case GameplayLoop.INTENSITY.GLITCH:
+            case GameplayLoop.INTENSITY.CRASH:
+                {
+                    if (GchIntMusicRealTime.Count <= 0)
+                    {
+                        GchIntMusicRealTime = new List<AudioSource>(GchIntensityMusic);
+                    }
+                    chosen = GchIntMusicRealTime[Random.Range(0, GchIntMusicRealTime.Count)];
+                    currentlyPlaying = chosen;
+                    GchIntMusicRealTime.Remove(chosen);
                     break;
                 }
 
@@ -123,5 +135,6 @@ public class AudioManager : MonoBehaviour
         MidIntMusicRealTime = new List<AudioSource>(MidIntensityMusic);
         HighIntMusicRealTime = new List<AudioSource>(HighIntensityMusic);
         ExtIntMusicRealTime = new List<AudioSource>(ExtIntensityMusic);
+        GchIntMusicRealTime = new List<AudioSource>(GchIntensityMusic);
     }
 }

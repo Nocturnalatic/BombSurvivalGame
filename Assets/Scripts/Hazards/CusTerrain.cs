@@ -5,12 +5,13 @@ using UnityEngine;
 public class CusTerrain : MonoBehaviour
 {
     Material m_Material;
-    public float baseStability = 10f;
+    public float baseStability = 8.5f;
     private float stability;
 
     private void Start()
     {
         m_Material = GetComponent<Renderer>().material;
+        baseStability *= 1 + (GameplayLoop.instance.Intensity / 13f);
         stability = baseStability;
     }
 
@@ -22,7 +23,7 @@ public class CusTerrain : MonoBehaviour
         {
             GetComponent<Rigidbody>().isKinematic = false;
         }
-        if (stability <= -1f)
+        if (stability <= -2.5f)
         {
             Destroy(gameObject);
         }

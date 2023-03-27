@@ -11,7 +11,7 @@ public class Lava : MonoBehaviour
 
     IEnumerator RiseLavaEvent()
     {
-        float duration = Random.Range(60, 80);
+        float duration = Random.Range(50, 75);
         while (duration >= 0)
         {
             transform.localScale += 0.5f * Time.deltaTime * Vector3.up;
@@ -25,7 +25,7 @@ public class Lava : MonoBehaviour
         PlayerStats player = other.GetComponent<PlayerStats>();
         if (player != null && player.state == PlayerStats.GAME_STATE.IN_GAME)
         {
-            player.AddStatus(new StatusEffect(StatusEffect.EffectType.BURN, 2, 3, true));
+            player.AddStatus(new StatusEffect(StatusEffect.EffectType.BURN, 1, 2, true));
         }
     }
 }

@@ -92,8 +92,8 @@ public class GameplayLoop : MonoBehaviour
         POWERUPS = 1,
         MISSILERAIN,
         LAVA_RISE,
-        TIME_EXTEND,
-        MAKE_IT_RAIN
+        MAKE_IT_RAIN,
+        PLAYER_OVERCHARGE
     }
 
     public enum BOMB_TYPES
@@ -114,7 +114,7 @@ public class GameplayLoop : MonoBehaviour
 
     private List<BOMB_TYPES> typesToSpawn = Globals.defaultList;
 
-    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN, EVENTS.LAVA_RISE, EVENTS.TIME_EXTEND, EVENTS.MAKE_IT_RAIN};
+    private List<EVENTS> eventList = new List<EVENTS>() { EVENTS.METEORS, EVENTS.POWERUPS, EVENTS.MISSILERAIN, EVENTS.LAVA_RISE, EVENTS.MAKE_IT_RAIN, EVENTS.PLAYER_OVERCHARGE};
 
     Vector3 GenerateBombSpawn()
     {
@@ -420,13 +420,6 @@ public class GameplayLoop : MonoBehaviour
                     Lava.GetComponent<Lava>().StartLavaRiseEvent();
                     break;
                 }
-            case EVENTS.TIME_EXTEND:
-                {
-                    eventName.text = "EVENT: LONGER ROUND";
-                    eventDescription.text = "You gotta survive longer! However, your score will be higher.";
-                    roundSeconds += Random.Range(15, 30);
-                    break;
-                }
             case EVENTS.MAKE_IT_RAIN:
                 {
                     eventName.text = "EVENT: MAKE IT RAIN";
@@ -436,6 +429,23 @@ public class GameplayLoop : MonoBehaviour
                         Instantiate(coin, GenerateBombSpawn(), Quaternion.identity, bombsParent);
                     }
                     yield return new WaitForSeconds(3);
+                    break;
+                }
+            case EVENTS.PLAYER_OVERCHARGE:
+                {
+                    eventName.text = "EVENT: PLAYER OVERCHARGE";
+                    eventDescription.text = "Go Crazy, but still be careful!";
+                    foreach (PlayerStats player in allPlayers)
+                    {
+                        player.cooldownReductionModifiers.Add(Globals.eventPlrOvrCDRedBuff);
+                        player.GetComponentInParent<PlayerControls>().moveSpeedModifiers.Add(Globals.eventPlrOvrMoveSpdBuff);
+                    }
+                    yield return new WaitForSeconds(10);
+                    foreach (PlayerStats player in allPlayers)
+                    {
+                        player.cooldownReductionModifiers.Remove(Globals.eventPlrOvrCDRedBuff);
+                        player.GetComponentInParent<PlayerControls>().moveSpeedModifiers.Remove(Globals.eventPlrOvrMoveSpdBuff);
+                    }
                     break;
                 }
         }
