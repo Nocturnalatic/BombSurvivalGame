@@ -9,7 +9,7 @@ public class GlobalSettings : MonoBehaviour
     public PlayerData data;
     public static GlobalSettings instance;
     public Toggle hardcoretoggle;
-    public Slider mouseSensSlider, intensityControl;
+    public Slider mouseSensSlider, intensityControl, fovSlider, volSlider;
     public GameObject settingsCanvas;
     public GameObject postProcessing;
     public bool isInGameSettingsOpen = false;
@@ -47,6 +47,9 @@ public class GlobalSettings : MonoBehaviour
     public void SetMasterVolume(float masterVol)
     {
         AudioListener.volume = masterVol / 100f;
+        volSlider.GetComponentInChildren<UITextSlider>().TextUpdate(masterVol);
+        volSlider.value = masterVol;
+        data.UpdateVolumeSetting(masterVol);
     }
 
     public void SetHardcoreMode(bool v)
@@ -72,6 +75,9 @@ public class GlobalSettings : MonoBehaviour
     public void SetFOV(float v)
     {
         Camera.main.fieldOfView = v;
+        fovSlider.GetComponentInChildren<UITextSlider>().TextUpdate(v);
+        fovSlider.value = v;
+        data.UpdateFOVSetting(v);
     }
 
     public void TogglePostProcessing(bool v)

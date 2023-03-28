@@ -11,10 +11,29 @@ public class PlayerData : MonoBehaviour
     int ReqEXP;
     int CurrencyCoin;
     int SettingMouseSensitivity;
+    float FovSetting, AudioVolumeSetting;
 
     [SerializeField] Image expBar;
     [SerializeField] TextMeshProUGUI levelText;
     [SerializeField] TextMeshProUGUI coinCounter;
+    [SerializeField] TextMeshProUGUI playerTitle;
+
+    public string GetPlayerTitleFromEXP(int Level)
+    {
+        if (Level < 10) return "Newbie";
+        if (Level < 15) return "Rookie";
+        if (Level < 20) return "Skillful";
+        if (Level < 30) return "Experienced";
+        if (Level < 40) return "Survivalist";
+        if (Level < 50) return "Expert";
+        if (Level < 60) return "Professional";
+        if (Level < 70) return "Master Survivalist";
+        if (Level < 80) return "Veteran Survivalist";
+        if (Level < 90) return "Ultimate Survivalist";
+        if (Level < 100) return "Unbeatable Survivalist";
+        if (Level >= 100) return "If you see this, you are a chad";
+        return "No Title";
+    }
 
     void CheckLevelUp()
     {
@@ -25,6 +44,7 @@ public class PlayerData : MonoBehaviour
             ReqEXP = 100 + (int)Mathf.Pow(Level, 1.9f);
             expBar.fillAmount = EXP / (float)ReqEXP;
             levelText.text = $"Level {Level}";
+            playerTitle.text = GetPlayerTitleFromEXP(Level);
             CheckLevelUp(); //Call again in the case of double level ups;
         }
     }
@@ -68,6 +88,16 @@ public class PlayerData : MonoBehaviour
         SettingMouseSensitivity = sens;
     }
 
+    public void UpdateFOVSetting(float fov)
+    {
+        FovSetting = fov;
+    }
+
+    public void UpdateVolumeSetting(float volume)
+    {
+        AudioVolumeSetting = volume;    
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -75,9 +105,14 @@ public class PlayerData : MonoBehaviour
         EXP = PlayerPrefs.GetInt("Player EXP", 0);
         CurrencyCoin = PlayerPrefs.GetInt("Player Coin", 100);
         SettingMouseSensitivity = PlayerPrefs.GetInt("SettingMouseSens", 100);
+        AudioVolumeSetting = PlayerPrefs.GetFloat("SettingMasterVolume", 100);
+        FovSetting = PlayerPrefs.GetFloat("SettingFov", 60);
         GlobalSettings.instance.SetSensitivity(SettingMouseSensitivity);
+        GlobalSettings.instance.SetFOV(FovSetting);
+        GlobalSettings.instance.SetMasterVolume(AudioVolumeSetting);
         ReqEXP = 100 + (int)Mathf.Pow(Level, 1.9f);
         levelText.text = $"Level {Level}";
+        playerTitle.text = GetPlayerTitleFromEXP(Level);
         coinCounter.text = $"{CurrencyCoin}";
         expBar.fillAmount = EXP / (float)ReqEXP;
     }
@@ -95,5 +130,7 @@ public class PlayerData : MonoBehaviour
         PlayerPrefs.SetInt("Player EXP", EXP);
         PlayerPrefs.SetInt("SettingMouseSens", SettingMouseSensitivity);
         PlayerPrefs.SetInt("Player Coin", CurrencyCoin);
+        PlayerPrefs.SetFloat("SettingFov", FovSetting);
+        PlayerPrefs.SetFloat("SettingMasterVolume", AudioVolumeSetting);
     }
 }

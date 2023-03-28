@@ -30,7 +30,6 @@ Make a plan to help you combat certain difficulties.
 It is not wise to run through danger to grab powerups.
 Nukes emit a bright red laser, stay clear of it.
 Dropping to a lower level is a one way trip, usually. Think before leaping.
-REGENERATION at full health will convert into a shield.
 EMP bombs can be quite the nuisance if stacking shields and buffs.
 CORRUPTED destroys all ongoing buffs and shields.
 Black hole bombs can suck black hole bombs, it will be wise to dodge them.

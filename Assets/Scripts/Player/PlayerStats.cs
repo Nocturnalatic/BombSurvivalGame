@@ -18,6 +18,9 @@ public class PlayerStats : MonoBehaviour
     public float noiseCooldown = 2;
     public float effectResistance = 1;
     public Volume volume;
+    private Camera ragDollCamera;
+    public GameObject ragdoll, mainCamera;
+    public Transform emptyParent;
 
     public static PlayerStats instance;
     WaitForSeconds waitupdate;
@@ -84,6 +87,21 @@ public class PlayerStats : MonoBehaviour
         IN_GAME,
         WIN,
         LOSE
+    }
+
+    private IEnumerator TriggerDeathCamera()
+    {
+        GameObject rag = Instantiate(ragdoll, emptyParent);
+        rag.transform.localPosition = gameObject.transform.position;
+        ragDollCamera = rag.GetComponentInChildren<Camera>();
+        mainCamera.SetActive(false);
+        playerCanvas.enabled = false;
+        ragDollCamera.enabled = true;
+        yield return new WaitForSeconds(5);
+        playerCanvas.enabled = true;
+        mainCamera.SetActive(true);
+        ragDollCamera.enabled = false;
+        Destroy(rag);
     }
 
     public void ResetBoostShopPage()
@@ -513,6 +531,10 @@ public class PlayerStats : MonoBehaviour
 
     public void PlayLDT()
     {
+        if (health <= 0)
+        {
+            return;
+        }
         AudioSource sound = Instantiate(voicePack.lightDamageTakenNoises[Random.Range(0, voicePack.lightDamageTakenNoises.Count)]);
         sound.Play();
         Destroy(sound.gameObject, sound.clip.length);
@@ -520,6 +542,10 @@ public class PlayerStats : MonoBehaviour
 
     public void PlayHDT()
     {
+        if (health <= 0)
+        {
+            return;
+        }
         AudioSource sound = Instantiate(voicePack.heavyDamageTakenNoises[Random.Range(0, voicePack.heavyDamageTakenNoises.Count)]);
         sound.Play();
         Destroy(sound.gameObject, sound.clip.length);
@@ -528,6 +554,8 @@ public class PlayerStats : MonoBehaviour
     public void PlayDeath()
     {
         AudioSource sound = Instantiate(voicePack.deathNoises[Random.Range(0, voicePack.deathNoises.Count)]);
+        sound.volume = 1;
+        sound.priority = 0;
         sound.Play();
         Destroy(sound.gameObject, sound.clip.length);
     }
@@ -704,6 +732,7 @@ public class PlayerStats : MonoBehaviour
                     }
                     else
                     {
+                        StartCoroutine(TriggerDeathCamera());
                         GameplayLoop.instance.GameInProgress = false;
                         state = GAME_STATE.LOSE;
                         PlayDeath();
