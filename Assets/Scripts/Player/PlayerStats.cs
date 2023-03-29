@@ -11,6 +11,7 @@ public class PlayerStats : MonoBehaviour
     float health, shield;
     float maxhealth = 100;
     int damageblocked = 0; //Used to track PROTECTED effect damage
+    public int powerupsCollected, coinsCollected = 0;
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
     public float cooldownReduction = 1;
@@ -765,6 +766,8 @@ public class PlayerStats : MonoBehaviour
         ca.colorFilter.Override(new Color(1, 1, 1));
         transform.position = new Vector3(0, 10, 0);
         damageTaken = 0;
+        coinsCollected = 0;
+        powerupsCollected = 0;
         shield = 0;
         health = maxhealth;
         survivalTime = 0;

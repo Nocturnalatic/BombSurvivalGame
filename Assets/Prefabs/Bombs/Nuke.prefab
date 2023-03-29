@@ -5764,9 +5764,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 20
-  explosionForce: 1500
-  knockbackForce: 10
-  damage: 130
+  explosionForce: 5000
+  knockbackForce: 30
+  damage: 125
   speedMultiplier: 1
   isNuke: 1
   hissingNoise: {fileID: 0}

@@ -13,6 +13,7 @@ public class Scoring : MonoBehaviour
     [Header("UI Elements")]
     public TextMeshProUGUI survivalTime;
     public TextMeshProUGUI survivalBonus;
+    public TextMeshProUGUI collectionBonus;
     public TextMeshProUGUI damageTakenBonus;
     public TextMeshProUGUI HardcoreBonus;
     public TextMeshProUGUI IntensityMultiplier;
@@ -20,7 +21,7 @@ public class Scoring : MonoBehaviour
     public TextMeshProUGUI ExpGain;
     public Animator scoreAnimator;
 
-    int survivalT, survivalB, dmgTkn, Hardcore, IntMult, Final = 0;
+    int survivalT, survivalB, collectB, dmgTkn, Hardcore, IntMult, Final = 0;
 
     public void ResetScoreboard()
     {
@@ -37,43 +38,39 @@ public class Scoring : MonoBehaviour
     {
         if (score < 1000)
         {
-            return "AMATEUR";
+            return "F";
         }
-        else if (score < 2000)
+        else if (score < 1500)
         {
-            return "NOVICE";
+            return "E";
         }
-        else if (score < 2500)
+        else if (score < 2250)
         {
-            return "SKILLED";
-        }
-        else if (score < 3000)
-        {
-            return "VETERAN";
+            return "D";
         }
         else if (score < 3500)
         {
-            return "EPIC";
-        }
-        else if (score < 4000)
-        {
-            return "LEGENDARY";
-        }
-        else if (score < 4500)
-        {
-            return "MYTHICAL";
+            return "C";
         }
         else if (score < 5000)
         {
-            return "GODLIKE";
+            return "B";
         }
-        else if (score >= 5000)
+        else if (score < 6500)
         {
-            return "UNBEATABLE!";
+            return "A";
+        }
+        else if (score < 8000)
+        {
+            return "S";
+        }
+        else if (score < 10000)
+        {
+            return "S+";
         }
         else
         {
-            return "UNRANKED";
+            return score >= 10000 ? "CHAMPION!" : "UNRANKED";
         }
     }
 
@@ -81,39 +78,39 @@ public class Scoring : MonoBehaviour
     {
         if (score < 1000)
         {
-            return new Color(205 / 255f, 127 / 255f, 50 / 255f);
+            return Color.red;
         }
-        else if (score < 2000)
-        {
-            return new Color(192 / 255f, 192 / 255f, 192 / 255f);
-        }
-        else if (score < 2500)
-        {
-            return new Color(212 / 255f, 175 / 255f, 55 / 255f);
-        }
-        else if (score < 3000)
-        {
-            return new Color(229 / 255f, 228 / 255f, 226 / 255f);
-        }
-        else if (score < 3500)
-        {
-            return Color.magenta;
-        }
-        else if (score < 4000)
+        else if (score < 1500)
         {
             return new Color(1, 0.5f, 0);
         }
-        else if (score < 4500)
+        else if (score < 2250)
         {
-            return Color.red;
+            return Color.yellow;
+        }
+        else if (score < 3500)
+        {
+            return Color.green;
         }
         else if (score < 5000)
         {
-            return Color.white;
+            return Color.cyan;
         }
-        else if (score >= 5000)
+        else if (score < 6500)
         {
-            return Color.green;
+            return Color.blue;
+        }
+        else if (score < 8000)
+        {
+            return Color.magenta;
+        }
+        else if (score < 10000)
+        {
+            return new Color(1, 0.75f, 0.8f);
+        }
+        else if (score >= 10000)
+        {
+            return Color.white;
         }
         else
         {
@@ -145,6 +142,11 @@ public class Scoring : MonoBehaviour
         {
             survivalB = (int)(survivalT * 1.5f);
         }
+        else
+        {
+            survivalB = (int)(survivalT * 0.5f);
+        }
+        collectB = (PlayerStats.instance.coinsCollected * 5) + (PlayerStats.instance.powerupsCollected * 10);
         dmgTkn = 100 - (int)PlayerStats.instance.damageTaken;
         dmgTkn = (int)Mathf.Clamp(dmgTkn, 0, MaxDamageTaken);
         if (PlayerStats.instance.damageTaken < 1)
@@ -157,17 +159,18 @@ public class Scoring : MonoBehaviour
         }
         if (PlayerStats.instance.hardcoreMode)
         {
-            Hardcore = (survivalT + survivalB + dmgTkn) * 2;
+            Hardcore = (survivalT + survivalB + collectB + dmgTkn ) * 2;
         }
-        IntMult = (int)((survivalT + survivalB + dmgTkn) * GameplayLoop.instance.Intensity);
-        Final = survivalT + survivalB + dmgTkn + Hardcore + IntMult;
+        IntMult = (int)((survivalT + survivalB + collectB + dmgTkn) * GameplayLoop.instance.Intensity);
+        Final = survivalT + survivalB + collectB + dmgTkn + Hardcore + IntMult;
 
         survivalTime.text = $"{survivalT}";
         survivalBonus.text = $"{survivalB}";
+        collectionBonus.text = $"{collectB}";
         damageTakenBonus.text = $"{dmgTkn}";
         HardcoreBonus.text = Hardcore.ToString("#,##0");
         IntensityMultiplier.text = IntMult.ToString("#,##0");
-        FinalScore.text = (Final.ToString("#,##0")) + " - " + GetRankFromScore(Final);
+        FinalScore.text = (Final.ToString("#,##0")) + " | Grade: " + GetRankFromScore(Final);
         FinalScore.color = GetColorFromScore(Final);
         scoreAnimator.enabled = true;
         scoreAnimator.SetTrigger("DoScore");

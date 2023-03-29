@@ -19,6 +19,7 @@ public class Powerups : MonoBehaviour
 
     IEnumerator ActivatePowerup(POWERUP_TYPE type, PlayerStats player)
     {
+        player.powerupsCollected += 1;
         if (player.selectedPerk != null)
         {
             if (player.selectedPerk.ID == 3 && player.selectedPerk.enabled)

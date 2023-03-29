@@ -5255,8 +5255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021ac6cbf1cb6524ea6ce0dd2b42e60c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detonationTime: 3
-  damage: 6
+  detonationTime: 4
+  damage: 5
   explosionRadius: 12
   blackholeDuration: 3
   beepNoise: {fileID: 354283402258717471}

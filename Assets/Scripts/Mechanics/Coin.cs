@@ -16,6 +16,7 @@ public class Coin : MonoBehaviour
                 if (other.gameObject.transform.parent.CompareTag("Player"))
                 {
                     PlayerData playerData = other.gameObject.GetComponentInParent<PlayerData>();
+                    other.gameObject.GetComponentInParent<PlayerStats>().coinsCollected += 1;
                     coinCollect.Play();
                     collected = true;
                     GetComponent<MeshRenderer>().enabled = false;

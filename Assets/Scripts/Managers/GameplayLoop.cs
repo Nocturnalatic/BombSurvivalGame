@@ -162,7 +162,7 @@ public class GameplayLoop : MonoBehaviour
         }
         if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
-            MaxNukeCount = (Intensity >= 4.0f) ? 2 : 1;
+            MaxNukeCount = (Intensity >= 5.0f) ? 2 : 1;
             float nukeChance = Random.Range(0, 1f);
             if ((nukeChance <= 0.1 + (Intensity / 5f - 0.6f)) && NukeCount < MaxNukeCount)
             {
@@ -492,6 +492,7 @@ public class GameplayLoop : MonoBehaviour
                 player.GetComponent<PlayerControls>().gravity = -9.81f;
                 player.GetComponentInChildren<Scoring>().ResetScoreboard();
                 player.GetComponent<PlayerStats>().ResetBoostShopPage();
+                player.GetComponent<PlayerStats>().state = PlayerStats.GAME_STATE.DEFAULT;
             }
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
@@ -652,7 +653,7 @@ public class GameplayLoop : MonoBehaviour
         GlobalSettings.instance.SetHardcoreSetting(true);
         GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";
-        yield return new WaitForSeconds(8);
+        yield return new WaitForSeconds(9);
         ArenaFloor.SetActive(true);
         Destroy(env);
         allPlayers.Clear();
