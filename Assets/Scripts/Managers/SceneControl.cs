@@ -13,13 +13,24 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
     }
     public Material defaultSkybox;
     public Material HighIntSkybox;
+    public Light directionalLight;
     public GameObject player;
     public static SceneControl instance; //Public Object :3
     SCENE_TYPE currentScene; //This is to define which scene the player is in.
 
     public void SetSkybox(bool highInt)
     {
-        RenderSettings.skybox = highInt ? HighIntSkybox : defaultSkybox;   
+        RenderSettings.skybox = highInt ? HighIntSkybox : defaultSkybox;
+        if (highInt)
+        {
+            directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+            directionalLight.intensity = 0.5f;
+        }
+        else
+        {
+            directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(31.3510132f, 140.580063f, 80.950737f));
+            directionalLight.intensity = 1f;
+        }
     }
 
     public void SetPlayerSystem(bool v)

@@ -77,6 +77,10 @@ public class Nuke : MonoBehaviour
             trail.Stop();
             hissingNoise.Stop();
         }
+        else
+        {
+            GetComponent<Light>().enabled = false;
+        }
         yield return new WaitUntil(() => GetComponent<AudioSource>().isPlaying == false);
         if (isNuke)
         {

@@ -3818,11 +3818,11 @@ ParticleSystem:
   LightsModule:
     enabled: 0
     ratio: 1
-    light: {fileID: 3168243168540981311, guid: c0a0d3769dc6477428185f70618f0781, type: 3}
+    light: {fileID: 2862347151943669183, guid: cc98255c224f8564ab0d6174f15fa661, type: 3}
     randomDistribution: 0
-    color: 0
-    range: 0
-    intensity: 0
+    color: 1
+    range: 1
+    intensity: 1
     rangeCurve:
       serializedVersion: 2
       minMaxState: 0
