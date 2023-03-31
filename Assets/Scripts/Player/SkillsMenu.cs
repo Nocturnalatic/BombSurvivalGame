@@ -48,7 +48,7 @@ public class SkillsMenu : MonoBehaviour
         Boosts requestedBoost = Globals.BoostDatabase.Find(x => x.type == type);
         if (requestedBoost != null)
         {
-            if (playerData.GetCoin() > requestedBoost.price)
+            if (playerData.GetCoin() >= requestedBoost.price)
             {
                 playerData.AddCoin(-requestedBoost.price);
                 PlayerStats.instance.playerBoosts.Add(requestedBoost);
