@@ -19,7 +19,7 @@ public class MainMenu : MonoBehaviour
 
     public void OpenWebsite()
     {
-        Application.OpenURL("https://lionwayne7.wixsite.com/bombsurvival/bombs");
+        Application.OpenURL("https://lionwayne7.wixsite.com/bombsurvival/appupdates");
     }
 
     public void ExitGame()

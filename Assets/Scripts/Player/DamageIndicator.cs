@@ -10,10 +10,29 @@ public class DamageIndicator : MonoBehaviour
     Quaternion targetRotation;
     PlayerStats player;
 
-    public void Init(Vector3 pos, PlayerStats.DAMAGE_TYPE dmgType, PlayerStats plr)
+    IEnumerator ScaleLerp(Vector3 dblVec3)
+    {
+        float time = 0f;
+        float duration = 0.12f;
+        Vector3 scale = dblVec3;
+        Vector3 destination = scale / 3;
+
+        while (time < duration)
+        {
+            arrow.rectTransform.localScale = Vector3.Lerp(scale, destination, time / duration);
+            time += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        arrow.rectTransform.localScale = destination;
+    }
+    public void Init(Vector3 pos, PlayerStats.DAMAGE_TYPE dmgType, PlayerStats plr, float dmgPerc)
     {
         targetPosition = pos;
         player = plr;
+        dmgPerc = Mathf.Clamp(dmgPerc, 0.01f, 2f);
+        Vector3 scale = new Vector3(0.5f + dmgPerc, 0.5f + dmgPerc, 1);
+        StartCoroutine(ScaleLerp(scale * 3));
         switch (dmgType)
         {
             case PlayerStats.DAMAGE_TYPE.EXPLOSION:
@@ -21,6 +40,10 @@ public class DamageIndicator : MonoBehaviour
                 break;
             case PlayerStats.DAMAGE_TYPE.ELECTRIC:
                 arrow.color = Color.cyan;
+                break;
+            case PlayerStats.DAMAGE_TYPE.FIRE:
+            case PlayerStats.DAMAGE_TYPE.BURN: 
+                arrow.color = new Color(1, 0.5f, 0);
                 break;
             case PlayerStats.DAMAGE_TYPE.GRAVITY:
                 arrow.color = Color.magenta;
@@ -49,8 +72,8 @@ public class DamageIndicator : MonoBehaviour
             d2 = 360 - d2;
         }
         d2 *= Mathf.Deg2Rad;
-        float x = Mathf.Sin(d2) * Screen.currentResolution.width * 0.03f;
-        float z = Mathf.Cos(d2) * Screen.currentResolution.height * 0.03f;
+        float x = Mathf.Sin(d2) * 250 /*Screen.currentResolution.width*/ * 0.2f;
+        float z = Mathf.Cos(d2) * 250/*Screen.currentResolution.height*/ * 0.2f;
 
         arrow.rectTransform.localPosition = new Vector3(-x, z, 0);
     }

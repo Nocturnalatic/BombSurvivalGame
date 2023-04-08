@@ -12,6 +12,7 @@ public class GlobalSettings : MonoBehaviour
     public Slider mouseSensSlider, intensityControl, fovSlider, volSlider;
     public GameObject settingsCanvas;
     public GameObject postProcessing;
+    public GameObject healthBarTicks;
     public bool isInGameSettingsOpen = false;
     public List<CharacterVoicePack> characterVoicePacks;
     public TextMeshProUGUI commandOutputText;
@@ -42,6 +43,11 @@ public class GlobalSettings : MonoBehaviour
     public void SetIntensityControlSetting(bool v)
     {
         intensityControl.interactable = v;
+    }
+
+    public void SetHealthBarDetails(bool v)
+    {
+        healthBarTicks.SetActive(v);
     }
 
     public void SetMasterVolume(float masterVol)

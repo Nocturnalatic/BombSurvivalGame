@@ -24,7 +24,7 @@ The developer is actually homosexual! #GayPride!
 Homing Missiles will only target your position once, not constantly.
 Extra Health, called Shields, is not affected by damage reduction effects.
 There is no cap to stacking certain attributes.
-The border around your health bar is your shield bar.
+Your shield bar is indicated with a dark blue portion.
 Use corners wisely, for they can save as well as trap you.
 Make a plan to help you combat certain difficulties.
 It is not wise to run through danger to grab powerups.
@@ -35,3 +35,4 @@ CORRUPTED destroys all ongoing buffs and shields.
 Black hole bombs can suck black hole bombs, it will be wise to dodge them.
 Coin bombs disguise themselves as normal coins, they are heavier and less shiny.
 Power ups can block line of sight, use one to dodge a bomb before collecting.
+ENERGISED speeds up your skill cooldowns.

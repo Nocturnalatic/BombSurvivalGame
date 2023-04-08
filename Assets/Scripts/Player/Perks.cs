@@ -53,13 +53,14 @@ public class Perks
                 }
             case (4):
                 {
-                    List<StatusEffect.EffectType> types = new List<StatusEffect.EffectType>();
-                    types.Add(StatusEffect.EffectType.REGEN);
-                    types.Add(StatusEffect.EffectType.PROTECTED);
-                    types.Add(StatusEffect.EffectType.HASTE);
-                    types.Add(StatusEffect.EffectType.CONTROL_IMMUNE);
-
-                    PlayerStats.instance.AddStatus(new StatusEffect(types[Random.Range(0, types.Count)], 35, 1, false, StatusEffect.BuffType.POSITIVE));
+                    int numBuffs = Random.Range(1, 4);
+                    List<StatusEffect.EffectType> effectType = new List<StatusEffect.EffectType>(Globals.positiveEffects);
+                    for (int i = 0; i < numBuffs; i++)
+                    {
+                        StatusEffect.EffectType type = effectType[Random.Range(0,effectType.Count)];
+                        PlayerStats.instance.AddStatus(new StatusEffect(type, 60, 1, false, StatusEffect.BuffType.POSITIVE));
+                        effectType.Remove(type);
+                    } 
                     break;
                 }
             case 5:

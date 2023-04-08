@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,7 +23,7 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
         if (highInt)
         {
             directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
-            directionalLight.intensity = 0.5f;
+            directionalLight.intensity = 0.6f;
         }
         else
         {

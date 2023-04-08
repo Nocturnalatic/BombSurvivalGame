@@ -9,14 +9,14 @@ public class StatusEffect
 
     }
     
-    public StatusEffect(EffectType t, float d, float m, bool s, BuffType bT = BuffType.NEGATIVE)
+    public StatusEffect(EffectType effectType, float effectDuration, float effectMultiplier, bool effectStackable, BuffType effectOrientation = BuffType.NEGATIVE)
     {
-        type = t;
-        original_duration = d;
+        type = effectType;
+        original_duration = effectDuration;
         duration = original_duration;
-        d_Multiplier = m;
-        stackable = s;
-        buffType = bT;
+        d_Multiplier = effectMultiplier;
+        stackable = effectStackable;
+        buffType = effectOrientation;
     }
     public enum EffectType
     {
@@ -30,6 +30,7 @@ public class StatusEffect
         SUCTION,
         CORRUPTED,
         IMMORTAL,
+        ENERGISED,
         TOTAL
     }
 

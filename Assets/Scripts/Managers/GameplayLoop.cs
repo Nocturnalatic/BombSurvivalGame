@@ -133,6 +133,11 @@ public class GameplayLoop : MonoBehaviour
         return pos;
     }
 
+    public void SkipIntermission()
+    {
+        timer = 1;
+    }
+
     public void SetIntensity(float v)
     {
         Intensity = v;
@@ -168,7 +173,7 @@ public class GameplayLoop : MonoBehaviour
             {
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
-                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 1.05f);
+                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 0.75f);
                 nukeObj.GetComponent<Animator>().speed = nukeObj.GetComponent<Nuke>().speedMultiplier;
                 NukeCount++;
             }

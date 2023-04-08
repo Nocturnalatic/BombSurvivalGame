@@ -13,8 +13,7 @@ public class Meteor : MonoBehaviour
     public enum METEOR_TYPE
     {
         FIRE = 0,
-        ICE,
-        ELECTRIC
+        ICE
     }
     [SerializeField]
     GameObject fire;
@@ -62,7 +61,7 @@ public class Meteor : MonoBehaviour
                         if (hit.collider.transform.parent.CompareTag("Player"))
                         {
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
-                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position);
+                            col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position, true, type == METEOR_TYPE.FIRE ? PlayerStats.DAMAGE_TYPE.FIRE : PlayerStats.DAMAGE_TYPE.ELECTRIC);
                             if (type == METEOR_TYPE.ICE)
                             {
                                 StatusEffect effect = new StatusEffect(StatusEffect.EffectType.CHILLED, 10 * distanceMod, 0.5f, false);

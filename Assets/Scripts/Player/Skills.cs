@@ -47,14 +47,14 @@ public class Skills
         {
             case 0:
                 {
-                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 15);
+                    Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 25);
                     foreach (Collider col in result)
                     {
                         Rigidbody rb = col.GetComponent<Rigidbody>();
 
                         if (rb != null && !rb.gameObject.CompareTag("Bomb"))
                         {
-                            rb.AddExplosionForce(1500, PlayerStats.instance.transform.position, 15, 1);
+                            rb.AddExplosionForce(1500, PlayerStats.instance.transform.position, 25, 1);
                         }
                     }
                     break;
@@ -86,9 +86,15 @@ public class Skills
             case 5:
                 {
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.ENERGISED, 5, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
             case 6:
+                {
+                    PlayerStats.instance.Skill5(false);
+                    break;
+                }
+            case 7:
                 {
                     RandomSkill();
                     break;
@@ -100,7 +106,7 @@ public class Skills
 
     public void RandomSkill()
     {
-        int SID = Random.Range(0, 6);
+        int SID = Random.Range(0, 7);
         switch (SID)
         {
             case 0:
@@ -112,7 +118,7 @@ public class Skills
 
                         if (rb != null && !rb.gameObject.CompareTag("Bomb"))
                         {
-                            rb.AddExplosionForce(1750, PlayerStats.instance.transform.position, 40, 1);
+                            rb.AddExplosionForce(2000, PlayerStats.instance.transform.position, 40, 1);
                         }
                     }
                     break;
@@ -144,6 +150,12 @@ public class Skills
             case 5:
                 {
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 10, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.ENERGISED, 10, 1, false, StatusEffect.BuffType.POSITIVE));
+                    break;
+                }
+            case 6:
+                {
+                    PlayerStats.instance.Skill5(true);
                     break;
                 }
         }

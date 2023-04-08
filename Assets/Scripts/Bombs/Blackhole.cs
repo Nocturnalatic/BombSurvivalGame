@@ -72,13 +72,12 @@ public class Blackhole : MonoBehaviour
                     distanceFactor = Mathf.Abs(distanceFactor);
                     if (!col.GetComponentInParent<PlayerStats>().HasEffect(StatusEffect.EffectType.CONTROL_IMMUNE))
                     {
-                        col.GetComponentInParent<PlayerControls>().controller.Move((playerDir * 0.7f) * (distanceFactor));
+                        col.GetComponentInParent<PlayerControls>().controller.Move((playerDir * 0.6f) * (distanceFactor));
                         col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.SUCTION, 0.25f, 1, false));
                     }
                     if (distanceFactor > 0.7f)
                     {
                         col.GetComponentInParent<PlayerStats>().DamagePlayer(Time.deltaTime * damage, transform.position, false, PlayerStats.DAMAGE_TYPE.GRAVITY);
-                        col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 0.25f, 1, false));
                     }
                 }
             }

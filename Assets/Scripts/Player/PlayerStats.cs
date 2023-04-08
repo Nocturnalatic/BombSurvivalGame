@@ -27,6 +27,7 @@ public class PlayerStats : MonoBehaviour
     WaitForSeconds waitupdate;
     public Animator shockwave, hpbar, flash, burnVig;
     public Image burnEffect;
+    public Image healthTickImage;
     [HideInInspector]
     public bool hardcoreMode = false;
     [HideInInspector]
@@ -34,7 +35,6 @@ public class PlayerStats : MonoBehaviour
     [HideInInspector]
     public List<StatusEffect> effects = new List<StatusEffect>();
 
-    public Animator dodgeTextAnimator;
     [Header("Audio")]
     public CharacterVoicePack voicePack;
     public AudioSource skillReady;
@@ -133,6 +133,7 @@ public class PlayerStats : MonoBehaviour
     {
         EXPLOSION = 0,
         FIRE,
+        BURN,
         GRAVITY,
         ELECTRIC
     }
@@ -165,6 +166,29 @@ public class PlayerStats : MonoBehaviour
         AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 10, empowered ? 4 : 2.5f, true, StatusEffect.BuffType.POSITIVE));
     }
 
+    public void Skill5(bool empowered = false)
+    {
+        StartCoroutine(RaidenDash(empowered));
+    }
+
+    IEnumerator RaidenDash(bool empowered)
+    {
+        Dispel();
+        AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, empowered ? 1.5f : 0.75f, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+        AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, empowered ? 1.5f : 0.75f, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
+        PlayerControls.instance.moveSpeedModifiers.Add(Globals.radiantDashMoveSpeedBuff);
+        PlayerControls.instance.jumpHeight *= 4;
+        ColorAdjustments ca;
+        volume.profile.TryGet(out ca);
+        ca.colorFilter.Override(new Color(0.3f, 0.3f, 0.3f));
+        ca.saturation.Override(-100);
+        yield return new WaitForSeconds(0.75f);
+        PlayerControls.instance.jumpHeight /= 4;
+        PlayerControls.instance.moveSpeedModifiers.Remove(Globals.radiantDashMoveSpeedBuff);
+        ca.colorFilter.Override(new Color(1, 1, 1));
+        ca.saturation.Override(0);
+    }
+
     IEnumerator ApplyBurn()
     {
         StatusEffect effect = new(StatusEffect.EffectType.BURN, 2.5f, 1, true);
@@ -191,6 +215,14 @@ public class PlayerStats : MonoBehaviour
     {
         GameObject go = Instantiate(infoTextPrefab, playerCanvas.transform);
         go.GetComponent<InfoText>().CreateInfoText(text, color);
+    }
+
+    public void SkipIntermission()
+    {
+        if (GameplayLoop.instance != null)
+        {
+            GameplayLoop.instance.SkipIntermission();
+        }
     }
 
     public StatusEffect GetEffect(StatusEffect.EffectType t)
@@ -241,60 +273,61 @@ public class PlayerStats : MonoBehaviour
                 return "CORRUPTED";
             case StatusEffect.EffectType.IMMORTAL:
                 return "IMMORTAL";
+            case StatusEffect.EffectType.ENERGISED:
+                return "ENERGISED";
         }
         return "ERROR";
     }
 
-    public void AddStatus(StatusEffect effect)
+    public void AddStatus(StatusEffect newEffect)
     {
-        if (!effect.stackable) //Not stackable, check whether the player has an effect
+        if (newEffect.stackable == false) //Not stackable, check whether the player has an effect
         {
-            foreach (StatusEffect f in effects)
+            foreach (StatusEffect existing in effects)
             {
-                if (f.type == effect.type)
+                if (existing.type == newEffect.type) //The player has an existing effect
                 {
-                    if (f.d_Multiplier > effect.d_Multiplier) //Check whichever has a larger multiplier, stronger effect override
+                    if (existing.duration >= newEffect.original_duration) //Check which effect has a longer duration
                     {
-                        f.duration = effect.duration; 
-                        f.original_duration = effect.original_duration;
+                        //Ignore the new effect since the player has an existing longer effect
                     }
                     else
                     {
-                        if (f.duration <= effect.original_duration) //if the current effect is shorter, new one overrides
-                        {
-                            effects.Remove(f);  //Remove the existing lesser effect
-                            effects.Add(effect); //Add the longer one
-                        }
+                        //Add the new longer effect and remove the old shorter effect
+                        effects.Remove(existing);
+                        effects.Add(newEffect);
                     }
                     return;
                 }
             }
-            effects.Add(effect); //If the effect is not found, add it
+            effects.Add(newEffect); //If the effect is not found, add it
         }
         else //It is stackable
         {
-            foreach (StatusEffect f in effects) //f is existing effect
+            foreach (StatusEffect existing in effects) //Stackable effects usually have unique d_Multiplier instead of 1
             {
-                if (f.type == effect.type)
+                if (existing.type == newEffect.type)
                 {
-                    if (f.d_Multiplier > effect.d_Multiplier) // effect will stack and diminish with f
+                    if (existing.d_Multiplier > newEffect.d_Multiplier) // effect will stack and diminish with f
                     {
-                        f.d_Multiplier += (effect.d_Multiplier * 0.5f);
-                        f.duration = effect.duration;
-                        f.stacks++;
+                        existing.d_Multiplier += (newEffect.d_Multiplier * 0.5f);
+                        existing.duration = newEffect.duration;
+                        existing.original_duration = newEffect.original_duration;
+                        existing.stacks++;
                     }
                     else
                     {
-                        effect.d_Multiplier += (f.d_Multiplier * 0.5f);
-                        effect.stacks++;
-                        effect.duration = f.original_duration;
-                        effects.Remove(f);
-                        effects.Add(effect);
+                        newEffect.d_Multiplier += (existing.d_Multiplier * 0.5f);
+                        newEffect.stacks++;
+                        newEffect.original_duration = existing.original_duration;
+                        newEffect.duration = existing.original_duration;
+                        effects.Remove(existing);
+                        effects.Add(newEffect);
                     }
                     return;
                 }
             }
-            effects.Add(effect);
+            effects.Add(newEffect);
         }
     }
 
@@ -349,7 +382,7 @@ public class PlayerStats : MonoBehaviour
                     volume.profile.TryGet(out ca);
                     ca.colorFilter.Override(new Color(1f, 0.5f, 0.3f));
                     burnVig.SetTrigger("Flash");
-                    DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.FIRE);
+                    DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.BURN);
                 }
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
@@ -366,7 +399,15 @@ public class PlayerStats : MonoBehaviour
                 if (effect.type == StatusEffect.EffectType.CORRUPTED)
                 {
                     glitchedSkillEffect.enabled = true;
+                    glitchedSkillEffect.material.SetTextureOffset("_MainTex", new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f)));
                     Dispel(true);
+                }
+                if (effect.type == StatusEffect.EffectType.ENERGISED)
+                {
+                    if (!cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.ENERGISED_CDRED_BUFF))
+                    {
+                        cooldownReductionModifiers.Add(Globals.energisedCDRedBuff);
+                    }
                 }
             }
             else
@@ -394,6 +435,13 @@ public class PlayerStats : MonoBehaviour
                 if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.HASTE_MOVEMENT_BUFF))
                 {
                     PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementBuff);
+                }
+            }
+            if (f.type == StatusEffect.EffectType.ENERGISED)
+            {
+                if (cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.ENERGISED_CDRED_BUFF))
+                {
+                    cooldownReductionModifiers.Remove(Globals.energisedCDRedBuff);
                 }
             }
             if (f.type == StatusEffect.EffectType.BURN)
@@ -480,6 +528,8 @@ public class PlayerStats : MonoBehaviour
                 UI_Icons[i].SetActive(false);
             }
         }
+
+        healthTickImage.material.mainTextureScale = new Vector2((maxhealth + shield)/20f, 1f);
     }
 
     private void Start()
@@ -591,7 +641,7 @@ public class PlayerStats : MonoBehaviour
         float hpperc = health / maxhealth;
         HPBarBG.fillAmount = hpperc;
         HPbar.fillAmount = hpperc;
-        ShieldBar.fillAmount = shield / maxhealth;
+        ShieldBar.fillAmount = shield / (maxhealth + shield);
         if (hpperc > 0.35f)
         {
             hpbar.enabled = true;
@@ -612,11 +662,6 @@ public class PlayerStats : MonoBehaviour
 
     public void DamagePlayer(float dmg, Vector3 origin, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION)
     {
-        if (type != DAMAGE_TYPE.FIRE)
-        {
-            GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
-            di.GetComponent<DamageIndicator>().Init(origin, type, this);
-        }
         float hpperc;
         bool dodge = false;
       
@@ -668,6 +713,11 @@ public class PlayerStats : MonoBehaviour
                 }
             }
             float finalDamage = remainingDmg / damageReduction;
+            if (type != DAMAGE_TYPE.BURN && state == GAME_STATE.IN_GAME)
+            {
+                GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
+                di.GetComponent<DamageIndicator>().Init(origin, type, this, dmg * 2 / damageReduction / (health + shield));
+            }
             health -= finalDamage;
             if (GameplayLoop.instance.GameInProgress)
             {
@@ -690,7 +740,7 @@ public class PlayerStats : MonoBehaviour
         }
         hpperc = health / maxhealth;
         HPbar.fillAmount = hpperc;
-        ShieldBar.fillAmount = shield / maxhealth;
+        ShieldBar.fillAmount = shield / (maxhealth + shield);
         if (hpperc <= 0.35f)
         {
             hpbar.enabled = true;

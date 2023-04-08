@@ -33,6 +33,11 @@
         },
         {
             "ID":6,
+            "skillName":"Radiant Dash",
+            "cooldown":5
+        },
+        {
+            "ID":7,
             "skillName":"Random",
             "cooldown":22
         }
