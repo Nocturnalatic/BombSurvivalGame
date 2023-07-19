@@ -173,7 +173,7 @@ public class PlayerControls : MonoBehaviour
         float result = 1;
         foreach (Globals.MODIFIERS mod in moveSpeedModifiers)
         {
-            result *= mod.value;
+            result *= 1 + mod.value;
         }
         moveSpeed = baseMoveSpeed * result;
         if (moveSpeed > baseMoveSpeed)

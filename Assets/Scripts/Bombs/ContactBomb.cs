@@ -32,7 +32,7 @@ public class ContactBomb : MonoBehaviour
         Material mat = GetComponent<MeshRenderer>().material;
         while (negR > 0)
         {
-            negR -= Time.deltaTime * 1.1f;
+            negR -= Time.deltaTime * 0.9f;
             mat.color = new Color(mat.color.r, negR, negR, 1);
             yield return new WaitForFixedUpdate();
         }

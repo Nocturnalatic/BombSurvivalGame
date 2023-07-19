@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132c7abd083684e4ba55607b56e9c2cb, type: 3}
+  m_Name: Mirana
+  m_EditorClassIdentifier: 
+  lightDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: 292827085d6bb454fada3f3cc5d63d17, type: 3}
+  - {fileID: -6731454708704800911, guid: 349f6a1ca5aaa28499ecdc53d9ba34fc, type: 3}
+  - {fileID: -6731454708704800911, guid: 46e2e4238771c854289637f16ced734f, type: 3}
+  - {fileID: -6731454708704800911, guid: df858525ef80a4741a849e160c79c2ae, type: 3}
+  heavyDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: f312b6f32782ecf479cb055897da1c6c, type: 3}
+  - {fileID: -6731454708704800911, guid: bbc0db78cd2c950428461ae66eee61d6, type: 3}
+  - {fileID: -6731454708704800911, guid: d233f73191af3e045bd6634d87aeabb8, type: 3}
+  - {fileID: -6731454708704800911, guid: 82c38b5e7087a5047b9991a82b958667, type: 3}
+  deathNoises:
+  - {fileID: -6731454708704800911, guid: 11ada27b868c77746aa4f0e8bd7a2f93, type: 3}
+  - {fileID: -6731454708704800911, guid: 1ec78d50d4502b3488c4c7173551cddf, type: 3}
+  - {fileID: -6731454708704800911, guid: b20827a3efac12642826a9ab653d6b35, type: 3}

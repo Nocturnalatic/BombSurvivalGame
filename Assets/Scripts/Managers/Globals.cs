@@ -45,23 +45,23 @@ public class Globals
         RADIANT_DASH_MOVESPD_BUFF = -11,
     }
 
-    public static MODIFIERS chillMovementDebuff = new(MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF, 0.6f);
-    public static MODIFIERS chillDamageDebuff = new(MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF, 0.5f);
-    public static MODIFIERS hardcoreMovementDebuff = new(MODIFIER_IDS.HARDCORE_MOVEMENT_DEBUFF, 0.9f);
-    public static MODIFIERS tankyMovementDebuff = new(MODIFIER_IDS.TANKY_MOVEMENT_DEBUFF, 0.80f);
-    public static MODIFIERS tankydamageBuff = new(MODIFIER_IDS.TANKY_DAMAGERED_BUFF, 1.5f);
-    public static MODIFIERS hasteMovementBuff = new(MODIFIER_IDS.HASTE_MOVEMENT_BUFF, 1.33f);
-    public static MODIFIERS chillCDRedDebuff = new(MODIFIER_IDS.CHILLED_CDRED_DEBUFF, 0.5f);
-    public static MODIFIERS powerupCDRedBuff = new(MODIFIER_IDS.POWERUP_CDRED_BUFF, 2.0f);
-    public static MODIFIERS powerupMoveSpdBuff = new(MODIFIER_IDS.POWERUP_MOVESPD_BUFF, 1.5f);
-    public static MODIFIERS powerupDmgRedBuff = new(MODIFIER_IDS.POWERUP_DMGRED_BUFF, 1.5f);
-    public static MODIFIERS qnqDmgRedDebuff = new(MODIFIER_IDS.QNQ_DMGRED_DEBUFF, 0.75f);
-    public static MODIFIERS qnqMoveSpdBuff = new(MODIFIER_IDS.QNQ_MOVESPD_BUFF, 1.25f);
-    public static MODIFIERS qnqCDRedBuff = new(MODIFIER_IDS.QNQ_CDRED_BUFF, 1.8f);
-    public static MODIFIERS eventPlrOvrMoveSpdBuff = new(MODIFIER_IDS.EVT_PLROVR_MSPD_BUFF, 2.5f);
-    public static MODIFIERS eventPlrOvrCDRedBuff = new(MODIFIER_IDS.EVT_PLROVR_CDRED_BUFF, 5f);
-    public static MODIFIERS energisedCDRedBuff = new(MODIFIER_IDS.ENERGISED_CDRED_BUFF, 1.75f);
-    public static MODIFIERS radiantDashMoveSpeedBuff = new(MODIFIER_IDS.RADIANT_DASH_MOVESPD_BUFF, 5f);
+    public static MODIFIERS chillMovementDebuff = new(MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF, -0.25f); //25% Slow
+    public static MODIFIERS chillDamageDebuff = new(MODIFIER_IDS.CHILLED_DAMAGERED_DEBUFF, -0.5f); //50% Damage Taken
+    public static MODIFIERS hardcoreMovementDebuff = new(MODIFIER_IDS.HARDCORE_MOVEMENT_DEBUFF, -0.1f); //10% Slow
+    public static MODIFIERS tankyMovementDebuff = new(MODIFIER_IDS.TANKY_MOVEMENT_DEBUFF, -0.2f); //20% Slow
+    public static MODIFIERS tankydamageBuff = new(MODIFIER_IDS.TANKY_DAMAGERED_BUFF, 0.75f); //50% Dmg Red
+    public static MODIFIERS hasteMovementBuff = new(MODIFIER_IDS.HASTE_MOVEMENT_BUFF, 0.33f); //33% Speed
+    public static MODIFIERS chillCDRedDebuff = new(MODIFIER_IDS.CHILLED_CDRED_DEBUFF, -0.5f); //50% CD Penalty
+    public static MODIFIERS powerupCDRedBuff = new(MODIFIER_IDS.POWERUP_CDRED_BUFF, 0.5f); //50% CD Reduction
+    public static MODIFIERS powerupMoveSpdBuff = new(MODIFIER_IDS.POWERUP_MOVESPD_BUFF, 0.25f); //25% Speed
+    public static MODIFIERS powerupDmgRedBuff = new(MODIFIER_IDS.POWERUP_DMGRED_BUFF, 0.5f); //50% Dmg Red
+    public static MODIFIERS qnqDmgRedDebuff = new(MODIFIER_IDS.QNQ_DMGRED_DEBUFF, -0.25f); //25% Dmg Taken
+    public static MODIFIERS qnqMoveSpdBuff = new(MODIFIER_IDS.QNQ_MOVESPD_BUFF, 0.25f); //25% Speed
+    public static MODIFIERS qnqCDRedBuff = new(MODIFIER_IDS.QNQ_CDRED_BUFF, 0.2f); //20% CD Reduction
+    public static MODIFIERS eventPlrOvrMoveSpdBuff = new(MODIFIER_IDS.EVT_PLROVR_MSPD_BUFF, 2f); 
+    public static MODIFIERS eventPlrOvrCDRedBuff = new(MODIFIER_IDS.EVT_PLROVR_CDRED_BUFF, 0.8f); //80% CD Reduction
+    public static MODIFIERS energisedCDRedBuff = new(MODIFIER_IDS.ENERGISED_CDRED_BUFF, 0.25f); //25% CD Reduction
+    public static MODIFIERS radiantDashMoveSpeedBuff = new(MODIFIER_IDS.RADIANT_DASH_MOVESPD_BUFF, 4f); //400% Speed
 
     public static List<Powerups.POWERUP_TYPE> powerupList = new List<Powerups.POWERUP_TYPE>() { Powerups.POWERUP_TYPE.CD_REDUCTION_BUFF, Powerups.POWERUP_TYPE.MOVE_SPEED_BUFF, Powerups.POWERUP_TYPE.DMG_RED_BUFF, Powerups.POWERUP_TYPE.MINOR_HEAL, Powerups.POWERUP_TYPE.MAJOR_HEAL };
     public static List<StatusEffect.EffectType> positiveEffects = new List<StatusEffect.EffectType>() { StatusEffect.EffectType.REGEN, StatusEffect.EffectType.PROTECTED, StatusEffect.EffectType.CONTROL_IMMUNE, StatusEffect.EffectType.HASTE, StatusEffect.EffectType.IMMORTAL, StatusEffect.EffectType.ENERGISED};

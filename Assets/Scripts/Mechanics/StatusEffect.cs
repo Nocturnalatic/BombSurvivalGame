@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class StatusEffect
 {
+    [System.Flags]
+    public enum EffectFlag
+    {
+        none = 1,
+        noStackDuration = 2,
+    }
     public StatusEffect()
     {
 
     }
     
-    public StatusEffect(EffectType effectType, float effectDuration, float effectMultiplier, bool effectStackable, BuffType effectOrientation = BuffType.NEGATIVE)
+    public StatusEffect(EffectType effectType, float effectDuration, float effectMultiplier, bool effectStackable, BuffType effectOrientation = BuffType.NEGATIVE, EffectFlag flgs = EffectFlag.none)
     {
         type = effectType;
         original_duration = effectDuration;
@@ -17,6 +23,7 @@ public class StatusEffect
         d_Multiplier = effectMultiplier;
         stackable = effectStackable;
         buffType = effectOrientation;
+        flags = flgs;
     }
     public enum EffectType
     {
@@ -48,4 +55,5 @@ public class StatusEffect
     public bool stackable; //Whether the effect will stack by itself
     public int stacks = 1; //Stack count for stackable effects
     public BuffType buffType = BuffType.NEGATIVE; //Whether this effect is positive or not;
+    public EffectFlag flags;
 }

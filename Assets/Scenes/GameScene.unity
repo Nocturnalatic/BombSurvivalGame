@@ -8654,8 +8654,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -22.5}
-  m_SizeDelta: {x: 118.583, y: 25}
+  m_AnchoredPosition: {x: -2.9444, y: -22.5}
+  m_SizeDelta: {x: 123.9364, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &875934009
 MonoBehaviour:
@@ -8677,7 +8677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HARD 5
+  m_text: hard|4.5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6b416d331c0312c458eac97cf1726907, type: 2}
   m_sharedMaterial: {fileID: 2764519967253577603, guid: 6b416d331c0312c458eac97cf1726907, type: 2}
@@ -8686,16 +8686,16 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278195711
-  m_fontColor: {r: 1, g: 0.08141991, b: 0, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 1
+  m_colorMode: 2
   m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
+    topLeft: {r: 1, g: 0, b: 0, a: 1}
+    topRight: {r: 1, g: 0, b: 0, a: 1}
+    bottomLeft: {r: 0.9491441, g: 1, b: 0, a: 1}
+    bottomRight: {r: 0.9491441, g: 1, b: 0, a: 1}
+  m_fontColorGradientPreset: {fileID: 11400000, guid: 909a3d94927306f4290886493fe13190, type: 2}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
@@ -8710,7 +8710,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 1
   m_fontSizeMax: 32.1
-  m_fontStyle: 1
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -10860,6 +10860,13 @@ MonoBehaviour:
   - {fileID: 6556976972515063848, guid: 5c5887331f733db4ab7297955f40448e, type: 3}
   MapThumbnails:
   - {fileID: 21300000, guid: 391f5c641221b27499d516be34a5826a, type: 3}
+  intensityColorGradients:
+  - {fileID: 11400000, guid: 950ef8445888ab14b856f2fbf29f71c0, type: 2}
+  - {fileID: 11400000, guid: ef42c45487a906049b1cab6a8740c5f3, type: 2}
+  - {fileID: 11400000, guid: 9510624faa3cca949a0a7cc5fcb3cef6, type: 2}
+  - {fileID: 11400000, guid: fb5f43b9520f6594ebef5cbd46fd7fb5, type: 2}
+  - {fileID: 11400000, guid: 86b3844acbf9feb4a84aa6b9f0d67330, type: 2}
+  - {fileID: 11400000, guid: 909a3d94927306f4290886493fe13190, type: 2}
   ArenaFloor: {fileID: 1347130342}
   Lava: {fileID: 196792471}
   genericBomb: {fileID: 7237942699976219641, guid: 315b9acdfb278ff4084469721e23dc8a, type: 3}

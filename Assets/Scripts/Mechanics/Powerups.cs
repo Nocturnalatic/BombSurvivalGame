@@ -26,6 +26,10 @@ public class Powerups : MonoBehaviour
             if (player.selectedPerk.ID == 3 && player.selectedPerk.enabled)
             {
                 StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 8), 2, false, StatusEffect.BuffType.POSITIVE);
+                if (effectSelected.type == StatusEffect.EffectType.REGEN)
+                {
+                    effectSelected.stackable = true;
+                }
                 player.AddStatus(effectSelected);
             }
         }
@@ -35,8 +39,8 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupCDRedBuff;
                     player.cooldownReductionModifiers.Add(effect);
-                    player.CreateInfoText("Cooldown Improved!", Color.cyan);
-                    yield return new WaitForSeconds(Random.Range(5, 11));
+                    player.CreateInfoText("Cooldown Reduction", Color.cyan);
+                    yield return new WaitForSeconds(8);
                     player.cooldownReductionModifiers.Remove(effect);
                     break;
                 }
@@ -44,8 +48,8 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupMoveSpdBuff;
                     player.gameObject.GetComponent<PlayerControls>().moveSpeedModifiers.Add(effect);
-                    player.CreateInfoText("Movement Speed Improved!", Color.cyan);
-                    yield return new WaitForSeconds(Random.Range(5, 11));
+                    player.CreateInfoText("Movement Speed Up", Color.cyan);
+                    yield return new WaitForSeconds(8);
                     player.gameObject.GetComponent<PlayerControls>().moveSpeedModifiers.Remove(effect);
                     break;
                 }
@@ -53,8 +57,8 @@ public class Powerups : MonoBehaviour
                 {
                     var effect = Globals.powerupDmgRedBuff;
                     player.damageResistModifiers.Add(effect);
-                    player.CreateInfoText("Resistance Improved!", Color.cyan);
-                    yield return new WaitForSeconds(Random.Range(5, 11));
+                    player.CreateInfoText("Damage Reduction", Color.cyan);
+                    yield return new WaitForSeconds(8);
                     player.damageResistModifiers.Remove(effect);
                     break;
                 }

@@ -1,6 +1,5 @@
 Nukes will causes a red glow. Keep an eye out!
 Flashbangs are hard to spot, make sure to stay alert!
-Nukes will only spawn at Intensity 3 and higher.
 Make sure to turn around to check for bombs that may have appeared behind you.
 Looking up is as important as looking down.
 Meteors don't damage you much, but their effects can be devastating.
@@ -10,29 +9,32 @@ The Random skill will improve the skill chosen upon usage.
 Meteors, like nukes, will also cause glows near their landing zone.
 Do not try hardcode mode if you're new.
 Terrain will gradually crack as they get damaged.
-FROSTED and BURNING can stack, surprising.
+FROSTED and BURNING can co-exist, surprisingly.
 You can survive falling into lava by being PROTECTED or using a cure.
 BURNING deals damage over time and the damage can stack.
 STUNNED prevents you from doing anything.
 FROSTED slows you, your cooldowns and makes you take more damage.
-REGENERATION will regenerate health over time.
+REGENERATION will regenerate health and stamina over time.
 PROTECTED prevents you from taking damage.
 IMMOVABLE which prevents you from being STUNNED, FROSTED or knocked back.
 HASTE increases your movement speed.
-Bombs require line of sight to damage you. Hiding behind a tree from a nuke works.
+Bombs require line of sight to damage you. Any cover is sufficient.
 The developer is actually homosexual! #GayPride!
 Homing Missiles will only target your position once, not constantly.
-Extra Health, called Shields, is not affected by damage reduction effects.
-There is no cap to stacking certain attributes.
+Shields are not affected by damage manipulation effects.
+Stacking attribues will have diminishing returns!.
 Your shield bar is indicated with a dark blue portion.
 Use corners wisely, for they can save as well as trap you.
 Make a plan to help you combat certain difficulties.
 It is not wise to run through danger to grab powerups.
 Nukes emit a bright red laser, stay clear of it.
 Dropping to a lower level is a one way trip, usually. Think before leaping.
-EMP bombs can be quite the nuisance if stacking shields and buffs.
-CORRUPTED destroys all ongoing buffs and shields.
+EMP bombs will destroy all shields, no matter how much.
+CORRUPTED destroys all buffs and stops skill usage and their cooldowns.
 Black hole bombs can suck black hole bombs, it will be wise to dodge them.
-Coin bombs disguise themselves as normal coins, they are heavier and less shiny.
+Coin bombs disguise themselves as normal coins, they have a slight discolor.
 Power ups can block line of sight, use one to dodge a bomb before collecting.
 ENERGISED speeds up your skill cooldowns.
+All buffs and debuffs can stack up to 60 seconds.
+Feeling motion sick? Turn off visual effects can help you cope.
+Effects that stack in power will have their durations greatly diminished.

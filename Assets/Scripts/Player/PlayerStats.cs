@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using TMPro;
+using System.Linq;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -76,6 +77,11 @@ public class PlayerStats : MonoBehaviour
     public bool isInFire = false;
     bool isChilled = false;
     bool skillReadyPlayed = true;
+
+    [Header("Additional Stats UI")]
+    public TextMeshProUGUI MSpdText;
+    public TextMeshProUGUI DmgRedText;
+    public TextMeshProUGUI CDRedText;
 
     #region Scoring Variables
     public float damageTaken = 0;
@@ -281,22 +287,28 @@ public class PlayerStats : MonoBehaviour
 
     public void AddStatus(StatusEffect newEffect)
     {
+        if (newEffect.buffType == StatusEffect.BuffType.NEGATIVE)
+        {
+            newEffect.duration /= effectResistance;
+        }
+        else
+        {
+            newEffect.duration *= effectResistance;
+        }
+        newEffect.original_duration = newEffect.duration;
+        if (newEffect.type == StatusEffect.EffectType.STUNNED)
+        {
+            StartCoroutine(StunBlur(newEffect.original_duration));
+        }
         if (newEffect.stackable == false) //Not stackable, check whether the player has an effect
         {
             foreach (StatusEffect existing in effects)
             {
                 if (existing.type == newEffect.type) //The player has an existing effect
                 {
-                    if (existing.duration >= newEffect.original_duration) //Check which effect has a longer duration
-                    {
-                        //Ignore the new effect since the player has an existing longer effect
-                    }
-                    else
-                    {
-                        //Add the new longer effect and remove the old shorter effect
-                        effects.Remove(existing);
-                        effects.Add(newEffect);
-                    }
+                    existing.duration += newEffect.duration;
+                    existing.duration = Mathf.Min(60, existing.duration);
+                    existing.original_duration = existing.duration;
                     return;
                 }
             }
@@ -308,22 +320,23 @@ public class PlayerStats : MonoBehaviour
             {
                 if (existing.type == newEffect.type)
                 {
-                    if (existing.d_Multiplier > newEffect.d_Multiplier) // effect will stack and diminish with f
+                    StatusEffect finalEffect = new StatusEffect();
+                    finalEffect.type = existing.type;
+                    finalEffect.stackable = true;
+                    finalEffect.stacks = existing.stacks + 1;
+                    finalEffect.buffType = existing.buffType;
+                    finalEffect.d_Multiplier = Mathf.Max(existing.d_Multiplier, newEffect.d_Multiplier) + (Mathf.Min(existing.d_Multiplier, newEffect.d_Multiplier) * 0.5f);
+                    if (newEffect.flags.HasFlag(StatusEffect.EffectFlag.noStackDuration))
                     {
-                        existing.d_Multiplier += (newEffect.d_Multiplier * 0.5f);
-                        existing.duration = newEffect.duration;
-                        existing.original_duration = newEffect.original_duration;
-                        existing.stacks++;
+                        finalEffect.duration = Mathf.Max(existing.duration, newEffect.duration);
                     }
                     else
                     {
-                        newEffect.d_Multiplier += (existing.d_Multiplier * 0.5f);
-                        newEffect.stacks++;
-                        newEffect.original_duration = existing.original_duration;
-                        newEffect.duration = existing.original_duration;
-                        effects.Remove(existing);
-                        effects.Add(newEffect);
+                        finalEffect.duration = Mathf.Min(existing.duration, newEffect.duration) + (Mathf.Max(existing.duration, newEffect.duration) * 0.5f);
                     }
+                    finalEffect.original_duration = finalEffect.duration;
+                    effects.Remove(existing);
+                    effects.Add(finalEffect);
                     return;
                 }
             }
@@ -335,15 +348,15 @@ public class PlayerStats : MonoBehaviour
     {
         
         List<StatusEffect> toberemoved = new List<StatusEffect>();
-        foreach (StatusEffect effect in effects) 
+        foreach (StatusEffect effect in effects.ToList()) 
         {
             if (effect.buffType == StatusEffect.BuffType.NEGATIVE)
             {
-                effect.duration -= Time.deltaTime * effectResistance;
+                effect.duration -= Time.deltaTime;
             }
             else
             {
-                effect.duration -= Time.deltaTime / effectResistance;
+                effect.duration -= Time.deltaTime;
             }
             if (effect.duration > 0)
             {
@@ -370,7 +383,6 @@ public class PlayerStats : MonoBehaviour
                     if (!isChilled)
                     {
                         PlayerControls.instance.moveSpeedModifiers.Add(Globals.chillMovementDebuff);
-                        cooldownReduction = 0.5f;
                         damageResistModifiers.Add(Globals.chillDamageDebuff);
                         cooldownReductionModifiers.Add(Globals.chillCDRedDebuff);
                         isChilled = true;
@@ -402,6 +414,14 @@ public class PlayerStats : MonoBehaviour
                     glitchedSkillEffect.material.SetTextureOffset("_MainTex", new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f)));
                     Dispel(true);
                 }
+                if (effect.type == StatusEffect.EffectType.SUCTION)
+                {
+                    if (effect.stacks >= 100)
+                    {
+                        AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 1.5f, 1, false));
+                        effect.stacks = 0;
+                    }
+                }
                 if (effect.type == StatusEffect.EffectType.ENERGISED)
                 {
                     if (!cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.ENERGISED_CDRED_BUFF))
@@ -426,7 +446,7 @@ public class PlayerStats : MonoBehaviour
                 if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF)) //Bug 2 Attempt Fix
                 {
                     PlayerControls.instance.moveSpeedModifiers.RemoveAt(PlayerControls.instance.moveSpeedModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
-                    damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF));
+                    damageResistModifiers.RemoveAt(damageResistModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_DAMAGERED_DEBUFF));
                     cooldownReductionModifiers.RemoveAt(cooldownReductionModifiers.FindIndex(x => x.ID == Globals.MODIFIER_IDS.CHILLED_CDRED_DEBUFF));
                 }
             }
@@ -469,33 +489,38 @@ public class PlayerStats : MonoBehaviour
         {
             attMod.SetActive(false);
         }
+        cooldownUI.GetComponentInChildren<TextMeshProUGUI>().color = MSpdText.color = DmgRedText.color = CDRedText.color = Color.white;
         float result = 1;
         foreach (Globals.MODIFIERS mod in damageResistModifiers)
         {
-            result *= mod.value;
+            result *= 1 - mod.value;
         }
         damageReduction = result;
         float result2 = 1;
         foreach (Globals.MODIFIERS mod in cooldownReductionModifiers)
         {
-            result2 *= mod.value;
+            result2 *= 1 - mod.value;
         }
         cooldownReduction = result2;
-        if (cooldownReduction < 1)
+        if (cooldownReduction > 1)
         {
             AttributeModifiers[5].SetActive(true);
+            cooldownUI.GetComponentInChildren<TextMeshProUGUI>().color = CDRedText.color = Color.red;
         }
-        else if (cooldownReduction > 1)
+        else if (cooldownReduction < 1)
         {
             AttributeModifiers[4].SetActive(true);
+            cooldownUI.GetComponentInChildren<TextMeshProUGUI>().color = CDRedText.color = Color.green;
         }
-        if (damageReduction > 1)
+        if (damageReduction < 1)
         {
             AttributeModifiers[2].SetActive(true);
+            DmgRedText.color = Color.green;
         }
-        else if (damageReduction < 1)
+        else if (damageReduction > 1)
         {
             AttributeModifiers[3].SetActive(true);
+            DmgRedText.color = Color.red;
         }
         if (effectResistance > 1)
         {
@@ -512,7 +537,8 @@ public class PlayerStats : MonoBehaviour
             {
                 StatusEffect t_effect = GetEffect(type);
                 UI_Icons[i].SetActive(true);
-                UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(t_effect.original_duration / t_effect.duration, 0, 5);
+                UI_Icons[i].GetComponent<Animator>().enabled = t_effect.duration < 5;
+                UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(5 / t_effect.duration, 0, 5);
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
                 {
@@ -526,6 +552,10 @@ public class PlayerStats : MonoBehaviour
             else
             {
                 UI_Icons[i].SetActive(false);
+                UI_Icons[i].transform.Find("UIIcon").GetComponent<Image>().color = Color.white;
+                Color tmp_color = UI_Icons[i].transform.Find("Image").GetComponent<Image>().color;
+                UI_Icons[i].transform.Find("Image").GetComponent<Image>().color = new Color(tmp_color.r, tmp_color.g, tmp_color.b, 1);
+                UI_Icons[i].transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().color = Color.white;
             }
         }
 
@@ -712,7 +742,7 @@ public class PlayerStats : MonoBehaviour
                     remainingDmg = 0;
                 }
             }
-            float finalDamage = remainingDmg / damageReduction;
+            float finalDamage = remainingDmg * damageReduction;
             if (type != DAMAGE_TYPE.BURN && state == GAME_STATE.IN_GAME)
             {
                 GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
@@ -770,7 +800,7 @@ public class PlayerStats : MonoBehaviour
                 {
                     Dispel();
                     AddStatus(new StatusEffect(StatusEffect.EffectType.IMMORTAL, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
-                    AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 5, maxhealth / 5f, false, StatusEffect.BuffType.SUPER_POSITIVE));
+                    AddStatus(new StatusEffect(StatusEffect.EffectType.REGEN, 5, maxhealth / 5f, true, StatusEffect.BuffType.SUPER_POSITIVE));
                     AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
                     AddStatus(new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 5, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
                     playerBoosts.Remove(playerBoosts.Find(x => x.type == Globals.BOOST_TYPE.EXTRA_LIFE));
@@ -850,10 +880,44 @@ public class PlayerStats : MonoBehaviour
         ca.colorFilter.Override(Color.white);
     }
 
+    private IEnumerator StunBlur(float stunDuration)
+    {
+        DepthOfField dof;
+        volume.profile.TryGet(out dof);
+        float duration = -0.5f;
+        while (duration < stunDuration)
+        {
+            dof.focusDistance.Override(Mathf.Lerp(0.1f, 10, duration / stunDuration));
+            duration += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private void UpdateAddStatUI()
+    {
+        MSpdText.transform.parent.gameObject.SetActive(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
+        MSpdText.text = $"Movement Speed: {100 * PlayerControls.instance.moveSpeed / PlayerControls.instance.baseMoveSpeed}%";
+        DmgRedText.text = $"Damage Reduction: {(1 - damageReduction) * 100}%";
+        CDRedText.text = $"Cooldown Reduction: {(1 - cooldownReduction) * 100}%";
+        if (PlayerControls.instance.moveSpeed > PlayerControls.instance.baseMoveSpeed)
+        {
+            MSpdText.color = Color.green;
+        }
+        else if (PlayerControls.instance.moveSpeed < PlayerControls.instance.baseMoveSpeed)
+        {
+            MSpdText.color = Color.red;
+        }
+        else
+        {
+            MSpdText.color = Color.white;
+        }
+    }
+
     private void Update()
     {
         ProcessEffects();
         ProcessStatusUI();
+        UpdateAddStatUI();
         ToggleLowHPMode(health / maxhealth <= 0.35f);
         if (noiseCooldown > 0)
         {
@@ -867,7 +931,7 @@ public class PlayerStats : MonoBehaviour
                 skillReadyPlayed = false;
                 if (!HasEffect(StatusEffect.EffectType.CORRUPTED))
                 {
-                    selectedSkill.currentcooldown -= Time.deltaTime * cooldownReduction;
+                    selectedSkill.currentcooldown -= Time.deltaTime / cooldownReduction;
                 }
                 cooldownUI.fillAmount = selectedSkill.currentcooldown / selectedSkill.cooldown;
                 cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = System.Math.Ceiling(selectedSkill.currentcooldown).ToString();

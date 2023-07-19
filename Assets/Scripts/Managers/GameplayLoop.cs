@@ -24,6 +24,7 @@ public class GameplayLoop : MonoBehaviour
     public Image roundTimerBar;
     public List<GameObject> Environments;
     public List<Sprite> MapThumbnails;
+    public List<TMP_ColorGradient> intensityColorGradients;
     [SerializeField]
     GameObject ArenaFloor;
     [SerializeField]
@@ -142,7 +143,7 @@ public class GameplayLoop : MonoBehaviour
     {
         Intensity = v;
         SetIntensityColor();
-        intensityText.text = $"{GetIntensityText()} {Intensity}";
+        intensityText.text = $"{GetIntensityText()}|{Intensity}";
         SceneControl.instance.SetSkybox(Intensity >= 4);
     }
 
@@ -157,7 +158,7 @@ public class GameplayLoop : MonoBehaviour
         //Specialise rng for nukes and other big bombs
         if (powerupTimer <= 0)
         {
-            powerupTimer = Random.Range(20, 40);
+            powerupTimer = Random.Range(7, 18);
             Instantiate(powerUp, GenerateBombSpawn(), Quaternion.identity, bombsParent);
         }
         if (coinTimer <= 0)
@@ -169,7 +170,7 @@ public class GameplayLoop : MonoBehaviour
         {
             MaxNukeCount = (Intensity >= 5.0f) ? 2 : 1;
             float nukeChance = Random.Range(0, 1f);
-            if ((nukeChance <= 0.1 + (Intensity / 5f - 0.6f)) && NukeCount < MaxNukeCount)
+            if ((nukeChance <= (Intensity / 7f - 0.6f)) && NukeCount < MaxNukeCount)
             {
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
@@ -271,39 +272,7 @@ public class GameplayLoop : MonoBehaviour
 
     public void SetIntensityColor()
     {
-        switch(GetIntensity())
-        {
-            case INTENSITY.LOW:
-                {
-                    intensityText.color = Color.green;
-                    break;
-                }
-            case INTENSITY.MID:
-                {
-                    intensityText.color = Color.yellow;
-                    break;
-                }
-            case INTENSITY.HIGH:
-                {
-                    intensityText.color = Color.red;
-                    break;
-                }
-            case INTENSITY.EXTREME:
-                {
-                    intensityText.color = Color.magenta;
-                    break;
-                }
-            case INTENSITY.GLITCH:
-                {
-                    intensityText.color = Color.cyan;
-                    break;
-                }
-            case INTENSITY.CRASH:
-                {
-                    intensityText.color = new Color(1, 0.5f, 0);
-                    break;
-                }
-        }
+        intensityText.colorGradientPreset = intensityColorGradients[(int)GetIntensity()];
     }
 
     float GetWinningPlayers()
@@ -371,9 +340,9 @@ public class GameplayLoop : MonoBehaviour
             case INTENSITY.HIGH:
                 return "HARD";
             case INTENSITY.EXTREME:
-                return "EXTREME";
+                return "INSANE";
             case INTENSITY.GLITCH:
-                return "GLITCH";
+                return "MASTER";
             case INTENSITY.CRASH:
                 return "CRASH";
             default:
@@ -654,7 +623,7 @@ public class GameplayLoop : MonoBehaviour
         {
             Intensity -= 0.5f;
         }
-        Intensity = Mathf.Clamp(Intensity, 1.0f, 9.0f);
+        Intensity = Mathf.Clamp(Intensity, 1.0f, 10.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
         GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";

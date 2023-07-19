@@ -84,7 +84,7 @@ public class Bomb : MonoBehaviour
                             if (type == BOMB_TYPE.FLASHBANG)
                             {
                                 col.GetComponentInParent<PlayerStats>().Flash();
-                                StatusEffect effect = new(StatusEffect.EffectType.STUNNED, 3 * distanceMod, 1, false);
+                                StatusEffect effect = new(StatusEffect.EffectType.STUNNED, 4 * distanceMod, 1, false);
                                 col.GetComponentInParent<PlayerStats>().AddStatus(effect);
                             }
                             else if (type == BOMB_TYPE.EMP)

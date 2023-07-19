@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detonationTime: 5
-  explosionRadius: 12
+  explosionRadius: 10
   explosionForce: 200
   knockbackForce: 0
   damage: 10
