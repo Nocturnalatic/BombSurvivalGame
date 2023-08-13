@@ -5853,6 +5853,7 @@ MonoBehaviour:
   damage: 125
   speedMultiplier: 1
   isNuke: 1
+  radiationField: {fileID: 7150327196213900706, guid: deb756aa575cb544fbd09223d4640ecb, type: 3}
   hissingNoise: {fileID: 0}
   trail: {fileID: 0}
 --- !u!82 &5128013164650050134

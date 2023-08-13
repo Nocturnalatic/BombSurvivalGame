@@ -11,6 +11,7 @@ public class Nuke : MonoBehaviour
     public float speedMultiplier = 1f;
     bool triggered = false;
     public bool isNuke = true;
+    public GameObject radiationField;
     Rigidbody localrb;
     [SerializeField]
     AudioSource hissingNoise;
@@ -27,6 +28,10 @@ public class Nuke : MonoBehaviour
 
     IEnumerator Explode()
     {
+        if (isNuke)
+        {
+            Instantiate(radiationField, transform.position, Quaternion.identity, transform.parent);
+        }
         Collider[] result = Physics.OverlapSphere(transform.position, explosionRadius);
         foreach (Collider col in result)
         {
@@ -60,6 +65,10 @@ public class Nuke : MonoBehaviour
                             dir += Vector3.up;
                             float distanceMod = Mathf.Abs((explosionRadius - Vector3.Distance(col.transform.position, transform.position)) / explosionRadius);
                             col.GetComponentInParent<PlayerStats>().DamagePlayer(damage * distanceMod, transform.position);
+                            if (isNuke)
+                            {
+                                col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.VULNERABLE, 10, 1, false));
+                            }
                             col.GetComponentInParent<PlayerControls>().AddKnockback(dir, knockbackForce * distanceMod);
                         }
                     }

@@ -159,11 +159,11 @@ public class PlayerControls : MonoBehaviour
         {
             if (staminaRegenDelay > 0)
             {
-                staminaRegenDelay -= Time.deltaTime * PlayerStats.instance.cooldownReduction;
+                staminaRegenDelay -= Time.deltaTime / PlayerStats.instance.cooldownReduction;
             }
             else
             {
-                stamina += Time.deltaTime * 20 * PlayerStats.instance.cooldownReduction;
+                stamina += Time.deltaTime * 20 / PlayerStats.instance.cooldownReduction;
             }
         }
         stamina = Mathf.Clamp(stamina, 0, maxStamina);
@@ -218,7 +218,7 @@ public class PlayerControls : MonoBehaviour
 
     void UpdateGravity()
     {
-        velocity.y += gravity * Time.deltaTime * gravityMultiplier; // update player velocity
+        velocity.y += gravity * Time.deltaTime * gravityMultiplier * (Physics.gravity.magnitude / 9.81f); // update player velocity
         controller.Move(velocity * Time.deltaTime); // apply fall to player
     }
 }

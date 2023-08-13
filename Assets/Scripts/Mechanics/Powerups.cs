@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Powerups : MonoBehaviour
 {
@@ -20,11 +21,15 @@ public class Powerups : MonoBehaviour
     IEnumerator ActivatePowerup(POWERUP_TYPE type, PlayerStats player)
     {
         player.powerupsCollected += 1;
-        player.Dispel();
         if (player.selectedPerk != null)
         {
             if (player.selectedPerk.ID == 3 && player.selectedPerk.enabled)
             {
+                var buffList = player.effects.Where(x => x.buffType == StatusEffect.BuffType.NEGATIVE);
+                foreach (var fx in buffList.ToList())
+                {
+                    player.ConvertEffect(fx);
+                }
                 StatusEffect effectSelected = new StatusEffect(Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)], Random.Range(5, 8), 2, false, StatusEffect.BuffType.POSITIVE);
                 if (effectSelected.type == StatusEffect.EffectType.REGEN)
                 {
@@ -33,6 +38,7 @@ public class Powerups : MonoBehaviour
                 player.AddStatus(effectSelected);
             }
         }
+        player.Dispel();
         switch (type)
         {
             case POWERUP_TYPE.CD_REDUCTION_BUFF:

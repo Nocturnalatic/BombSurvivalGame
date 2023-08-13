@@ -10847,6 +10847,7 @@ MonoBehaviour:
   Intensity: 1
   GameInProgress: 0
   roundSeconds: 0
+  gameMode: 0
   NukeCount: 0
   GigaBombCount: 0
   bombsParent: {fileID: 764104423}
@@ -10855,6 +10856,7 @@ MonoBehaviour:
   globalText: {fileID: 552298367}
   intensityText: {fileID: 875934009}
   roundTimerText: {fileID: 400359650}
+  gamemodeText: {fileID: 1448734765}
   roundTimerBar: {fileID: 1742259542}
   Environments:
   - {fileID: 6556976972515063848, guid: 5c5887331f733db4ab7297955f40448e, type: 3}

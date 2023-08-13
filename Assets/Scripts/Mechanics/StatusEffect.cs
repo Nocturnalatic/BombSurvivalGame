@@ -12,7 +12,7 @@ public class StatusEffect
     }
     public StatusEffect()
     {
-
+        buffType = BuffType.NEGATIVE;
     }
     
     public StatusEffect(EffectType effectType, float effectDuration, float effectMultiplier, bool effectStackable, BuffType effectOrientation = BuffType.NEGATIVE, EffectFlag flgs = EffectFlag.none)
@@ -38,6 +38,10 @@ public class StatusEffect
         CORRUPTED,
         IMMORTAL,
         ENERGISED,
+        VULNERABLE,
+        RADIATION,
+        QUICKNESS,
+        SLOWNESS,
         TOTAL
     }
 

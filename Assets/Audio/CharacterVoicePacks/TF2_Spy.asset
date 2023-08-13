@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132c7abd083684e4ba55607b56e9c2cb, type: 3}
+  m_Name: TF2_Spy
+  m_EditorClassIdentifier: 
+  lightDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: 7ea1b929bc431914f98f41f51831146e, type: 3}
+  - {fileID: -6731454708704800911, guid: f9ae40947c989df47af261064cecf931, type: 3}
+  - {fileID: -6731454708704800911, guid: 60131a4be2d5dd14ab1db90a04104846, type: 3}
+  - {fileID: -6731454708704800911, guid: 37587dd9467383148920602b64677620, type: 3}
+  heavyDamageTakenNoises:
+  - {fileID: -6731454708704800911, guid: e3a048ea61ada314db1d050e512539d0, type: 3}
+  - {fileID: -6731454708704800911, guid: 0a0da2942bfdf8d4fa31bfe77f2c087d, type: 3}
+  - {fileID: -6731454708704800911, guid: 672dfe619ad80a94d98e5a3ff882f5a8, type: 3}
+  - {fileID: -6731454708704800911, guid: e7d71f2d373f8a441b9111ae75aac03b, type: 3}
+  - {fileID: -6731454708704800911, guid: efc947df7ef794f4493cba04c2024094, type: 3}
+  deathNoises:
+  - {fileID: -6731454708704800911, guid: 79d53385a4b4a374293f7f2b733a5fc5, type: 3}
+  - {fileID: -6731454708704800911, guid: b741da138d5820b44ab68967e4e17191, type: 3}
+  - {fileID: -6731454708704800911, guid: adb81776ef42f9f44a182f4003f870a5, type: 3}

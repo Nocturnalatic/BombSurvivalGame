@@ -18,7 +18,7 @@ public class Blackhole : MonoBehaviour
     [SerializeField]
     AudioSource beepNoise;
     [SerializeField]
-    GameObject blackholeFX;
+    GameObject blackholeFX, FX2;
     public Animator animator;
     WaitForFixedUpdate waitFrame = new WaitForFixedUpdate();
 
@@ -47,6 +47,7 @@ public class Blackhole : MonoBehaviour
         animator.enabled = false;
         GetComponent<Rigidbody>().isKinematic = true;
         blackholeFX.SetActive(true);
+        FX2.SetActive(true);
         while (blackholeDuration > 0)
         {
             Collider[] result = Physics.OverlapSphere(transform.position, explosionRadius);

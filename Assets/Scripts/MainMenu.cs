@@ -22,6 +22,11 @@ public class MainMenu : MonoBehaviour
         Application.OpenURL("https://lionwayne7.wixsite.com/bombsurvival/appupdates");
     }
 
+    public void OpenFandom()
+    {
+        Application.OpenURL("https://bomb-survival.fandom.com/wiki/Bomb_Survival_Wiki");
+    }
+
     public void ExitGame()
     {
         //In The Future, Saving Data function should go here

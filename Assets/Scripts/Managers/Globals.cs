@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 public class Globals
 {
@@ -14,6 +16,22 @@ public class Globals
             value = v;
         }
     }
+
+    public enum GAME_MODES
+    {
+        CLASSIC = 0,
+        CURSED = 1,
+        LITTLE_GUYS,
+        LOW_GRAVITY,
+        TOTAL
+    }
+
+    public static List<string> GameModeDescriptions = new List<string>() { 
+        "Your standard game mode. Survive until the end!",
+        "Bomb explosions will apply random debuffs. Cleanses are key!",
+        "Only bombs and cluster bombs will spawn. Watch your feet!",
+        "Gravity is reduced, everything becomes funky. Enjoy this mode!"
+    };
 
     public enum BOOST_TYPE
     {
@@ -32,6 +50,9 @@ public class Globals
         TANKY_MOVEMENT_DEBUFF = 3,
         CHILLED_CDRED_DEBUFF = 4,
         QNQ_DMGRED_DEBUFF = 5,
+        VULNERABLE_DMGRED_DEBUFF = 6,
+        SLOWNESS_CDRED_DEBUFF = 7,
+        SLOWNESS_MOVESPD_DEBUFF = 8,
         TANKY_DAMAGERED_BUFF = -1,
         HASTE_MOVEMENT_BUFF = -2,
         POWERUP_CDRED_BUFF = -3,
@@ -43,28 +64,35 @@ public class Globals
         EVT_PLROVR_CDRED_BUFF = -9,
         ENERGISED_CDRED_BUFF = -10,
         RADIANT_DASH_MOVESPD_BUFF = -11,
+        QUICKNESS_MOVESPD_BUFF = -12,
     }
 
-    public static MODIFIERS chillMovementDebuff = new(MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF, -0.25f); //25% Slow
-    public static MODIFIERS chillDamageDebuff = new(MODIFIER_IDS.CHILLED_DAMAGERED_DEBUFF, -0.5f); //50% Damage Taken
-    public static MODIFIERS hardcoreMovementDebuff = new(MODIFIER_IDS.HARDCORE_MOVEMENT_DEBUFF, -0.1f); //10% Slow
-    public static MODIFIERS tankyMovementDebuff = new(MODIFIER_IDS.TANKY_MOVEMENT_DEBUFF, -0.2f); //20% Slow
-    public static MODIFIERS tankydamageBuff = new(MODIFIER_IDS.TANKY_DAMAGERED_BUFF, 0.75f); //50% Dmg Red
-    public static MODIFIERS hasteMovementBuff = new(MODIFIER_IDS.HASTE_MOVEMENT_BUFF, 0.33f); //33% Speed
-    public static MODIFIERS chillCDRedDebuff = new(MODIFIER_IDS.CHILLED_CDRED_DEBUFF, -0.5f); //50% CD Penalty
-    public static MODIFIERS powerupCDRedBuff = new(MODIFIER_IDS.POWERUP_CDRED_BUFF, 0.5f); //50% CD Reduction
-    public static MODIFIERS powerupMoveSpdBuff = new(MODIFIER_IDS.POWERUP_MOVESPD_BUFF, 0.25f); //25% Speed
-    public static MODIFIERS powerupDmgRedBuff = new(MODIFIER_IDS.POWERUP_DMGRED_BUFF, 0.5f); //50% Dmg Red
-    public static MODIFIERS qnqDmgRedDebuff = new(MODIFIER_IDS.QNQ_DMGRED_DEBUFF, -0.25f); //25% Dmg Taken
-    public static MODIFIERS qnqMoveSpdBuff = new(MODIFIER_IDS.QNQ_MOVESPD_BUFF, 0.25f); //25% Speed
-    public static MODIFIERS qnqCDRedBuff = new(MODIFIER_IDS.QNQ_CDRED_BUFF, 0.2f); //20% CD Reduction
+    public static MODIFIERS chillMovementDebuff = new(MODIFIER_IDS.CHILLED_MOVEMENT_DEBUFF, -0.25f); //-25% M. Speed
+    public static MODIFIERS chillDamageDebuff = new(MODIFIER_IDS.CHILLED_DAMAGERED_DEBUFF, -0.25f); //+25% Damage Taken
+    public static MODIFIERS hardcoreMovementDebuff = new(MODIFIER_IDS.HARDCORE_MOVEMENT_DEBUFF, -0.1f); //-10% M. Speed
+    public static MODIFIERS tankyMovementDebuff = new(MODIFIER_IDS.TANKY_MOVEMENT_DEBUFF, -0.2f); //-20% M. Speed
+    public static MODIFIERS tankydamageBuff = new(MODIFIER_IDS.TANKY_DAMAGERED_BUFF, 0.5f); //+50% Damage Red.
+    public static MODIFIERS hasteMovementBuff = new(MODIFIER_IDS.HASTE_MOVEMENT_BUFF, 0.50f); //+50% Movement Speed
+    public static MODIFIERS chillCDRedDebuff = new(MODIFIER_IDS.CHILLED_CDRED_DEBUFF, -0.25f); //-25% CD Red.
+    public static MODIFIERS powerupCDRedBuff = new(MODIFIER_IDS.POWERUP_CDRED_BUFF, 0.5f); //+50% CD Red.
+    public static MODIFIERS powerupMoveSpdBuff = new(MODIFIER_IDS.POWERUP_MOVESPD_BUFF, 0.25f); //+25% M. Speed
+    public static MODIFIERS powerupDmgRedBuff = new(MODIFIER_IDS.POWERUP_DMGRED_BUFF, 0.5f); //+50% Damage Red.
+    public static MODIFIERS qnqDmgRedDebuff = new(MODIFIER_IDS.QNQ_DMGRED_DEBUFF, -0.25f); //+25% Dmg Taken
+    public static MODIFIERS qnqMoveSpdBuff = new(MODIFIER_IDS.QNQ_MOVESPD_BUFF, 0.25f); //+25% M. Speed
+    public static MODIFIERS qnqCDRedBuff = new(MODIFIER_IDS.QNQ_CDRED_BUFF, 0.2f); //+20% CD Reduction
     public static MODIFIERS eventPlrOvrMoveSpdBuff = new(MODIFIER_IDS.EVT_PLROVR_MSPD_BUFF, 2f); 
     public static MODIFIERS eventPlrOvrCDRedBuff = new(MODIFIER_IDS.EVT_PLROVR_CDRED_BUFF, 0.8f); //80% CD Reduction
     public static MODIFIERS energisedCDRedBuff = new(MODIFIER_IDS.ENERGISED_CDRED_BUFF, 0.25f); //25% CD Reduction
     public static MODIFIERS radiantDashMoveSpeedBuff = new(MODIFIER_IDS.RADIANT_DASH_MOVESPD_BUFF, 4f); //400% Speed
+    public static MODIFIERS vulnDmgRedDebuff = new(MODIFIER_IDS.VULNERABLE_DMGRED_DEBUFF, -0.5f); //+50% Damage Taken
+    public static MODIFIERS quicknessMoveSpdBuff = new(MODIFIER_IDS.QUICKNESS_MOVESPD_BUFF, 0.25f); //+25% M. Speed
+    public static MODIFIERS slownessCDRedDebuff = new(MODIFIER_IDS.SLOWNESS_CDRED_DEBUFF, -0.66f); //-66% CD Red.
+    public static MODIFIERS slownessMoveSpdDebuf = new(MODIFIER_IDS.SLOWNESS_MOVESPD_DEBUFF, -0.5f); //-50% M. Speed
 
     public static List<Powerups.POWERUP_TYPE> powerupList = new List<Powerups.POWERUP_TYPE>() { Powerups.POWERUP_TYPE.CD_REDUCTION_BUFF, Powerups.POWERUP_TYPE.MOVE_SPEED_BUFF, Powerups.POWERUP_TYPE.DMG_RED_BUFF, Powerups.POWERUP_TYPE.MINOR_HEAL, Powerups.POWERUP_TYPE.MAJOR_HEAL };
-    public static List<StatusEffect.EffectType> positiveEffects = new List<StatusEffect.EffectType>() { StatusEffect.EffectType.REGEN, StatusEffect.EffectType.PROTECTED, StatusEffect.EffectType.CONTROL_IMMUNE, StatusEffect.EffectType.HASTE, StatusEffect.EffectType.IMMORTAL, StatusEffect.EffectType.ENERGISED};
+    public static List<StatusEffect.EffectType> positiveEffects = new List<StatusEffect.EffectType>() { StatusEffect.EffectType.REGEN, StatusEffect.EffectType.PROTECTED, StatusEffect.EffectType.CONTROL_IMMUNE, StatusEffect.EffectType.HASTE, StatusEffect.EffectType.IMMORTAL, StatusEffect.EffectType.ENERGISED, StatusEffect.EffectType.QUICKNESS};
+    public static List<StatusEffect.EffectType> negativeEffects = new List<StatusEffect.EffectType>() { StatusEffect.EffectType.BURN, StatusEffect.EffectType.CHILLED, StatusEffect.EffectType.CORRUPTED, StatusEffect.EffectType.STUNNED, StatusEffect.EffectType.VULNERABLE, StatusEffect.EffectType.RADIATION, StatusEffect.EffectType.SLOWNESS};
+    public static List<GAME_MODES> gameModesList = new List<GAME_MODES>() {GAME_MODES.CLASSIC, GAME_MODES.CURSED, GAME_MODES.LITTLE_GUYS, GAME_MODES.LOW_GRAVITY};
 
     #region EVENT_BOMB_TYPES
     public static List<GameplayLoop.BOMB_TYPES> defaultList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR, GameplayLoop.BOMB_TYPES.NUKE, GameplayLoop.BOMB_TYPES.FLASHBANG, GameplayLoop.BOMB_TYPES.AIRSTRIKE, GameplayLoop.BOMB_TYPES.BLACKHOLE, GameplayLoop.BOMB_TYPES.EMP, GameplayLoop.BOMB_TYPES.COINBOMB, GameplayLoop.BOMB_TYPES.GIGA_BOMB};
@@ -72,6 +100,7 @@ public class Globals
     public static List<GameplayLoop.BOMB_TYPES> midIntList = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB, GameplayLoop.BOMB_TYPES.COINBOMB, GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR, GameplayLoop.BOMB_TYPES.FLASHBANG, GameplayLoop.BOMB_TYPES.AIRSTRIKE};
     public static List<GameplayLoop.BOMB_TYPES> MeteorsOnly = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.METEOR, GameplayLoop.BOMB_TYPES.ICE_METEOR };
     public static List<GameplayLoop.BOMB_TYPES> missileRain = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.AIRSTRIKE };
+    public static List<GameplayLoop.BOMB_TYPES> littleGuysMode = new List<GameplayLoop.BOMB_TYPES>() { GameplayLoop.BOMB_TYPES.BOMB, GameplayLoop.BOMB_TYPES.CLUSTER_BOMB};
     #endregion
 
     #region BOOSTS_DETAILS

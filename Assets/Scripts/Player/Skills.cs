@@ -87,6 +87,7 @@ public class Skills
                 {
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 5, 1, false, StatusEffect.BuffType.POSITIVE));
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.ENERGISED, 5, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.QUICKNESS, 5, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
             case 6:
@@ -151,6 +152,7 @@ public class Skills
                 {
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.HASTE, 10, 1, false, StatusEffect.BuffType.POSITIVE));
                     PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.ENERGISED, 10, 1, false, StatusEffect.BuffType.POSITIVE));
+                    PlayerStats.instance.AddStatus(new StatusEffect(StatusEffect.EffectType.QUICKNESS, 10, 1, false, StatusEffect.BuffType.POSITIVE));
                     break;
                 }
             case 6:

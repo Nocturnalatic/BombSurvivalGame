@@ -9,10 +9,11 @@ public class GameplayLoop : MonoBehaviour
 {
     public static GameplayLoop instance;
     
-    [Range(1, 9)]
+    [Range(1, 10)]
     public float Intensity;
     public bool GameInProgress = false;
     public float roundSeconds;
+    public Globals.GAME_MODES gameMode;
     float timer;
     [HideInInspector]
     public int NukeCount = 0;
@@ -20,7 +21,7 @@ public class GameplayLoop : MonoBehaviour
     int MaxNukeCount = 1;
     readonly float roundDuration = 150;
     public Transform bombsParent, Arena, Players;
-    public TextMeshProUGUI globalText, intensityText, roundTimerText;
+    public TextMeshProUGUI globalText, intensityText, roundTimerText, gamemodeText;
     public Image roundTimerBar;
     public List<GameObject> Environments;
     public List<Sprite> MapThumbnails;
@@ -350,6 +351,23 @@ public class GameplayLoop : MonoBehaviour
         }
     }
 
+    string GetGamemodeName(Globals.GAME_MODES mode)
+    {
+        switch (mode)
+        {
+            case Globals.GAME_MODES.CLASSIC:
+                return "CLASSIC";
+            case Globals.GAME_MODES.CURSED:
+                return "CURSED";
+            case Globals.GAME_MODES.LITTLE_GUYS:
+                return "LITTLE GUYS";
+            case Globals.GAME_MODES.LOW_GRAVITY:
+                return "LOW GRAVITY";
+            default:
+                return "ERROR";
+        }
+    }
+
     IEnumerator LaunchEvent()
     {
         EVENTS chosenEvent = eventList[Random.Range(0, eventList.Count)];
@@ -424,8 +442,8 @@ public class GameplayLoop : MonoBehaviour
                 }
         }
         eventActive = false;
-        spawnDelayMultiplier = 1f;
-        typesToSpawn = getBombListFromIntensity(GetIntensity());
+        spawnDelayMultiplier = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? 0.75f : 1;
+        typesToSpawn = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? Globals.littleGuysMode : getBombListFromIntensity(GetIntensity());
         yield return null;
     }
 
@@ -473,6 +491,7 @@ public class GameplayLoop : MonoBehaviour
         eventChosen = false;
         AudioManager.instance.PlayLobbyMusic();
         Lava.transform.localScale = new Vector3(50, 1, 50);
+        Physics.gravity = new Vector3(0, -9.81f, 0);
         intenseMode = false;
         roundTimerBar.GetComponent<Animator>().enabled = false;
         roundTimerText.text = "2:30";
@@ -542,6 +561,17 @@ public class GameplayLoop : MonoBehaviour
         //Loading Screen Sequence
         tipBar.text = lines[Random.Range(0, lines.Length)];
         yield return new WaitForSeconds(4);
+        gameMode = Globals.gameModesList[Random.Range(0, (int)Globals.GAME_MODES.TOTAL)];
+        globalText.text = $"Game Mode: {GetGamemodeName(gameMode)}";
+        gamemodeText.text = GetGamemodeName(gameMode);
+        eventPopupAnim.SetTrigger("DoEventPopup");
+        eventName.text = GetGamemodeName(gameMode);
+        eventDescription.text = Globals.GameModeDescriptions[(int)gameMode];
+        yield return new WaitForSeconds(3);
+        if (gameMode == Globals.GAME_MODES.LOW_GRAVITY)
+        {
+            Physics.gravity *= 0.35f;
+        }
         GameInProgress = true;
         timer = 3;
         AudioManager.instance.StopAudio();
@@ -560,12 +590,12 @@ public class GameplayLoop : MonoBehaviour
         roundSeconds = roundDuration;
         roundTimerBar.fillAmount = 1;
         float spawnDelay = 1 / (Intensity * 0.8f) + 0.5f;
-        spawnDelayMultiplier = 1;
         if (Intensity > 6)
         {
             spawnDelayMultiplier /= 1 + (Intensity - 6.0f);
         }
-        typesToSpawn = getBombListFromIntensity(GetIntensity());
+        typesToSpawn = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? Globals.littleGuysMode : getBombListFromIntensity(GetIntensity());
+        spawnDelayMultiplier = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? 0.75f : 1;
         Coroutine countdown = StartCoroutine(CountdownRoundTime());
         AudioManager.instance.PlayBGM(GetIntensity());
         AudioManager.instance.currentlyPlaying.pitch = 1;

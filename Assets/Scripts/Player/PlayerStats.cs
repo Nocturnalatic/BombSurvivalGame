@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using TMPro;
-using System.Linq;
+using UnityEngine.UI;
 
 public class PlayerStats : MonoBehaviour
 {
     float health, shield;
     float maxhealth = 100;
-    int damageblocked = 0; //Used to track PROTECTED effect damage
+    float damageblocked = 0; //Used to track PROTECTED effect damage
     public int powerupsCollected, coinsCollected = 0;
     public List<Globals.MODIFIERS> damageResistModifiers = new List<Globals.MODIFIERS>();
     public List<Globals.MODIFIERS> cooldownReductionModifiers = new List<Globals.MODIFIERS>();
@@ -135,13 +135,21 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    [System.Flags]
+    public enum DAMAGE_FLAGS
+    {
+        NONE = 1,
+        IGNORE_SHIELDS = 2,
+    }
+
     public enum DAMAGE_TYPE
     {
         EXPLOSION = 0,
         FIRE,
         BURN,
         GRAVITY,
-        ELECTRIC
+        ELECTRIC,
+        RADIATION
     }
 
     public void Flash()
@@ -164,6 +172,89 @@ public class PlayerStats : MonoBehaviour
                 effect.duration = 0;
             }
         }
+    }
+
+    public void ConvertEffect(StatusEffect effect)
+    {
+        StatusEffect newEffect = new StatusEffect();
+        newEffect.stackable = false; //Default to false
+        newEffect.d_Multiplier = 1;
+        switch (effect.type)
+        {
+            case StatusEffect.EffectType.BURN:
+                newEffect.type = StatusEffect.EffectType.REGEN;
+                newEffect.duration = 5;
+                newEffect.stackable = true;
+                newEffect.d_Multiplier = 4;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+            case StatusEffect.EffectType.CONTROL_IMMUNE:
+                newEffect.type = StatusEffect.EffectType.STUNNED;
+                newEffect.duration = 2;
+                break;
+            case StatusEffect.EffectType.CHILLED:
+                newEffect.type = StatusEffect.EffectType.QUICKNESS;
+                newEffect.duration = 3;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+            case StatusEffect.EffectType.HASTE:
+                newEffect.type = StatusEffect.EffectType.SLOWNESS;
+                newEffect.duration = 2;
+                break;
+            case StatusEffect.EffectType.PROTECTED:
+                newEffect.type = StatusEffect.EffectType.VULNERABLE;
+                newEffect.duration = 3;
+                break;
+            case StatusEffect.EffectType.REGEN:
+                newEffect.type = StatusEffect.EffectType.BURN;
+                newEffect.duration = 5;
+                newEffect.d_Multiplier = 4;
+                newEffect.stackable = true;
+                break;
+            case StatusEffect.EffectType.STUNNED:
+                newEffect.type = StatusEffect.EffectType.CONTROL_IMMUNE;
+                newEffect.duration = 4;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+            case StatusEffect.EffectType.CORRUPTED:
+                newEffect.type = Globals.positiveEffects[Random.Range(0, Globals.positiveEffects.Count)];
+                newEffect.duration = 4;
+                newEffect.d_Multiplier = newEffect.type == StatusEffect.EffectType.REGEN ? 3 : 1;
+                newEffect.stackable = newEffect.type == StatusEffect.EffectType.REGEN ? true : false;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+            case StatusEffect.EffectType.ENERGISED:
+                newEffect.type = StatusEffect.EffectType.CHILLED;
+                newEffect.duration = 5;
+                break;
+            case StatusEffect.EffectType.VULNERABLE:
+                newEffect.type = StatusEffect.EffectType.PROTECTED;
+                newEffect.duration = 2;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+            case StatusEffect.EffectType.RADIATION:
+                newEffect.type = StatusEffect.EffectType.REGEN;
+                newEffect.duration = 3;
+                newEffect.d_Multiplier = 10;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                newEffect.stackable = true;
+                break;
+            case StatusEffect.EffectType.QUICKNESS:
+                newEffect.type = StatusEffect.EffectType.SLOWNESS;
+                newEffect.duration = 3;
+                break;
+            case StatusEffect.EffectType.SLOWNESS:
+                newEffect.type = StatusEffect.EffectType.QUICKNESS;
+                newEffect.duration = 5;
+                newEffect.buffType = StatusEffect.BuffType.POSITIVE;
+                break;
+
+            default:
+                newEffect.duration = 0;
+                break;
+        }
+        AddStatus(newEffect);
+        effect.duration = 0;
     }
 
     public void Skill4(bool empowered = false)
@@ -260,27 +351,35 @@ public class PlayerStats : MonoBehaviour
         switch (t)
         {
             case StatusEffect.EffectType.BURN:
-                return "BURNING";
+                return "BURN";
             case StatusEffect.EffectType.STUNNED:
-                return "STUNNED";
+                return "STUN";
             case StatusEffect.EffectType.CHILLED:
-                return "FROSTED";
+                return "FROST";
             case StatusEffect.EffectType.REGEN:
                 return "REGENERATION";
             case StatusEffect.EffectType.PROTECTED:
-                return "PROTECTED";
+                return "PROTECTION";
             case StatusEffect.EffectType.CONTROL_IMMUNE:
-                return "IMMOVABLE";
+                return "IMMOVABILITY";
             case StatusEffect.EffectType.HASTE:
                 return "HASTE";
             case StatusEffect.EffectType.SUCTION:
                 return "SUCTION";
             case StatusEffect.EffectType.CORRUPTED:
-                return "CORRUPTED";
+                return "CORRUPTION";
             case StatusEffect.EffectType.IMMORTAL:
-                return "IMMORTAL";
+                return "IMMORTALITY";
             case StatusEffect.EffectType.ENERGISED:
                 return "ENERGISED";
+            case StatusEffect.EffectType.VULNERABLE:
+                return "VULNERABILITY";
+            case StatusEffect.EffectType.RADIATION:
+                return "RADIATION";
+            case StatusEffect.EffectType.QUICKNESS:
+                return "QUICKNESS";
+            case StatusEffect.EffectType.SLOWNESS:
+                return "SLOWNESS";
         }
         return "ERROR";
     }
@@ -396,9 +495,16 @@ public class PlayerStats : MonoBehaviour
                     burnVig.SetTrigger("Flash");
                     DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.BURN);
                 }
+                if (effect.type == StatusEffect.EffectType.RADIATION)
+                {
+                    ColorAdjustments ca;
+                    volume.profile.TryGet(out ca);
+                    ca.colorFilter.Override(new Color(0.17f, 0.98f, 0.12f));
+                    DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.RADIATION, DAMAGE_FLAGS.IGNORE_SHIELDS);
+                }
                 if (effect.type == StatusEffect.EffectType.REGEN)
                 {
-                    HealPlayer(effect.d_Multiplier * Time.deltaTime, false, 1);
+                    HealPlayer(effect.d_Multiplier * Time.deltaTime, true, 0.5f);
                     PlayerControls.instance.stamina += effect.d_Multiplier * Time.deltaTime;
                 }
                 if (effect.type == StatusEffect.EffectType.HASTE)
@@ -408,11 +514,40 @@ public class PlayerStats : MonoBehaviour
                         PlayerControls.instance.moveSpeedModifiers.Add(Globals.hasteMovementBuff);
                     }
                 }
+                if (effect.type == StatusEffect.EffectType.QUICKNESS)
+                {
+                    if (!PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.QUICKNESS_MOVESPD_BUFF))
+                    {
+                        PlayerControls.instance.moveSpeedModifiers.Add(Globals.quicknessMoveSpdBuff);
+                    }
+                }
+                if (effect.type == StatusEffect.EffectType.SLOWNESS)
+                {
+                    if (!PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.SLOWNESS_MOVESPD_DEBUFF))
+                    {
+                        PlayerControls.instance.moveSpeedModifiers.Add(Globals.slownessMoveSpdDebuf);
+                    }
+                    if (!cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.SLOWNESS_CDRED_DEBUFF))
+                    {
+                        cooldownReductionModifiers.Add(Globals.slownessCDRedDebuff);
+                    }
+                }
+                if (effect.type == StatusEffect.EffectType.VULNERABLE)
+                {
+                    if (!damageResistModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.VULNERABLE_DMGRED_DEBUFF))
+                    {
+                        damageResistModifiers.Add(Globals.vulnDmgRedDebuff);
+                    }
+                }
                 if (effect.type == StatusEffect.EffectType.CORRUPTED)
                 {
                     glitchedSkillEffect.enabled = true;
                     glitchedSkillEffect.material.SetTextureOffset("_MainTex", new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f)));
-                    Dispel(true);
+                    var buffList = effects.Where(x => x.buffType == StatusEffect.BuffType.POSITIVE);
+                    foreach (var fx in buffList.ToList())
+                    {
+                        ConvertEffect(fx); //Corrupt all buffs
+                    }
                 }
                 if (effect.type == StatusEffect.EffectType.SUCTION)
                 {
@@ -457,6 +592,13 @@ public class PlayerStats : MonoBehaviour
                     PlayerControls.instance.moveSpeedModifiers.Remove(Globals.hasteMovementBuff);
                 }
             }
+            if (f.type == StatusEffect.EffectType.VULNERABLE) //When Vuln Ends
+            {
+                if (damageResistModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.VULNERABLE_DMGRED_DEBUFF))
+                {
+                    damageResistModifiers.Remove(Globals.vulnDmgRedDebuff);
+                }
+            }
             if (f.type == StatusEffect.EffectType.ENERGISED)
             {
                 if (cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.ENERGISED_CDRED_BUFF))
@@ -464,20 +606,39 @@ public class PlayerStats : MonoBehaviour
                     cooldownReductionModifiers.Remove(Globals.energisedCDRedBuff);
                 }
             }
-            if (f.type == StatusEffect.EffectType.BURN)
+            if (f.type == StatusEffect.EffectType.BURN || f.type == StatusEffect.EffectType.RADIATION)
             {
                 ColorAdjustments ca;
                 volume.profile.TryGet(out ca);
                 ca.colorFilter.Override(new Color(1, 1, 1));
             }
+
             if (f.type == StatusEffect.EffectType.CORRUPTED)
             {
                 glitchedSkillEffect.enabled = false;
             }
             if (f.type == StatusEffect.EffectType.PROTECTED)
             {
-                CreateInfoText($"{damageblocked} damage blocked", Color.cyan);
+                CreateInfoText($"{Mathf.RoundToInt(damageblocked)} damage blocked", Color.cyan);
                 damageblocked = 0;
+            }
+            if (f.type == StatusEffect.EffectType.QUICKNESS)
+            {
+                if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.QUICKNESS_MOVESPD_BUFF))
+                {
+                    PlayerControls.instance.moveSpeedModifiers.Remove(Globals.quicknessMoveSpdBuff);
+                }
+            }
+            if (f.type == StatusEffect.EffectType.SLOWNESS)
+            {
+                if (PlayerControls.instance.moveSpeedModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.SLOWNESS_MOVESPD_DEBUFF))
+                {
+                    PlayerControls.instance.moveSpeedModifiers.Remove(Globals.slownessMoveSpdDebuf);
+                }
+                if (cooldownReductionModifiers.Exists(x => x.ID == Globals.MODIFIER_IDS.SLOWNESS_CDRED_DEBUFF))
+                {
+                    cooldownReductionModifiers.Remove(Globals.slownessCDRedDebuff);
+                }
             }
             effects.Remove(f);
         }
@@ -537,8 +698,15 @@ public class PlayerStats : MonoBehaviour
             {
                 StatusEffect t_effect = GetEffect(type);
                 UI_Icons[i].SetActive(true);
-                UI_Icons[i].GetComponent<Animator>().enabled = t_effect.duration < 5;
-                UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(5 / t_effect.duration, 0, 5);
+                if (t_effect.duration < 5)
+                {
+                    UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(5 / t_effect.duration, 0, 5);
+                }
+                else
+                {
+                    UI_Icons[i].GetComponent<Animator>().PlayInFixedTime("FlashUIIcon", 0, 0.0f);
+                    UI_Icons[i].GetComponent<Animator>().speed = 0;
+                }
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
                 {
@@ -552,10 +720,10 @@ public class PlayerStats : MonoBehaviour
             else
             {
                 UI_Icons[i].SetActive(false);
-                UI_Icons[i].transform.Find("UIIcon").GetComponent<Image>().color = Color.white;
-                Color tmp_color = UI_Icons[i].transform.Find("Image").GetComponent<Image>().color;
-                UI_Icons[i].transform.Find("Image").GetComponent<Image>().color = new Color(tmp_color.r, tmp_color.g, tmp_color.b, 1);
-                UI_Icons[i].transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().color = Color.white;
+                //UI_Icons[i].transform.Find("UIIcon").GetComponent<Image>().color = Color.white;
+                //Color tmp_color = UI_Icons[i].transform.Find("Image").GetComponent<Image>().color;
+                //UI_Icons[i].transform.Find("Image").GetComponent<Image>().color = new Color(tmp_color.r, tmp_color.g, tmp_color.b, 1);
+                //UI_Icons[i].transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().color = Color.white;
             }
         }
 
@@ -690,11 +858,22 @@ public class PlayerStats : MonoBehaviour
         DamagePlayer(shield, origin, false,  DAMAGE_TYPE.ELECTRIC);
     }
 
-    public void DamagePlayer(float dmg, Vector3 origin, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION)
+    public void DamagePlayer(float dmg, Vector3 origin, bool dodgeable = true, DAMAGE_TYPE type = DAMAGE_TYPE.EXPLOSION, DAMAGE_FLAGS flags = DAMAGE_FLAGS.NONE)
     {
         float hpperc;
         bool dodge = false;
       
+        if (HasEffect(StatusEffect.EffectType.QUICKNESS))
+        {
+            if (type == DAMAGE_TYPE.EXPLOSION || type == DAMAGE_TYPE.ELECTRIC || type == DAMAGE_TYPE.FIRE)
+            {
+                if (selectedSkill.currentcooldown > 0)
+                {
+                    selectedSkill.currentcooldown -= Mathf.Max(1f, dmg * 0.25f);
+                }
+            }
+        }
+
         if (selectedPerk != null)
         {
             if (selectedPerk.ID == 0 && selectedPerk.enabled && dodgeable) //Dodge
@@ -729,7 +908,7 @@ public class PlayerStats : MonoBehaviour
                 noiseCooldown = 1;
             }
             float remainingDmg = dmg;
-            if (shield > 0)
+            if (shield > 0 && !flags.HasFlag(DAMAGE_FLAGS.IGNORE_SHIELDS))
             {
                 if (remainingDmg > shield)
                 {
@@ -743,7 +922,7 @@ public class PlayerStats : MonoBehaviour
                 }
             }
             float finalDamage = remainingDmg * damageReduction;
-            if (type != DAMAGE_TYPE.BURN && state == GAME_STATE.IN_GAME)
+            if ((type != DAMAGE_TYPE.BURN && type != DAMAGE_TYPE.RADIATION) && state == GAME_STATE.IN_GAME)
             {
                 GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
                 di.GetComponent<DamageIndicator>().Init(origin, type, this, dmg * 2 / damageReduction / (health + shield));
@@ -752,6 +931,20 @@ public class PlayerStats : MonoBehaviour
             if (GameplayLoop.instance.GameInProgress)
             {
                 damageTaken += finalDamage;
+            }
+            if (type == DAMAGE_TYPE.EXPLOSION && GameplayLoop.instance.gameMode == Globals.GAME_MODES.CURSED)
+            {
+                StatusEffect randDebuff = new StatusEffect(Globals.negativeEffects[Random.Range(0, Globals.negativeEffects.Count)], 3, 1, false);
+                if (randDebuff.type == StatusEffect.EffectType.BURN)
+                {
+                    randDebuff.d_Multiplier = 2;
+                    randDebuff.stackable = true;
+                }
+                if (randDebuff.type == StatusEffect.EffectType.STUNNED)
+                {
+                    randDebuff.duration = 1;
+                }
+                AddStatus(randDebuff);
             }
             StartCoroutine(LerpHPBarBG());
             if (type == DAMAGE_TYPE.EXPLOSION)
@@ -766,7 +959,7 @@ public class PlayerStats : MonoBehaviour
         }
         else if (HasEffect(StatusEffect.EffectType.PROTECTED))
         {
-            damageblocked += Mathf.RoundToInt(dmg);
+            damageblocked += dmg;
         }
         hpperc = health / maxhealth;
         HPbar.fillAmount = hpperc;
@@ -778,6 +971,7 @@ public class PlayerStats : MonoBehaviour
             {
                 if (selectedPerk.ID == 1 && selectedPerk.enabled)
                 {
+                    Dispel();
                     StatusEffect effect1 = new StatusEffect(StatusEffect.EffectType.REGEN, 15, maxhealth * 0.5f / 15, true, StatusEffect.BuffType.SUPER_POSITIVE);
                     AddStatus(effect1);
                     AddStatus(new StatusEffect(StatusEffect.EffectType.PROTECTED, 3, 1, false, StatusEffect.BuffType.SUPER_POSITIVE));
@@ -945,6 +1139,7 @@ public class PlayerStats : MonoBehaviour
                     skillReadyPlayed = true;
                 }
                 cooldownUI.GetComponentInChildren<TextMeshProUGUI>().text = "";
+                cooldownUI.fillAmount = 0;
             }
         }
     }
