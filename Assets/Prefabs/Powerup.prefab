@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3503377751523766078}
   - component: {fileID: 3503377751523766073}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PowerupGet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,9 +145,9 @@ GameObject:
   - component: {fileID: 5974292786670138646}
   - component: {fileID: 2294017355411569414}
   - component: {fileID: 4183574837221166158}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Powerup
-  m_TagString: Untagged
+  m_TagString: Collectible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

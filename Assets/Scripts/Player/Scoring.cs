@@ -147,27 +147,20 @@ public class Scoring : MonoBehaviour
             survivalB = (int)(survivalT * 0.5f);
         }
         collectB = (PlayerStats.instance.coinsCollected * 5) + (PlayerStats.instance.powerupsCollected * 10);
-        dmgTkn = 100 - (int)PlayerStats.instance.damageTaken;
-        dmgTkn = (int)Mathf.Clamp(dmgTkn, 0, MaxDamageTaken);
-        if (PlayerStats.instance.damageTaken < 1)
-        {
-            dmgTkn *= 5; //500% More For No Damage Bonus
-        }
-        else if (PlayerStats.instance.damageTaken < 10)
-        {
-            dmgTkn *= 2; //200% More For Taking Less Than 10 Damage
-        }
+        dmgTkn = (500 - PlayerStats.instance.hitsTaken * 100);
+        dmgTkn = dmgTkn < 0 ? dmgTkn / 2 : dmgTkn;
         if (PlayerStats.instance.hardcoreMode)
         {
             Hardcore = (survivalT + survivalB + collectB + dmgTkn ) * 2;
         }
         IntMult = (int)((survivalT + survivalB + collectB + dmgTkn) * GameplayLoop.instance.Intensity);
         Final = survivalT + survivalB + collectB + dmgTkn + Hardcore + IntMult;
+        Final = Mathf.Max(0, Final);
 
         survivalTime.text = $"{survivalT}";
         survivalBonus.text = $"{survivalB}";
         collectionBonus.text = $"{collectB}";
-        damageTakenBonus.text = $"{dmgTkn}";
+        damageTakenBonus.text = $"{PlayerStats.instance.hitsTaken} | {dmgTkn}";
         HardcoreBonus.text = Hardcore.ToString("#,##0");
         IntensityMultiplier.text = IntMult.ToString("#,##0");
         FinalScore.text = (Final.ToString("#,##0")) + " | Grade: " + GetRankFromScore(Final);

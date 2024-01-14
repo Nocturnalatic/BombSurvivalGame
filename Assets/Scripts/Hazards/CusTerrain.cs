@@ -6,6 +6,8 @@ public class CusTerrain : MonoBehaviour
 {
     Material m_Material;
     public float baseStability = 8.5f;
+    [SerializeField]
+    private bool showTerrain = true;
     private float stability;
 
     private void Start()
@@ -18,10 +20,16 @@ public class CusTerrain : MonoBehaviour
     public void DamageTerrain(float dmg)
     {
         stability -= dmg;
-        m_Material.SetFloat(Shader.PropertyToID("_DetailAlbedoMapScale"), (baseStability - stability) / baseStability);
+        if (showTerrain)
+        {
+            m_Material.SetFloat(Shader.PropertyToID("_DetailAlbedoMapScale"), (baseStability - stability) / baseStability);
+        }
         if (stability <= 0)
         {
-            GetComponent<Rigidbody>().isKinematic = false;
+            if (GetComponent<Rigidbody>() != null)
+            {
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
         }
         if (stability <= -2.5f)
         {

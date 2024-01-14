@@ -18,7 +18,8 @@ public class PlayerStats : MonoBehaviour
     public float cooldownReduction = 1;
     public float damageReduction = 1;
     public float noiseCooldown = 2;
-    public float effectResistance = 1;
+    public float dodgeChance = 0;
+    public float buffDuration = 1;
     public Volume volume;
     private Camera ragDollCamera;
     public GameObject ragdoll, mainCamera;
@@ -39,6 +40,8 @@ public class PlayerStats : MonoBehaviour
     [Header("Audio")]
     public CharacterVoicePack voicePack;
     public AudioSource skillReady;
+    public AudioSource acidSizzle;
+    public AudioSource fireIgnite;
 
     [Header("Health Bar UI")]
     public Image ShieldBar, HPbar, HPBarBG;
@@ -57,6 +60,7 @@ public class PlayerStats : MonoBehaviour
     public List<AudioSource> skillSoundFX;
     public Animator barrierEffect, skillUsageAnimator;
     public Image glitchedSkillEffect;
+    public GameObject barrierField;
 
     [Header("Perks")]
     [HideInInspector]
@@ -82,9 +86,13 @@ public class PlayerStats : MonoBehaviour
     public TextMeshProUGUI MSpdText;
     public TextMeshProUGUI DmgRedText;
     public TextMeshProUGUI CDRedText;
+    public TextMeshProUGUI DodgeText;
+
+    public bool isInWater = false;
+    public Globals.FLUID_TYPE submergedFluidType = Globals.FLUID_TYPE.NONE;
 
     #region Scoring Variables
-    public float damageTaken = 0;
+    public int hitsTaken = 0;
     public float survivalTime = 0;
     #endregion
 
@@ -120,8 +128,18 @@ public class PlayerStats : MonoBehaviour
     {
         ChromaticAberration chromatic;
         Vignette vignette;
-        PlayerControls.instance.mainCamera.GetComponent<AudioLowPassFilter>().enabled = lowHP;
-        PlayerControls.instance.mainCamera.GetComponent<AudioReverbFilter>().enabled = lowHP;
+        if (lowHP)
+        {
+            AudioManager.instance.ApplyAudioFilter(AudioManager.AUDIO_FILTER_EFFECTS.LOW_HEALTH);
+        }
+        else
+        {
+            if (AudioManager.instance != null)
+            {
+
+                AudioManager.instance.ApplyAudioFilter(AudioManager.AUDIO_FILTER_EFFECTS.NONE);
+            }
+        }
         if (volume.profile != null)
         {
             if (volume.profile.TryGet(out chromatic))
@@ -149,7 +167,9 @@ public class PlayerStats : MonoBehaviour
         BURN,
         GRAVITY,
         ELECTRIC,
-        RADIATION
+        RADIATION,
+        DROWN,
+        CORROSION
     }
 
     public void Flash()
@@ -163,6 +183,17 @@ public class PlayerStats : MonoBehaviour
         StartCoroutine(ApplyBurn());
     }
 
+    public void ApplyFluidType(Globals.FLUID_TYPE type)
+    {
+        submergedFluidType = type;
+    }
+
+    public void InWater()
+    {
+        isInWater = true;
+        StartCoroutine(ApplyInWater());
+    }
+
     public void Dispel(bool reverse = false)
     {
         foreach (StatusEffect effect in effects)
@@ -171,6 +202,14 @@ public class PlayerStats : MonoBehaviour
             {
                 effect.duration = 0;
             }
+        }
+    }
+
+    public void ConvertAllEffects(StatusEffect.BuffType type)
+    {
+        foreach (StatusEffect effect in effects.Where(x => x.buffType == type).ToList())
+        {
+            ConvertEffect(effect);
         }
     }
 
@@ -296,6 +335,46 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    IEnumerator ApplyInWater()
+    {
+        AudioManager.instance.ApplyAudioFilter(AudioManager.AUDIO_FILTER_EFFECTS.UNDERWATER);
+        PlayerControls.instance.moveSpeedModifiers.Add(Globals.underwaterSpeedDebuff);
+        ColorAdjustments ca;
+        while (isInWater)
+        {
+            volume.profile.TryGet(out ca);
+            ca.colorFilter.Override(Water.getColorFromLiquidType(submergedFluidType));
+            if (state == GAME_STATE.IN_GAME)
+            {
+                PlayerControls controls = PlayerControls.instance;
+                controls.DelayOxygenRegen();
+                switch (submergedFluidType)
+                {
+                    case Globals.FLUID_TYPE.WATER:
+                        controls.oxygen -= 8f * Time.fixedDeltaTime;
+                        break;
+                    case Globals.FLUID_TYPE.ACID:
+                        controls.oxygen -= 30f * Time.fixedDeltaTime;
+                        break;
+                    case Globals.FLUID_TYPE.LAVA:
+                        controls.oxygen -= 50f * Time.fixedDeltaTime;
+                        break;
+                }
+                print(controls.oxygen);
+                if (controls.oxygen <= 0)
+                {
+                    DamagePlayer(0.2f * maxhealth * Time.deltaTime, transform.position, false, DAMAGE_TYPE.DROWN, DAMAGE_FLAGS.IGNORE_SHIELDS);
+                }
+            }
+            yield return new WaitForFixedUpdate();
+        }
+        PlayerControls.instance.moveSpeedModifiers.Remove(Globals.underwaterSpeedDebuff);
+        AudioManager.instance.ApplyAudioFilter(AudioManager.AUDIO_FILTER_EFFECTS.NONE);
+        volume.profile.TryGet(out ca);
+        ca.colorFilter.Override(new Color(1, 1, 1));
+        PlayerControls.instance.AddKnockback(Vector3.up, 2, true);
+    }
+
     IEnumerator LerpHPBarBG()
     {
         float HPPerc = health / maxhealth;
@@ -386,13 +465,10 @@ public class PlayerStats : MonoBehaviour
 
     public void AddStatus(StatusEffect newEffect)
     {
-        if (newEffect.buffType == StatusEffect.BuffType.NEGATIVE)
+        UI_Icons[(int)newEffect.type].GetComponent<Animator>().enabled = true;
+        if (newEffect.buffType != StatusEffect.BuffType.NEGATIVE)
         {
-            newEffect.duration /= effectResistance;
-        }
-        else
-        {
-            newEffect.duration *= effectResistance;
+            newEffect.duration *= buffDuration;
         }
         newEffect.original_duration = newEffect.duration;
         if (newEffect.type == StatusEffect.EffectType.STUNNED)
@@ -412,6 +488,8 @@ public class PlayerStats : MonoBehaviour
                 }
             }
             effects.Add(newEffect); //If the effect is not found, add it
+            UI_Icons[(int)newEffect.type].SetActive(true);
+            UI_Icons[(int)newEffect.type].GetComponent<Animator>().Play("NewStatus", 1);
         }
         else //It is stackable
         {
@@ -440,6 +518,8 @@ public class PlayerStats : MonoBehaviour
                 }
             }
             effects.Add(newEffect);
+            UI_Icons[(int)newEffect.type].SetActive(true);
+            UI_Icons[(int)newEffect.type].GetComponent<Animator>().Play("NewStatus", 1);
         }
     }
 
@@ -462,15 +542,12 @@ public class PlayerStats : MonoBehaviour
                 //Control Immune
                 if (effect.type == StatusEffect.EffectType.CONTROL_IMMUNE)
                 {
-                    StatusEffect check = GetEffect(StatusEffect.EffectType.CHILLED);
-                    StatusEffect check2 = GetEffect(StatusEffect.EffectType.STUNNED);
-                    if (check != null)
+                    foreach (StatusEffect f in effects.ToList())
                     {
-                        check.duration = 0;
-                    }
-                    if (check2 != null)
-                    {
-                        check2.duration = 0;
+                        if (f.type == StatusEffect.EffectType.STUNNED || f.type == StatusEffect.EffectType.CHILLED || f.type == StatusEffect.EffectType.SLOWNESS)
+                        {
+                            f.duration = 0;
+                        }
                     }
                 }
 
@@ -499,7 +576,7 @@ public class PlayerStats : MonoBehaviour
                 {
                     ColorAdjustments ca;
                     volume.profile.TryGet(out ca);
-                    ca.colorFilter.Override(new Color(0.17f, 0.98f, 0.12f));
+                    ca.colorFilter.Override(new Color(0.5f, 0.98f, 0.5f));
                     DamagePlayer(effect.d_Multiplier * Time.deltaTime, transform.position, false, DAMAGE_TYPE.RADIATION, DAMAGE_FLAGS.IGNORE_SHIELDS);
                 }
                 if (effect.type == StatusEffect.EffectType.REGEN)
@@ -683,11 +760,11 @@ public class PlayerStats : MonoBehaviour
             AttributeModifiers[3].SetActive(true);
             DmgRedText.color = Color.red;
         }
-        if (effectResistance > 1)
+        if (buffDuration > 1)
         {
             AttributeModifiers[6].SetActive(true);
         }
-        else if (effectResistance < 1)
+        else if (buffDuration < 1)
         {
             AttributeModifiers[7].SetActive(true);
         }
@@ -697,15 +774,15 @@ public class PlayerStats : MonoBehaviour
             if (HasEffect(type))
             {
                 StatusEffect t_effect = GetEffect(type);
-                UI_Icons[i].SetActive(true);
                 if (t_effect.duration < 5)
                 {
-                    UI_Icons[i].GetComponent<Animator>().speed = Mathf.Clamp(5 / t_effect.duration, 0, 5);
+                    UI_Icons[i].GetComponent<Animator>().SetLayerWeight(1, 1);
+                    UI_Icons[i].GetComponent<Animator>().SetFloat("flashSpeed", Mathf.Clamp(5 / t_effect.duration, 0, 5));
+                    UI_Icons[i].GetComponent<Animator>().Play("FlashUIIcon", 1);
                 }
                 else
                 {
-                    UI_Icons[i].GetComponent<Animator>().PlayInFixedTime("FlashUIIcon", 0, 0.0f);
-                    UI_Icons[i].GetComponent<Animator>().speed = 0;
+                    UI_Icons[i].GetComponent<Animator>().SetLayerWeight(1, 0);
                 }
                 UI_Icons[i].transform.GetChild(0).GetComponent<Image>().fillAmount = t_effect.duration / t_effect.original_duration;
                 if (GetEffect(type).stackable)
@@ -720,21 +797,21 @@ public class PlayerStats : MonoBehaviour
             else
             {
                 UI_Icons[i].SetActive(false);
-                //UI_Icons[i].transform.Find("UIIcon").GetComponent<Image>().color = Color.white;
-                //Color tmp_color = UI_Icons[i].transform.Find("Image").GetComponent<Image>().color;
-                //UI_Icons[i].transform.Find("Image").GetComponent<Image>().color = new Color(tmp_color.r, tmp_color.g, tmp_color.b, 1);
-                //UI_Icons[i].transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().color = Color.white;
+                UI_Icons[i].transform.Find("UIIcon").GetComponent<Image>().color = Color.white;
+                Color tmp_color = UI_Icons[i].transform.Find("Image").GetComponent<Image>().color;
+                UI_Icons[i].transform.Find("Image").GetComponent<Image>().color = new Color(tmp_color.r, tmp_color.g, tmp_color.b, 1);
+                UI_Icons[i].transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().color = Color.white;
             }
         }
 
-        healthTickImage.material.mainTextureScale = new Vector2((maxhealth + shield)/20f, 1f);
+        healthTickImage.material.mainTextureScale = new Vector2((maxhealth)/20f, 1f);
     }
 
     private void Start()
     {
         shield = 0;
         health = maxhealth;
-        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
         instance = this;
         waitupdate = new WaitForSeconds(1/144f);
         Skills.InitSkills();
@@ -836,21 +913,22 @@ public class PlayerStats : MonoBehaviour
         {
             health += hp;
         }
+        shield = Mathf.Clamp(shield, 0, maxhealth * 1.5f);
         float hpperc = health / maxhealth;
         HPBarBG.fillAmount = hpperc;
         HPbar.fillAmount = hpperc;
-        ShieldBar.fillAmount = shield / (maxhealth + shield);
+        ShieldBar.fillAmount = shield / (maxhealth);
         if (hpperc > 0.35f)
         {
             hpbar.enabled = true;
-            HPbar.color = new Color(0.6735849f, 1, 1);
+            HPbar.color = new Color(0, 1, 1);
             hpbar.enabled = false;
         }
         if (health > maxhealth)
         {
             health = maxhealth;
         }
-        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
     }
 
     public void DestroyShields(Vector3 origin)
@@ -874,25 +952,23 @@ public class PlayerStats : MonoBehaviour
             }
         }
 
-        if (selectedPerk != null)
+        if (dodgeable) //Dodge
         {
-            if (selectedPerk.ID == 0 && selectedPerk.enabled && dodgeable) //Dodge
+            float rng = Random.Range(0, 1f);
+            if (rng <= (dodgeChance * 0.01))
             {
-                float rng = Random.Range(0, 1f);
-                if (rng <= 0.25f)
-                {
-                    //Dodge
-                    dodge = true;
-                    CreateInfoText($"{(int)dmg} damage dodged", Color.cyan);
-                    //if (dodgeTextAnimator.GetCurrentAnimatorStateInfo(0).IsName("Dodge"))
-                    //{
-                    //    dodgeTextAnimator.enabled = false;
-                    //    dodgeTextAnimator.enabled = true;
-                    //}
-                    //dodgeTextAnimator.SetTrigger("Dodge");
-                }
+                //Dodge
+                dodge = true;
+                CreateInfoText($"{(int)dmg} damage dodged", Color.cyan);
+                //if (dodgeTextAnimator.GetCurrentAnimatorStateInfo(0).IsName("Dodge"))
+                //{
+                //    dodgeTextAnimator.enabled = false;
+                //    dodgeTextAnimator.enabled = true;
+                //}
+                //dodgeTextAnimator.SetTrigger("Dodge");
             }
         }
+
         if (!dodge && !HasEffect(StatusEffect.EffectType.PROTECTED))
         {
             if (noiseCooldown <= 0)
@@ -922,15 +998,19 @@ public class PlayerStats : MonoBehaviour
                 }
             }
             float finalDamage = remainingDmg * damageReduction;
-            if ((type != DAMAGE_TYPE.BURN && type != DAMAGE_TYPE.RADIATION) && state == GAME_STATE.IN_GAME)
+            if ((type != DAMAGE_TYPE.BURN && type != DAMAGE_TYPE.RADIATION && type != DAMAGE_TYPE.DROWN) && state == GAME_STATE.IN_GAME)
             {
                 GameObject di = Instantiate(damageIndicator, playerCanvas.transform);
-                di.GetComponent<DamageIndicator>().Init(origin, type, this, dmg * 2 / damageReduction / (health + shield));
+                di.GetComponent<DamageIndicator>().Init(origin, shield > 0 ? DAMAGE_TYPE.ELECTRIC : type, this, dmg * 2 / damageReduction / (health + shield));
             }
             health -= finalDamage;
             if (GameplayLoop.instance.GameInProgress)
             {
-                damageTaken += finalDamage;
+                if (type == DAMAGE_TYPE.EXPLOSION || type == DAMAGE_TYPE.ELECTRIC)
+                {
+                    hitsTaken += 1;
+                    CreateInfoText($"Hits Taken: {hitsTaken}", Color.red);
+                }
             }
             if (type == DAMAGE_TYPE.EXPLOSION && GameplayLoop.instance.gameMode == Globals.GAME_MODES.CURSED)
             {
@@ -963,7 +1043,7 @@ public class PlayerStats : MonoBehaviour
         }
         hpperc = health / maxhealth;
         HPbar.fillAmount = hpperc;
-        ShieldBar.fillAmount = shield / (maxhealth + shield);
+        ShieldBar.fillAmount = shield / maxhealth;
         if (hpperc <= 0.35f)
         {
             hpbar.enabled = true;
@@ -1015,7 +1095,7 @@ public class PlayerStats : MonoBehaviour
                 }
             }
         }
-        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
     }
 
     public float GetMaxHealth()
@@ -1029,35 +1109,60 @@ public class PlayerStats : MonoBehaviour
         health = v;
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
-        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
+    }
+
+    public void SetBaseMaxHealth()
+    {
+        float baseHealth = 100 + gameObject.GetComponentInParent<PlayerData>().UpgradesData["VitalityLevel"] * 1.25f;
+        maxhealth = baseHealth;
+        health = maxhealth;
+        HPBarBG.fillAmount = 1;
+        HPbar.fillAmount = 1;
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
+    }
+
+    public void SetDodgeChance()
+    {
+        dodgeChance = gameObject.GetComponentInParent<PlayerData>().UpgradesData["LuckLevel"] * 0.1f;
+        buffDuration = 1 + gameObject.GetComponentInParent<PlayerData>().UpgradesData["LuckLevel"] * 0.003f;
+        if (selectedPerk != null)
+        {
+            if (selectedPerk.ID == 0 && selectedPerk.enabled == true)
+            {
+                dodgeChance += 25;
+            }
+        }
     }
 
     public void Reset() //Resets other things
     {
         StopAllCoroutines();
+        AudioManager.instance.ApplyAudioFilter(AudioManager.AUDIO_FILTER_EFFECTS.NONE);
         ColorAdjustments ca;
         volume.profile.TryGet(out ca);
         ca.colorFilter.Override(new Color(1, 1, 1));
         transform.position = new Vector3(0, 10, 0);
-        damageTaken = 0;
+        hitsTaken = 0;
         coinsCollected = 0;
         powerupsCollected = 0;
         shield = 0;
         health = maxhealth;
-        survivalTime = 0;
         ShieldBar.fillAmount = 0;
         HPBarBG.fillAmount = 1;
         HPbar.fillAmount = 1;
+        survivalTime = 0;
         cooldownReduction = 1;
-        effectResistance = 1;
+        buffDuration = 1;
         effects.Clear();
         PlayerControls.instance.moveSpeedModifiers.Clear();
         damageResistModifiers.Clear();
         cooldownReductionModifiers.Clear();
         playerBoosts.Clear();
         hpbar.enabled = false;
-        HPbar.color = new Color(0.6735849f, 1, 1);
-        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth + shield)}";
+        isInWater = false;
+        HPbar.color = new Color(0, 1, 1);
+        hpText.text = $"{System.Math.Ceiling(health + shield)} / {System.Math.Ceiling(maxhealth)}";
     }
 
     private IEnumerator DamageEffect(float dmgPerc)
@@ -1090,9 +1195,10 @@ public class PlayerStats : MonoBehaviour
     private void UpdateAddStatUI()
     {
         MSpdText.transform.parent.gameObject.SetActive(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
-        MSpdText.text = $"Movement Speed: {100 * PlayerControls.instance.moveSpeed / PlayerControls.instance.baseMoveSpeed}%";
+        MSpdText.text = $"Move Speed: {100 * PlayerControls.instance.moveSpeed / PlayerControls.instance.baseMoveSpeed}% ({PlayerControls.instance.baseMoveSpeed.ToString("F1")}m/s)";
         DmgRedText.text = $"Damage Reduction: {(1 - damageReduction) * 100}%";
         CDRedText.text = $"Cooldown Reduction: {(1 - cooldownReduction) * 100}%";
+        DodgeText.text = $"Dodge Chance: {dodgeChance.ToString("F1")}%";
         if (PlayerControls.instance.moveSpeed > PlayerControls.instance.baseMoveSpeed)
         {
             MSpdText.color = Color.green;

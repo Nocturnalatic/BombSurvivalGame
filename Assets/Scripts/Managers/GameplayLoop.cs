@@ -8,7 +8,8 @@ using TMPro;
 public class GameplayLoop : MonoBehaviour
 {
     public static GameplayLoop instance;
-    
+    public bool IsEndlessMode = false;
+
     [Range(1, 10)]
     public float Intensity;
     public bool GameInProgress = false;
@@ -18,6 +19,7 @@ public class GameplayLoop : MonoBehaviour
     [HideInInspector]
     public int NukeCount = 0;
     public int GigaBombCount = 0;
+    public int GigaFrostCount = 0;
     int MaxNukeCount = 1;
     readonly float roundDuration = 150;
     public Transform bombsParent, Arena, Players;
@@ -58,6 +60,8 @@ public class GameplayLoop : MonoBehaviour
     GameObject coinBomb;
     [SerializeField]
     GameObject gigaBomb;
+    [SerializeField]
+    GameObject gigaFrost;
 
     WaitForFixedUpdate waitforupdate;
     List<PlayerStats> allPlayers = new List<PlayerStats>();
@@ -111,6 +115,7 @@ public class GameplayLoop : MonoBehaviour
         EMP,
         COINBOMB,
         GIGA_BOMB,
+        GIGA_FROST,
         TOTAL
     }
 
@@ -169,25 +174,38 @@ public class GameplayLoop : MonoBehaviour
         }
         if (Intensity >= 3 && typesToSpawn.Contains(BOMB_TYPES.NUKE))
         {
-            MaxNukeCount = (Intensity >= 5.0f) ? 2 : 1;
+            MaxNukeCount = 1;
             float nukeChance = Random.Range(0, 1f);
             if ((nukeChance <= (Intensity / 7f - 0.6f)) && NukeCount < MaxNukeCount)
             {
                 Vector3 pos = GenerateBombSpawn();
                 GameObject nukeObj = Instantiate(nuke, pos, Quaternion.Euler(90, 0, 0), bombsParent);
-                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 0.75f);
+                nukeObj.GetComponent<Nuke>().speedMultiplier = 1 + ((Intensity - 3) * 0.35f);
                 nukeObj.GetComponent<Animator>().speed = nukeObj.GetComponent<Nuke>().speedMultiplier;
                 NukeCount++;
             }
         }
-        if (Intensity > 5.0f && GigaBombCount < 1)
+        if (Intensity > 5.0f) //Spawn giga bomb types
         {
-            float gigaBombSpawnChance = Random.Range(0, 1f);
-            if (gigaBombSpawnChance <= 0.02f)
+            if (GigaBombCount < 1)
             {
-                GigaBombCount += 1;
-                GameObject gBomb = Instantiate(gigaBomb, GenerateBombSpawn(), Quaternion.identity, bombsParent);
-                gBomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                float gigaBombSpawnChance = Random.Range(0, 1f);
+                if (gigaBombSpawnChance <= 0.02f)
+                {
+                    GigaBombCount += 1;
+                    GameObject gBomb = Instantiate(gigaBomb, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+                    gBomb.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)), ForceMode.Impulse);
+                }
+            }
+
+            if (GigaFrostCount < 1)
+            {
+                float gigaFrostChance = Random.Range(0, 1f);
+                if (gigaFrostChance <= 0.02f)
+                {
+                    GigaFrostCount += 1;
+                    GameObject gFrost = Instantiate(gigaFrost, GenerateBombSpawn(), Quaternion.identity, bombsParent);
+                }
             }
         }
         BOMB_TYPES bombSelect;
@@ -303,11 +321,11 @@ public class GameplayLoop : MonoBehaviour
         {
             return INTENSITY.HIGH;
         }
-        else if (Intensity > 5 && Intensity <= 6)
+        else if (Intensity > 5 && Intensity <= 7)
         {
             return INTENSITY.EXTREME;
         }
-        else if (Intensity > 6 && Intensity <= 7)
+        else if (Intensity > 7 && Intensity <= 8f)
         {
             return INTENSITY.GLITCH;
         }
@@ -337,15 +355,15 @@ public class GameplayLoop : MonoBehaviour
             case INTENSITY.LOW:
                 return "EASY";
             case INTENSITY.MID:
-                return "MEDIUM";
+                return "NORMAL";
             case INTENSITY.HIGH:
                 return "HARD";
             case INTENSITY.EXTREME:
                 return "INSANE";
             case INTENSITY.GLITCH:
-                return "MASTER";
+                return "CHAOS";
             case INTENSITY.CRASH:
-                return "CRASH";
+                return "CHAOS+";
             default:
                 return "UNKNOWN";
         }
@@ -359,8 +377,6 @@ public class GameplayLoop : MonoBehaviour
                 return "CLASSIC";
             case Globals.GAME_MODES.CURSED:
                 return "CURSED";
-            case Globals.GAME_MODES.LITTLE_GUYS:
-                return "LITTLE GUYS";
             case Globals.GAME_MODES.LOW_GRAVITY:
                 return "LOW GRAVITY";
             default:
@@ -407,9 +423,9 @@ public class GameplayLoop : MonoBehaviour
                 }
             case EVENTS.LAVA_RISE:
                 {
-                    eventName.text = "EVENT: LAVA RISING";
-                    eventDescription.text = "Lava will slowly rise over time. Stay on high ground!";
-                    Lava.GetComponent<Lava>().StartLavaRiseEvent();
+                    eventName.text = "EVENT: FLUID RISING";
+                    eventDescription.text = "The arena's hazard will slowly rise over time. Stay on high ground!";
+                    Lava.GetComponent<Water>().StartRiseEvent(30);
                     break;
                 }
             case EVENTS.MAKE_IT_RAIN:
@@ -442,8 +458,8 @@ public class GameplayLoop : MonoBehaviour
                 }
         }
         eventActive = false;
-        spawnDelayMultiplier = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? 0.75f : 1;
-        typesToSpawn = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? Globals.littleGuysMode : getBombListFromIntensity(GetIntensity());
+        spawnDelayMultiplier = 1;
+        typesToSpawn = getBombListFromIntensity(GetIntensity());
         yield return null;
     }
 
@@ -473,6 +489,32 @@ public class GameplayLoop : MonoBehaviour
         }
     }
 
+    IEnumerator CountupEndlessTime()
+    {
+        while (true)
+        {
+            foreach (PlayerStats player in allPlayers)
+            {
+                if (player.state == PlayerStats.GAME_STATE.IN_GAME)
+                {
+                    player.survivalTime += Time.deltaTime;
+                }
+            }
+            roundSeconds += Time.deltaTime;
+            roundTimerText.text = $"{MiscFunctions.FormatTimeString(roundSeconds)}";
+            roundTimerBar.fillAmount = roundSeconds / 60f;
+            if (powerupTimer > 0)
+            {
+                powerupTimer -= Time.deltaTime;
+            }
+            if (coinTimer > 0)
+            {
+                coinTimer -= Time.deltaTime;
+            }
+            yield return waitforupdate;
+        }
+    }
+
     IEnumerator Gameplay()
     {
         //Start
@@ -488,9 +530,10 @@ public class GameplayLoop : MonoBehaviour
             }
         }
         yield return new WaitUntil(() => AudioManager.instance != null);
+        Lava.GetComponent<Water>().Reset();
         eventChosen = false;
         AudioManager.instance.PlayLobbyMusic();
-        Lava.transform.localScale = new Vector3(50, 1, 50);
+        Lava.transform.localScale = new Vector3(50, 13, 50);
         Physics.gravity = new Vector3(0, -9.81f, 0);
         intenseMode = false;
         roundTimerBar.GetComponent<Animator>().enabled = false;
@@ -534,32 +577,38 @@ public class GameplayLoop : MonoBehaviour
             }
             else
             {
-                player.SetMaxHealth(100);
+                player.SetBaseMaxHealth();
                 if (player.selectedPerk != null)
                 {
                     player.selectedPerk.enabled = true;
                     player.selectedPerk.ActivatePerk(player.selectedPerk.ID);
                 }
             }
+            player.SetDodgeChance();
             if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.MAX_HEALTH_BOOST))
             {
                 player.SetMaxHealth(player.GetMaxHealth() + 25);
             }
             if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.EFFECT_RESIST))
             {
-                player.effectResistance = 1.25f;
+                player.buffDuration += 0.25f;
             }
         }
         int mapIndex = Random.Range(0, Environments.Count);
         chosenEnv = Environments[mapIndex];
-        GameObject env = Instantiate(chosenEnv,Arena);
         mapThumbail.sprite = MapThumbnails[mapIndex];
-        mapText.text = "Now Entering: " + chosenEnv.name;
+        mapText.text = "Map: " + chosenEnv.name;
         globalText.text = "Loading Players";
         loadingscn.SetTrigger("DoLoadingScn");
-        ArenaFloor.SetActive(false);
-        //Loading Screen Sequence
         tipBar.text = lines[Random.Range(0, lines.Length)];
+        yield return new WaitForSeconds(0.5f);
+        GameObject env = Instantiate(chosenEnv, Arena);
+        ArenaFloor.SetActive(false);
+        foreach (PlayerStats player in allPlayers)
+        {
+            player.transform.position = new Vector3(0, 10, 0); //In case players spawn under the map
+        }
+        //Loading Screen Sequence
         yield return new WaitForSeconds(4);
         gameMode = Globals.gameModesList[Random.Range(0, (int)Globals.GAME_MODES.TOTAL)];
         globalText.text = $"Game Mode: {GetGamemodeName(gameMode)}";
@@ -573,7 +622,7 @@ public class GameplayLoop : MonoBehaviour
             Physics.gravity *= 0.35f;
         }
         GameInProgress = true;
-        timer = 3;
+        timer = 5;
         AudioManager.instance.StopAudio();
         while (timer > 0)
         {
@@ -586,6 +635,7 @@ public class GameplayLoop : MonoBehaviour
         AudioManager.instance.PlayWhistle();
         yield return AudioManager.instance.waitForWhistle;
         globalText.text = "Round In Progress";
+        Lava.GetComponent<Water>().doSwitchFluidType = true;
         // Start Spawning Bombs Based On Intensity
         roundSeconds = roundDuration;
         roundTimerBar.fillAmount = 1;
@@ -594,8 +644,8 @@ public class GameplayLoop : MonoBehaviour
         {
             spawnDelayMultiplier /= 1 + (Intensity - 6.0f);
         }
-        typesToSpawn = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? Globals.littleGuysMode : getBombListFromIntensity(GetIntensity());
-        spawnDelayMultiplier = (gameMode == Globals.GAME_MODES.LITTLE_GUYS) ? 0.75f : 1;
+        typesToSpawn = getBombListFromIntensity(GetIntensity());
+        spawnDelayMultiplier = 1;
         Coroutine countdown = StartCoroutine(CountdownRoundTime());
         AudioManager.instance.PlayBGM(GetIntensity());
         AudioManager.instance.currentlyPlaying.pitch = 1;
@@ -611,17 +661,9 @@ public class GameplayLoop : MonoBehaviour
                     eventChosen = true;
                 }
             }
-            if (!intenseMode && roundSeconds <= 30)
+            if (!intenseMode && roundSeconds <= 45)
             {
-                float rng = Random.Range(0, 1f);
-                if (rng <= 0.25f)
-                {
-                    roundTimerBar.GetComponent<Animator>().enabled = true;
-                    AudioManager.instance.PlayWhistle();
-                    AudioManager.instance.currentlyPlaying.pitch = 1.5f;
-                    spawnDelayMultiplier /= 2f; //100% more bombs
-                    globalText.text = "Final Frenzy!";
-                }
+                Lava.GetComponent<Water>().StartRiseEvent(45);
                 intenseMode = true;
             }
             yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
@@ -653,7 +695,7 @@ public class GameplayLoop : MonoBehaviour
         {
             Intensity -= 0.5f;
         }
-        Intensity = Mathf.Clamp(Intensity, 1.0f, 10.0f);
+        Intensity = Mathf.Clamp(Intensity, 1.0f, 100.0f);
         GlobalSettings.instance.SetHardcoreSetting(true);
         GlobalSettings.instance.SetIntensityControlSetting(true);
         globalText.text = "Cleaning Up!";
@@ -670,6 +712,190 @@ public class GameplayLoop : MonoBehaviour
         StartCoroutine(Gameplay());
     }
 
+    IEnumerator EndlessGameplay()
+    {
+        //Start
+        gamemodeText.text = "ENDLESS";
+        Intensity = 1;
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (player.GetComponent<PlayerStats>() != null)
+            {
+                allPlayers.Add(player.GetComponent<PlayerStats>());
+                player.GetComponent<PlayerControls>().gravity = -9.81f;
+                player.GetComponentInChildren<Scoring>().ResetScoreboard();
+                player.GetComponent<PlayerStats>().ResetBoostShopPage();
+                player.GetComponent<PlayerStats>().state = PlayerStats.GAME_STATE.DEFAULT;
+            }
+        }
+        yield return new WaitUntil(() => AudioManager.instance != null);
+        eventChosen = false;
+        AudioManager.instance.PlayLobbyMusic();
+        Lava.transform.localScale = new Vector3(50, 13, 50);
+        Physics.gravity = new Vector3(0, -9.81f, 0);
+        intenseMode = false;
+        roundTimerBar.GetComponent<Animator>().enabled = false;
+        roundTimerText.text = "0:00";
+        roundTimerBar.color = Color.white;
+        SetIntensity(Intensity);
+        foreach (PlayerStats player in allPlayers) //Reset Players
+        {
+            if (player.selectedSkill != null)
+            {
+                player.selectedSkill.currentcooldown = 0.1f;
+            }
+            player.skillUI.SetActive(true);
+            player.Reset();
+        }
+        timer = 30;
+        while (timer > 0)
+        {
+            globalText.text = $"Round begins in {(int)timer} {((int)timer == 1 ? "second" : "seconds")}";
+            timer -= Time.deltaTime;
+            yield return waitforupdate;
+        }
+        GlobalSettings.instance.SetHardcoreSetting(false);
+        GlobalSettings.instance.SetIntensityControlSetting(false);
+        foreach (PlayerStats player in allPlayers)
+        {
+            player.state = PlayerStats.GAME_STATE.IN_GAME;
+            if (player.Menu.activeInHierarchy) //Close all skill menus
+            {
+                player.ToggleMenu();
+            }
+            player.skillUI.SetActive(false);
+            if (player.hardcoreMode) //Apply hardcore mode modifier
+            {
+                player.SetMaxHealth(50);
+                player.GetComponentInParent<PlayerControls>().moveSpeedModifiers.Add(Globals.hardcoreMovementDebuff);
+                if (player.selectedPerk != null)
+                {
+                    player.selectedPerk.enabled = false;
+                }
+            }
+            else
+            {
+                player.SetBaseMaxHealth();
+                if (player.selectedPerk != null)
+                {
+                    player.selectedPerk.enabled = true;
+                    player.selectedPerk.ActivatePerk(player.selectedPerk.ID);
+                }
+            }
+            player.SetDodgeChance();
+            if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.MAX_HEALTH_BOOST))
+            {
+                player.SetMaxHealth(player.GetMaxHealth() + 25);
+            }
+            if (player.playerBoosts.Exists(x => x.type == Globals.BOOST_TYPE.EFFECT_RESIST))
+            {
+                player.buffDuration += 0.25f;
+            }
+        }
+        int mapIndex = Random.Range(0, Environments.Count);
+        chosenEnv = Environments[mapIndex];
+        GameObject env = Instantiate(chosenEnv, Arena);
+        mapThumbail.sprite = MapThumbnails[mapIndex];
+        mapText.text = "Now Entering: " + chosenEnv.name;
+        globalText.text = "Loading Players";
+        loadingscn.SetTrigger("DoLoadingScn");
+        ArenaFloor.SetActive(false);
+        //Loading Screen Sequence
+        tipBar.text = lines[Random.Range(0, lines.Length)];
+        yield return new WaitForSeconds(4);
+        GameInProgress = true;
+        timer = 3;
+        AudioManager.instance.StopAudio();
+        while (timer > 0)
+        {
+            AudioManager.instance.PlayTick();
+            globalText.text = $"{(int)timer}";
+            timer -= 1;
+            yield return new WaitForSeconds(1);
+        }
+        globalText.text = "BEGIN!";
+        AudioManager.instance.PlayWhistle();
+        yield return AudioManager.instance.waitForWhistle;
+        globalText.text = "Round In Progress";
+        // Start Spawning Bombs Based On Intensity
+        roundSeconds = 0;
+        roundTimerBar.fillAmount = 0;
+        spawnDelayMultiplier = 1;
+        Coroutine countdown = StartCoroutine(CountupEndlessTime());
+        typesToSpawn = getBombListFromIntensity(GetIntensity());
+        AudioManager.instance.currentlyPlaying.pitch = 1;
+        AudioManager.instance.PlayBGM(GetIntensity());
+        float spawnDelay = 1;
+        while (GameInProgress == true)
+        {
+            SpawnBomb();
+            if (roundSeconds >= 60)
+            {
+                Destroy(env);
+                env = Instantiate(chosenEnv, Arena);
+                foreach (PlayerStats player in allPlayers)
+                {
+                    player.transform.position = new Vector3(0, 10, 0); //In case players spawn under the map
+                }
+                Intensity += 0.5f;
+                spawnDelay = 1 / (Intensity * 0.8f) + 0.5f;
+                if (Intensity > 6)
+                {
+                    spawnDelayMultiplier /= 1 + 0.1f * (Intensity - 6.0f);
+                }
+                SetIntensity(Intensity);
+                typesToSpawn = getBombListFromIntensity(GetIntensity());
+                AudioManager.instance.StopAudio();
+                AudioManager.instance.PlayBGM(GetIntensity());
+                roundSeconds = 0;
+                PlayerStats.instance.CreateInfoText("Intensity Up!", Color.white);
+            }
+            yield return new WaitForSeconds(spawnDelay * spawnDelayMultiplier);
+        }
+        StopCoroutine(countdown);
+        foreach (PlayerStats player in allPlayers) //Set all player's state to WIN if they are IN GAME
+        {
+            if (player.state == PlayerStats.GAME_STATE.IN_GAME)
+            {
+                player.state = PlayerStats.GAME_STATE.WIN;
+            }
+        }
+        StartCoroutine(AudioManager.instance.FadeOutTrack());
+        AudioManager.instance.PlayWhistle();
+        GameInProgress = false;
+        globalText.text = "Round Over!";
+        yield return new WaitForSeconds(2);
+        globalText.text = $"{GetWinningPlayers()} / {allPlayers.Count} players survived";
+        yield return new WaitForSeconds(2);
+        foreach (PlayerStats player in allPlayers)
+        {
+            player.GetComponentInChildren<Scoring>().StartCoroutine(player.GetComponentInChildren<Scoring>().CalculateScore());
+        }
+        if ((GetWinningPlayers() / allPlayers.Count) >= 0.5f) //If more than half people survived, increase intensity
+        {
+            Intensity += 0.5f;
+        }
+        else
+        {
+            Intensity -= 0.5f;
+        }
+        Intensity = Mathf.Clamp(Intensity, 1.0f, 100.0f);
+        GlobalSettings.instance.SetHardcoreSetting(true);
+        GlobalSettings.instance.SetIntensityControlSetting(true);
+        globalText.text = "Cleaning Up!";
+        yield return new WaitForSeconds(9);
+        ArenaFloor.SetActive(true);
+        Destroy(env);
+        allPlayers.Clear();
+        foreach (Transform go in bombsParent)
+        {
+            Destroy(go.gameObject);
+        }
+        NukeCount = 0;
+        GigaBombCount = 0;
+        StartCoroutine(EndlessGameplay());
+    }
+
     // Start is called before the first frame update
     void Start()
     { 
@@ -678,6 +904,13 @@ public class GameplayLoop : MonoBehaviour
         Intensity = 3.0f;
         StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/Tips.txt");
         lines = sr.ReadToEnd().Split('\n');
-        StartCoroutine(Gameplay());
+        if (!IsEndlessMode)
+        {
+            StartCoroutine(Gameplay());
+        }
+        else
+        {
+            StartCoroutine(EndlessGameplay());
+        }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerControls : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class PlayerControls : MonoBehaviour
     public CharacterController controller;
     public static PlayerControls instance;
     public bool processCamera = true;
-    public Image staminaBarUI;
+    public Image staminaBarUI, oxygenBarUI;
+    public TextMeshProUGUI airText;
 
     public Camera mainCamera;
     public GameObject postProcessVolume;
@@ -29,13 +31,23 @@ public class PlayerControls : MonoBehaviour
     Vector3 moveDir, velocity, knockBack;
     public bool isGrounded = false;
     public bool isSprinting = false;
+    public float oxygen;
+    float maxOxygen = 100f;
+    float oxygenRegenDelay;
+    public bool isSwimming = false;
 
     float x, z;
+
+    public void DelayOxygenRegen()
+    {
+        oxygenRegenDelay = 1.5f;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         stamina = maxStamina;
+        oxygen = maxOxygen;
         Cursor.lockState = CursorLockMode.Locked; //To make sure the mouse don't anyhow move
         playerLeg = transform.Find("Body").Find("Leg");
         playerHead = transform.Find("Head");
@@ -47,7 +59,7 @@ public class PlayerControls : MonoBehaviour
     {
         isGrounded = controller.isGrounded;
 
-        if (isGrounded && velocity.y < 0) // if player is on the ground and is currently falling
+        if (isGrounded && velocity.y < 0 && !PlayerStats.instance.isInWater) // if player is on the ground and is currently falling
         {
             velocity.y = -2f; // reset velocity
         }
@@ -59,12 +71,25 @@ public class PlayerControls : MonoBehaviour
     }
 
 
-    public void AddKnockback(Vector3 direction, float force)
+    public void AddKnockback(Vector3 direction, float force, bool ignoreImmov = false)
     {
-        if (!PlayerStats.instance.HasEffect(StatusEffect.EffectType.CONTROL_IMMUNE))
+        if (!ignoreImmov)
+        {
+            if (!PlayerStats.instance.HasEffect(StatusEffect.EffectType.CONTROL_IMMUNE))
+            {
+                knockBack = (direction * force + Vector3.up) * 6;
+            }
+        }
+        else
         {
             knockBack = (direction * force + Vector3.up) * 6;
         }
+    }
+
+    public void SetBaseMovementSpeed()
+    {
+        float newBase = 7.0f + GetComponentInParent<PlayerData>().UpgradesData["MoveSpeedLevel"] * 0.05f;
+        baseMoveSpeed = newBase;
     }
 
     // Update is called once per frame
@@ -106,13 +131,36 @@ public class PlayerControls : MonoBehaviour
             ProcessMovement();
         }
         UpdateGravity();
+        UpdateOxygen();
     }
 
     void ProcessMovement()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded) // only allow player to jump when they are grounded
+        isSwimming = false;
+        if (Input.GetKeyDown(KeyCode.Space)) // only allow player to jump when they are grounded
         {
-            Jump();
+            if (isGrounded)
+            {
+                Jump();
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            if (PlayerStats.instance.isInWater)//Swim Up
+            {
+                velocity.y = Mathf.Sqrt(15f * 2f);
+                isSwimming = true;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            if (PlayerStats.instance.isInWater)
+            {
+                velocity.y = -Mathf.Sqrt(15f * 2f);
+                isSwimming = true;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -218,7 +266,34 @@ public class PlayerControls : MonoBehaviour
 
     void UpdateGravity()
     {
-        velocity.y += gravity * Time.deltaTime * gravityMultiplier * (Physics.gravity.magnitude / 9.81f); // update player velocity
-        controller.Move(velocity * Time.deltaTime); // apply fall to player
+        if (!PlayerStats.instance.isInWater)
+        {
+            velocity.y += gravity * Time.deltaTime * gravityMultiplier * (Physics.gravity.magnitude / 9.81f); // update player velocity 
+        }
+        else
+        {
+            Vector3 initialVelocity = velocity;
+            if (!isSwimming)
+            {
+                velocity = Vector3.Lerp(initialVelocity, Vector3.zero, Time.deltaTime * 5);
+            }
+        }
+        controller.Move(velocity * Time.deltaTime); // apply fall to player  
+    }
+
+    void UpdateOxygen()
+    {
+        if (oxygenRegenDelay > 0)
+        {
+            oxygenRegenDelay -= Time.deltaTime;
+        }
+        if (oxygen < maxOxygen && oxygenRegenDelay <= 0)
+        {
+            oxygen += 16f * Time.fixedDeltaTime;
+        }
+        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen);
+        oxygenBarUI.fillAmount = oxygen / maxOxygen;
+        oxygenBarUI.transform.parent.gameObject.SetActive(PlayerStats.instance.isInWater || oxygen < maxOxygen);
+        oxygenBarUI.color = (oxygen / maxOxygen <= 0.30f) ? Color.red : new Color(0, 0.39f, 1f);
     }
 }

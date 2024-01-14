@@ -5,7 +5,7 @@ using UnityEngine;
 public class NukeRadiation : MonoBehaviour
 {
     float radius = 20f;
-    float duration = 3f;
+    float duration = 1.5f;
 
     IEnumerator PulseRadiation()
     {
@@ -19,7 +19,7 @@ public class NukeRadiation : MonoBehaviour
                     col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.RADIATION, 5, 1, true, StatusEffect.BuffType.NEGATIVE, StatusEffect.EffectFlag.noStackDuration));
                 }
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
         }
     }
     // Start is called before the first frame update

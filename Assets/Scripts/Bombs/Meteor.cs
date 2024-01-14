@@ -7,13 +7,15 @@ public class Meteor : MonoBehaviour
     public float explosionRadius = 5;
     public float explosionForce = 300f;
     public float damage = 20;
+    public float speedMultiplier = 1f;
     bool Triggered = false;
     [SerializeField]
     ParticleSystem explosionFX;
     public enum METEOR_TYPE
     {
         FIRE = 0,
-        ICE
+        ICE,
+        GIGA_ICE
     }
     [SerializeField]
     GameObject fire;
@@ -25,7 +27,7 @@ public class Meteor : MonoBehaviour
     void Start()
     {
         localrb = GetComponent<Rigidbody>();
-        localrb.velocity = Vector3.down * 5.5f;
+        localrb.velocity = Vector3.down * 5.5f * speedMultiplier;
     }
 
     IEnumerator Explode()
@@ -72,6 +74,11 @@ public class Meteor : MonoBehaviour
                                 StatusEffect effect = new StatusEffect(StatusEffect.EffectType.BURN, (5 * distanceMod) + 1, 0.5f, true);
                                 col.GetComponentInParent<PlayerStats>().AddStatus(effect);
                             }
+                            if (type == METEOR_TYPE.GIGA_ICE)
+                            {
+                                col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.STUNNED, 1.5f, 1, false));
+                                col.GetComponentInParent<PlayerStats>().AddStatus(new StatusEffect(StatusEffect.EffectType.CHILLED, 10, 1, false));
+                            }
                         }
                     }
                 }
@@ -106,6 +113,13 @@ public class Meteor : MonoBehaviour
         {
             StartCoroutine(Explode());
             Triggered = true;
+        }
+    }
+    private void OnDestroy()
+    {
+        if (type == METEOR_TYPE.GIGA_ICE)
+        {
+            GameplayLoop.instance.GigaFrostCount--;
         }
     }
 }

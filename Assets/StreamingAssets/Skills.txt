@@ -3,8 +3,8 @@
     [
         {
             "ID":0,
-            "skillName":"Force Blast",
-            "cooldown":8
+            "skillName":"Sanctuary",
+            "cooldown":15
         },
         {
             "ID":1,

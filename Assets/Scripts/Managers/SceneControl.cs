@@ -8,7 +8,8 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
     {
         MAIN_MENU = 0,
         GAMEPLAY = 1,
-        TUTORIAL = 2
+        TUTORIAL = 2,
+        ENDLESS = 3,
     }
     public Material defaultSkybox;
     public Material HighIntSkybox;
@@ -23,12 +24,14 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
         if (highInt)
         {
             directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
-            directionalLight.intensity = 0.6f;
+            directionalLight.intensity = 0.65f;
+            directionalLight.color = new Color(80 / 255f, 104 / 255f, 134 / 255f);
         }
         else
         {
             directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(31.3510132f, 140.580063f, 80.950737f));
             directionalLight.intensity = 1f;
+            directionalLight.color = new Color(1, 0.91f, 0.68f);
         }
     }
 
@@ -68,6 +71,11 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
                     SceneManager.UnloadSceneAsync("TutorialScene");
                     break;
                 }
+            case SCENE_TYPE.ENDLESS:
+                {
+                    SceneManager.UnloadSceneAsync("EndlessScene");
+                    break;
+                }
         }
         AsyncOperation nScene = null;
         //Then load the new scene
@@ -93,6 +101,13 @@ public class SceneControl : MonoBehaviour //This will be attached to the manager
                     setplayer = true;
                     nScene = SceneManager.LoadSceneAsync("TutorialScene", LoadSceneMode.Additive);
                     currentScene = SCENE_TYPE.TUTORIAL;
+                    break;
+                }
+            case SCENE_TYPE.ENDLESS:
+                {
+                    setplayer = true;
+                    nScene = SceneManager.LoadSceneAsync("EndlessScene", LoadSceneMode.Additive);
+                    currentScene = SCENE_TYPE.ENDLESS;
                     break;
                 }
         }

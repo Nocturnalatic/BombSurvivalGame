@@ -17,6 +17,12 @@ public class MainMenu : MonoBehaviour
         StartCoroutine(SceneControl.instance.LoadScene(SceneControl.SCENE_TYPE.TUTORIAL));
     }
 
+    public void StartEndless()
+    {
+        GlobalSettings.instance.SetIntensityControlSetting(false);
+        StartCoroutine(SceneControl.instance.LoadScene(SceneControl.SCENE_TYPE.ENDLESS));
+    }
+
     public void OpenWebsite()
     {
         Application.OpenURL("https://lionwayne7.wixsite.com/bombsurvival/appupdates");

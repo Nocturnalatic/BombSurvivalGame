@@ -48,6 +48,9 @@ public class DamageIndicator : MonoBehaviour
             case PlayerStats.DAMAGE_TYPE.GRAVITY:
                 arrow.color = Color.magenta;
                 break;
+            case PlayerStats.DAMAGE_TYPE.CORROSION:
+                arrow.color = new Color(143/255f, 254/255f, 9/255f);
+                break;
         }
         Destroy(gameObject, 1.5f);
     }

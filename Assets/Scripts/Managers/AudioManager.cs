@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public enum AUDIO_FILTER_EFFECTS
+    {
+        NONE = 0,
+        LOW_HEALTH,
+        UNDERWATER,
+        TOTAL
+    }
+
+    #region BGMs
     public List<AudioSource> LobbyMusic;
     public List<AudioSource> LowIntensityMusic;
     public List<AudioSource> MidIntensityMusic;
@@ -16,6 +25,7 @@ public class AudioManager : MonoBehaviour
     private List<AudioSource> HighIntMusicRealTime;
     private List<AudioSource> ExtIntMusicRealTime;
     private List<AudioSource> GchIntMusicRealTime;
+    #endregion
 
     public AudioSource currentlyPlaying;
     public WaitUntil waitForWhistle;
@@ -25,9 +35,40 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager instance;
 
+    private Camera mainCamera;
+    private AudioReverbFilter filter;
+
     public void StopAudio()
     {
         currentlyPlaying.Stop();
+    }
+
+    public void ApplyAudioFilter(AUDIO_FILTER_EFFECTS fx)
+    {
+        switch (fx)
+        {
+            case AUDIO_FILTER_EFFECTS.NONE:
+                {
+                    filter.reverbPreset = AudioReverbPreset.Off;
+                    mainCamera.GetComponent<AudioLowPassFilter>().enabled = false;
+                    break;
+                }
+            case AUDIO_FILTER_EFFECTS.LOW_HEALTH:
+                {
+                    filter.reverbPreset = AudioReverbPreset.Dizzy;
+                    mainCamera.GetComponent<AudioLowPassFilter>().enabled = true;
+                    break;
+                }
+            case AUDIO_FILTER_EFFECTS.UNDERWATER:
+                {
+                    filter.reverbPreset = AudioReverbPreset.Underwater;
+                    mainCamera.GetComponent<AudioLowPassFilter>().enabled = true;
+                    break;
+                }
+            default:
+                filter.reverbPreset = AudioReverbPreset.Off;
+                break;
+        }
     }
 
     public void PlayLobbyMusic()
@@ -136,5 +177,7 @@ public class AudioManager : MonoBehaviour
         HighIntMusicRealTime = new List<AudioSource>(HighIntensityMusic);
         ExtIntMusicRealTime = new List<AudioSource>(ExtIntensityMusic);
         GchIntMusicRealTime = new List<AudioSource>(GchIntensityMusic);
+        mainCamera = Camera.main;
+        filter = mainCamera.GetComponent<AudioReverbFilter>();
     }
 }

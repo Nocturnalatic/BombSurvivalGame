@@ -20,6 +20,7 @@ public class Lava : MonoBehaviour
         }
         yield return null;
     }
+
     private void OnTriggerStay(Collider other)
     {
         PlayerStats player = other.GetComponent<PlayerStats>();

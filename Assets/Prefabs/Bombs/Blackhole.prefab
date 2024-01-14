@@ -5259,7 +5259,7 @@ MonoBehaviour:
   detonationTime: 4
   damage: 5
   explosionRadius: 12
-  blackholeDuration: 3
+  blackholeDuration: 2
   beepNoise: {fileID: 354283402258717471}
   blackholeFX: {fileID: 354283403753782510}
   FX2: {fileID: 7245347109573986214}

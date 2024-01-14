@@ -32,6 +32,10 @@ public class TutorialSequence : MonoBehaviour
         yield return new WaitUntil(() => !player.GetComponent<PlayerControls>().isGrounded);
         ding.Play();
         yield return new WaitForSeconds(2);
+        tutorialText.text = "Moreover, you can use SPACEBAR to swim up and L_CTRL to swim down in water.";
+        yield return new WaitUntil(() => player.GetComponent<PlayerControls>().isSwimming);
+        ding.Play();
+        yield return new WaitForSeconds(2);
         tutorialText.text = "Now, you can equip SKILLS and PERKS by pressing TAB, equip a skill and perk to continue.";
         yield return new WaitUntil(() => (player.GetComponent<PlayerStats>().selectedPerk != null && player.GetComponent<PlayerStats>().selectedSkill != null));
         ding.Play();

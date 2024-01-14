@@ -47,21 +47,26 @@ public class Skills
         {
             case 0:
                 {
+                    GameObject barrierField = PlayerStats.instance.barrierField;
                     Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 25);
                     foreach (Collider col in result)
                     {
                         Rigidbody rb = col.GetComponent<Rigidbody>();
 
-                        if (rb != null && !rb.gameObject.CompareTag("Bomb"))
+                        if (rb != null && !rb.gameObject.CompareTag("Bomb") && !rb.gameObject.CompareTag("Collectible"))
                         {
                             rb.AddExplosionForce(1500, PlayerStats.instance.transform.position, 25, 1);
                         }
                     }
+                    var bF = Object.Instantiate(barrierField, PlayerStats.instance.transform.position, Quaternion.identity);
+                    bF.transform.localScale *= 15;
+                    bF.GetComponentInChildren<BarrierField>().SetDuration(6);
                     break;
                 }
             case 1:
                 {
                     PlayerStats.instance.HealPlayer(20f, true);
+                    PlayerStats.instance.ConvertAllEffects(StatusEffect.BuffType.NEGATIVE);
                     break;
                 }
             case 2:
@@ -76,6 +81,7 @@ public class Skills
                 }
             case 4:
                 {
+                    PlayerStats.instance.Dispel();
                     StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 3, 1, false, StatusEffect.BuffType.POSITIVE);
                     StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 3, 1, false, StatusEffect.BuffType.POSITIVE);
                     PlayerStats.instance.AddStatus(effect);
@@ -112,21 +118,26 @@ public class Skills
         {
             case 0:
                 {
+                    GameObject barrierField = PlayerStats.instance.barrierField;
                     Collider[] result = Physics.OverlapSphere(PlayerStats.instance.transform.position, 40);
                     foreach (Collider col in result)
                     {
                         Rigidbody rb = col.GetComponent<Rigidbody>();
 
-                        if (rb != null && !rb.gameObject.CompareTag("Bomb"))
+                        if (rb != null && !rb.gameObject.CompareTag("Bomb") && !rb.gameObject.CompareTag("Collectible"))
                         {
                             rb.AddExplosionForce(2000, PlayerStats.instance.transform.position, 40, 1);
                         }
                     }
+                    var bF = Object.Instantiate(barrierField, PlayerStats.instance.transform.position, Quaternion.identity);
+                    bF.GetComponentInChildren<BarrierField>().SetDuration(9);
+                    bF.transform.localScale *= 25;
                     break;
                 }
             case 1:
                 {
                     PlayerStats.instance.HealPlayer(30f, true);
+                    PlayerStats.instance.ConvertAllEffects(StatusEffect.BuffType.NEGATIVE);
                     break;
                 }
             case 2:
@@ -141,6 +152,7 @@ public class Skills
                 }
             case 4:
                 {
+                    PlayerStats.instance.ConvertAllEffects(StatusEffect.BuffType.NEGATIVE);
                     StatusEffect effect = new StatusEffect(StatusEffect.EffectType.PROTECTED, 3.5f, 1, false, StatusEffect.BuffType.POSITIVE);
                     StatusEffect effect2 = new StatusEffect(StatusEffect.EffectType.CONTROL_IMMUNE, 3.5f, 1, false, StatusEffect.BuffType.POSITIVE);
                     PlayerStats.instance.AddStatus(effect);

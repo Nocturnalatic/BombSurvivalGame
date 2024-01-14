@@ -47,7 +47,7 @@ public class Perks
             case (2):
                 {
                     PlayerStats.instance.damageResistModifiers.Add(Globals.tankydamageBuff);
-                    PlayerStats.instance.SetMaxHealth(200);
+                    PlayerStats.instance.SetMaxHealth(PlayerStats.instance.GetMaxHealth() + 100);
                     PlayerControls.instance.moveSpeedModifiers.Add(Globals.tankyMovementDebuff);
                     break;
                 }

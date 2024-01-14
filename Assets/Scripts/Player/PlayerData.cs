@@ -12,6 +12,10 @@ public class PlayerData : MonoBehaviour
     int CurrencyCoin;
     int SettingMouseSensitivity;
     float FovSetting, AudioVolumeSetting;
+    #region Upgrades
+    int VitalityLevel, MoveSpeedLevel, LuckLevel;
+    public IDictionary<string, int> UpgradesData = new Dictionary<string, int>();
+    #endregion
 
     [SerializeField] Image expBar;
     [SerializeField] TextMeshProUGUI levelText;
@@ -98,9 +102,28 @@ public class PlayerData : MonoBehaviour
         AudioVolumeSetting = volume;    
     }
 
+    void InitUpgrades()
+    {
+        VitalityLevel = PlayerPrefs.GetInt("VitalityLevel", 1);
+        MoveSpeedLevel = PlayerPrefs.GetInt("MoveSpeedLevel", 1);
+        LuckLevel = PlayerPrefs.GetInt("LuckLevel", 1);
+        UpgradesData.Add("VitalityLevel", VitalityLevel);
+        UpgradesData.Add("MoveSpeedLevel", MoveSpeedLevel);
+        UpgradesData.Add("LuckLevel", LuckLevel);
+        PlayerControls.instance.SetBaseMovementSpeed();
+    }
+
+    public void UpdateUpgrades()
+    {
+        VitalityLevel = UpgradesData["VitalityLevel"];
+        MoveSpeedLevel = UpgradesData["MoveSpeedLevel"];
+        LuckLevel = UpgradesData["LuckLevel"];
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        InitUpgrades();
         Level = PlayerPrefs.GetInt("Player Level", 1);
         EXP = PlayerPrefs.GetInt("Player EXP", 0);
         CurrencyCoin = PlayerPrefs.GetInt("Player Coin", 100);
@@ -121,7 +144,14 @@ public class PlayerData : MonoBehaviour
     {
         EXP = 0;
         Level = 1;
-        CurrencyCoin = 0;
+        CurrencyCoin = 100;
+    }
+
+    private void ResetUpgrades()
+    {
+        PlayerPrefs.SetInt("VitalityLevel", 1);
+        PlayerPrefs.SetInt("MoveSpeedLevel", 1);
+        PlayerPrefs.SetInt("LuckLevel", 1);
     }
 
     private void OnApplicationQuit()
@@ -132,5 +162,8 @@ public class PlayerData : MonoBehaviour
         PlayerPrefs.SetInt("Player Coin", CurrencyCoin);
         PlayerPrefs.SetFloat("SettingFov", FovSetting);
         PlayerPrefs.SetFloat("SettingMasterVolume", AudioVolumeSetting);
+        PlayerPrefs.SetInt("VitalityLevel", VitalityLevel);
+        PlayerPrefs.SetInt("MoveSpeedLevel", MoveSpeedLevel);
+        PlayerPrefs.SetInt("LuckLevel", LuckLevel);
     }
 }
