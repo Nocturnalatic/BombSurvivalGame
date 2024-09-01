@@ -360,7 +360,6 @@ public class PlayerStats : MonoBehaviour
                         controls.oxygen -= 50f * Time.fixedDeltaTime;
                         break;
                 }
-                print(controls.oxygen);
                 if (controls.oxygen <= 0)
                 {
                     DamagePlayer(0.2f * maxhealth * Time.deltaTime, transform.position, false, DAMAGE_TYPE.DROWN, DAMAGE_FLAGS.IGNORE_SHIELDS);
@@ -1004,7 +1003,7 @@ public class PlayerStats : MonoBehaviour
                 di.GetComponent<DamageIndicator>().Init(origin, shield > 0 ? DAMAGE_TYPE.ELECTRIC : type, this, dmg * 2 / damageReduction / (health + shield));
             }
             health -= finalDamage;
-            if (GameplayLoop.instance.GameInProgress)
+            if (GameplayLoop.instance != null && GameplayLoop.instance.GameInProgress)
             {
                 if (type == DAMAGE_TYPE.EXPLOSION || type == DAMAGE_TYPE.ELECTRIC)
                 {

@@ -150,7 +150,7 @@ public class GameplayLoop : MonoBehaviour
         Intensity = v;
         SetIntensityColor();
         intensityText.text = $"{GetIntensityText()}|{Intensity}";
-        SceneControl.instance.SetSkybox(Intensity >= 4);
+        SceneControl.instance.SetSkybox(Intensity > 5);
     }
 
     public void SpawnBombPublic(BOMB_TYPES t, bool spawnAtPlayer = false)

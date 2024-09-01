@@ -44757,7 +44757,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!1 &6317469531475144206
 GameObject:
@@ -65077,27 +65077,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_SelectedEdges.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_SelectedFaces.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_Tangents.Array.data[24].z
-      value: -0.000000115737194
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_Tangents.Array.data[25].z
-      value: -0.0000001736058
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_Tangents.Array.data[26].z
-      value: -0.0000001736058
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_Tangents.Array.data[27].z
-      value: -0.00000023147436
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_Textures0.Array.data[24].x
@@ -65137,7 +65137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_SelectedVertices.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6719179662229543243, guid: 4a1cc2747d69f4449aade5f0d3fc1047, type: 3}
       propertyPath: m_SelectedEdges.Array.data[0].a

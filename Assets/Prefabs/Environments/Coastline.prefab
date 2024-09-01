@@ -1402,7 +1402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b6151d14677bf542a4346411e23a46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseStability: 70
+  baseStability: 90
   showTerrain: 1
 --- !u!54 &2890079870724968007
 Rigidbody:
